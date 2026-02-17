@@ -364,9 +364,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // No subcommand → open admin GUI
+        // No subcommand → open Arena List GUI (new Dashboard)
         if (args.length < 2) {
-            plugin.getAdminGUI().open(player);
+            plugin.getArenaListGUI().open(player);
             return true;
         }
 
@@ -457,12 +457,147 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             case "list" -> {
                 plugin.getArenaListGUI().open(player);
             }
+            case "set" -> {
+                handleAdminSet(player, args);
+            }
+            case "gamerule" -> {
+                handleAdminGamerule(player, args);
+            }
+            case "command" -> {
+                handleAdminCommand(player, args);
+            }
             default -> {
-                // Unknown subcommand, open admin GUI
-                plugin.getAdminGUI().open(player);
+                // Unknown subcommand, open Arena List GUI
+                plugin.getArenaListGUI().open(player);
             }
         }
         return true;
+    }
+
+    private void handleAdminSet(Player player, String[] args) {
+        if (args.length < 5) {
+            player.sendMessage(Component.text("Usage: /ds admin set <arena> <property> <value>", NamedTextColor.RED));
+            return;
+        }
+        String arenaId = args[2].toLowerCase();
+        String property = args[3].toLowerCase();
+        String value = args[4];
+
+        be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
+        if (config == null) {
+            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            return;
+        }
+
+        try {
+            switch (property) {
+                case "lobby" -> config.lobbyWorld = value;
+                case "game" -> config.gameWorld = value;
+                case "gametype" -> config.gameType = be.dualsfwshield.deathswap.GameType.valueOf(value.toUpperCase());
+                case "resilience" -> {
+                    boolean b = Boolean.parseBoolean(value);
+                    config.startIfMinPlayersMet = b;
+                    config.preventCancelAfterCountdown = b;
+                }
+                default -> {
+                    player.sendMessage(Component.text("Propriété inconnue: " + property, NamedTextColor.RED));
+                    return;
+                }
+            }
+            plugin.getConfigManager().saveArena(config);
+            player.sendMessage(Component.text("Propriété '" + property + "' mise à jour.", NamedTextColor.GREEN));
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(Component.text("Valeur invalide.", NamedTextColor.RED));
+        }
+    }
+
+    private void handleAdminGamerule(Player player, String[] args) {
+        if (args.length < 5) {
+            player.sendMessage(Component.text("Usage: /ds admin gamerule <arena> <set|remove> <rule> [value]",
+                    NamedTextColor.RED));
+            return;
+        }
+        String arenaId = args[2].toLowerCase();
+        String action = args[3].toLowerCase();
+        String rule = args[4];
+
+        be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
+        if (config == null) {
+            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            return;
+        }
+
+        if (action.equals("remove")) {
+            config.gamerules.remove(rule);
+            player.sendMessage(Component.text("Gamerule '" + rule + "' supprimée.", NamedTextColor.GREEN));
+        } else if (action.equals("set")) {
+            if (args.length < 6) {
+                player.sendMessage(
+                        Component.text("Usage: /ds admin gamerule <arena> set <rule> <value>", NamedTextColor.RED));
+                return;
+            }
+            String val = args[5];
+            config.gamerules.put(rule, val);
+            player.sendMessage(Component.text("Gamerule '" + rule + "' définie à " + val, NamedTextColor.GREEN));
+        }
+        plugin.getConfigManager().saveArena(config);
+    }
+
+    private void handleAdminCommand(Player player, String[] args) {
+        if (args.length < 5) {
+            player.sendMessage(
+                    Component.text("Usage: /ds admin command <arena> <tp|reset> <value...>", NamedTextColor.RED));
+            return;
+        }
+        String arenaId = args[2].toLowerCase();
+        String type = args[3].toLowerCase();
+
+        // Join rest of args
+        StringBuilder sb = new StringBuilder();
+        for (int i = 4; i < args.length; i++) {
+            sb.append(args[i]).append(" ");
+        }
+        String value = sb.toString().trim();
+
+        be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
+        if (config == null) {
+            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            return;
+        }
+
+        if (type.equals("tp")) {
+            if (value.equalsIgnoreCase("none") || value.equalsIgnoreCase("default")) {
+                config.teleportCommand = null;
+                player.sendMessage(Component.text("Commande TP réinitialisée (Défaut).", NamedTextColor.GREEN));
+            } else {
+                config.teleportCommand = value;
+                player.sendMessage(Component.text("Commande TP définie.", NamedTextColor.GREEN));
+            }
+        } else if (type.equals("reset")) {
+            if (value.equalsIgnoreCase("none")) {
+                config.worldResetCommands = new ArrayList<>();
+                player.sendMessage(Component.text("Reset désactivé.", NamedTextColor.GREEN));
+            } else if (value.toLowerCase().startsWith("mv")) {
+                config.worldResetCommands = new ArrayList<>();
+                config.worldResetCommands.add("mv regen %world% -s %seed%");
+                config.worldResetCommands.add("mv confirm");
+                player.sendMessage(Component.text("Reset défini sur Multiverse.", NamedTextColor.GREEN));
+            } else if (value.toLowerCase().startsWith("cwr")) {
+                config.worldResetCommands = new ArrayList<>();
+                config.worldResetCommands.add("cwr edit %world% setSeed %seed%");
+                config.worldResetCommands.add("cwr reset %world%");
+                player.sendMessage(Component.text("Reset défini sur Custom CWR.", NamedTextColor.GREEN));
+            } else {
+                // Custom splitted by ';'
+                config.worldResetCommands = new ArrayList<>();
+                for (String cmd : value.split(";")) {
+                    config.worldResetCommands.add(cmd.trim());
+                }
+                player.sendMessage(Component.text("Reset défini (" + config.worldResetCommands.size() + " cmds).",
+                        NamedTextColor.GREEN));
+            }
+        }
+        plugin.getConfigManager().saveArena(config);
     }
 
     private void sendHelp(CommandSender sender) {
@@ -505,13 +640,15 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 return filter(Arrays.asList("wins", "kills", "deaths", "time", "games"), args[1]);
             }
             if (sub.equals("admin")) {
-                return filter(Arrays.asList("create", "edit", "delete", "clone", "list", "save"), args[1]);
+                return filter(Arrays.asList("create", "edit", "delete", "clone", "list", "save", "set", "gamerule",
+                        "command"), args[1]);
             }
         } else if (args.length == 3) {
             String sub = args[0].toLowerCase();
             String adminSub = args[1].toLowerCase();
             if (sub.equals("admin")
-                    && (adminSub.equals("edit") || adminSub.equals("delete") || adminSub.equals("clone"))) {
+                    && (adminSub.equals("edit") || adminSub.equals("delete") || adminSub.equals("clone")
+                            || adminSub.equals("set") || adminSub.equals("gamerule") || adminSub.equals("command"))) {
                 return filter(new ArrayList<>(plugin.getArenaManager().getArenaIds()), args[2]);
             }
         }

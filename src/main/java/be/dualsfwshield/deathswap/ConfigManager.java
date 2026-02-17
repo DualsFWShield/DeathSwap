@@ -370,6 +370,18 @@ public class ConfigManager {
             }
         }
 
+        // Resilience settings
+        ac.startIfMinPlayersMet = section.getBoolean("start-if-min-players-met", false);
+        ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
+
+        // Command overrides
+        ac.teleportCommand = section.getString("teleport-command", null);
+        if (section.contains("world-reset-commands")) {
+            ac.worldResetCommands = section.getStringList("world-reset-commands");
+        } else {
+            ac.worldResetCommands = null; // Use global default
+        }
+
         return ac;
     }
 
@@ -451,6 +463,16 @@ public class ConfigManager {
             map.put("name", se.name());
             seedMaps.add(map);
         }
+        config.set("start-if-min-players-met", ac.startIfMinPlayersMet);
+        config.set("prevent-cancel-after-countdown", ac.preventCancelAfterCountdown);
+
+        if (ac.teleportCommand != null) {
+            config.set("teleport-command", ac.teleportCommand);
+        }
+        if (ac.worldResetCommands != null) {
+            config.set("world-reset-commands", ac.worldResetCommands);
+        }
+
         config.set("seeds", seedMaps);
 
         try {
@@ -584,6 +606,14 @@ public class ConfigManager {
         // Gamerules
         public Map<String, String> gamerules = new HashMap<>();
 
+        // Resilience
+        public boolean startIfMinPlayersMet = false;
+        public boolean preventCancelAfterCountdown = false;
+
+        // Command overrides (null = use global default)
+        public String teleportCommand = null;
+        public List<String> worldResetCommands = null;
+
         public ArenaConfig() {
             // Default gamerules (JE 1.21.5+ snake_case names)
             gamerules.put("keep_inventory", "false");
@@ -591,6 +621,8 @@ public class ConfigManager {
             gamerules.put("respawn_radius", "0");
             gamerules.put("send_command_feedback", "false");
             gamerules.put("log_admin_commands", "false");
+            gamerules.put("random_tick_speed", "3");
+            gamerules.put("show_advancement_messages", "true");
             gamerules.put("advance_time", "true");
             gamerules.put("advance_weather", "true");
             gamerules.put("mob_griefing", "true");

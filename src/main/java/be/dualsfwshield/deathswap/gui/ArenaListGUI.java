@@ -102,6 +102,10 @@ public class ArenaListGUI implements Listener {
             lore.add(Component.empty());
             lore.add(Component.text("Clic G: ", NamedTextColor.GREEN)
                     .append(Component.text("Éditer", NamedTextColor.GRAY)));
+            lore.add(Component.text("Shift-Clic G: ", NamedTextColor.AQUA)
+                    .append(Component.text("TP Lobby", NamedTextColor.GRAY)));
+            lore.add(Component.text("Clic D: ", NamedTextColor.RED)
+                    .append(Component.text("Supprimer", NamedTextColor.GRAY)));
             lore.add(Component.text("Clic D: ", NamedTextColor.RED)
                     .append(Component.text("Supprimer", NamedTextColor.GRAY)));
 
@@ -192,6 +196,17 @@ public class ArenaListGUI implements Listener {
             if (event.getClick() == ClickType.LEFT) {
                 // Edit → open SettingsGUI
                 plugin.getSettingsGUI().open(player, arenaId);
+            } else if (event.getClick() == ClickType.SHIFT_LEFT) {
+                // TP Lobby
+                GameInstance game = plugin.getArenaManager().getArena(arenaId);
+                org.bukkit.World world = (game != null) ? game.getLobbyLocation().getWorld()
+                        : Bukkit.getWorld(plugin.getConfigManager().getArenaConfig(arenaId).lobbyWorld);
+                if (world != null) {
+                    player.teleport(world.getSpawnLocation());
+                    player.sendMessage(Component.text("Téléportation au lobby de " + arenaId, NamedTextColor.GREEN));
+                } else {
+                    player.sendMessage(Component.text("Monde lobby introuvable.", NamedTextColor.RED));
+                }
             } else if (event.getClick() == ClickType.RIGHT) {
                 // Delete → open ConfirmationGUI
                 player.closeInventory();

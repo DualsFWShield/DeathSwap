@@ -52,8 +52,9 @@ gamerules:
   mob_griefing: "true"
   do_fire_tick: "true"
   show_death_messages: "true"
-  announce_advancements: "true"
+  announce_advancements: "true" # (show_advancement_messages sur les anciennes versions)
   immediate_respawn: "true"
+  random_tick_speed: "3" # (3 = défaut)
 
 # ==========================================
 #           STRUCTURES (SEEDS)

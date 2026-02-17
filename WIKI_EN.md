@@ -100,7 +100,7 @@ After the first launch:
 1. 🏠 Lobby → All players click "Ready"
 2. ⏳ Countdown + world loading
 3. 🌍 Random dispersion in the world
-4. ⚡ Spawn protection (configurable)
+4. ⚡ Spawn protection: Total invulnerability + Slow Falling + Fire Resistance (configurable)
 5. 🔄 Swaps at regular intervals
 6. 🏆 Last one standing is declared winner
 
@@ -209,6 +209,21 @@ world-reset-commands:
 - **`world-reset-commands`**: List of commands to reset the world.
   - **Default**: Uses CyberWorldReset (`cwr`).
   - **No Reset**: Leave the list empty `[]` to play on a static map.
+
+### `gamerules`
+
+```yaml
+gamerules:
+  keepInventory: "false"
+  immediateRespawn: "true"
+  doDaylightCycle: "true"
+  doWeatherCycle: "true"
+  mobGriefing: "true"
+  naturalRegeneration: "true"
+  doMobSpawning: "true"
+  random_tick_speed: "3"        # Crop growth speed (3 = default)
+  show_advancement_messages: "true" # Show advancements in chat
+```
 
 ### `prefixes`
 
@@ -607,8 +622,8 @@ The Admin Dashboard is a GUI system accessible via `/ds admin`. It provides a fu
 | Color | State |
 |-------|-------|
 | 🟡 Yellow | `WAITING` — Waiting for players |
-| 🟢 Light Green | `STARTING` — Countdown in progress |
-| 🟩 Green | `RUNNING` — Game in progress |
+| 🟢 Light Green | `STARTING` — World loading & players are invulnerable |
+| 🟩 Green | `RUNNING` — Game running (after spawn protection) |
 | 🔴 Red | `ENDED` — Game ended |
 | ⬛ Barrier | `DISABLED` — Arena disabled |
 

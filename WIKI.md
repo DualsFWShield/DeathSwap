@@ -100,7 +100,7 @@ Après le premier lancement :
 1. 🏠 Lobby → Tous les joueurs cliquent "Prêt"
 2. ⏳ Countdown + chargement du monde
 3. 🌍 Dispersion aléatoire dans le monde
-4. ⚡ Protection de spawn (configurable)
+4. ⚡ Protection de spawn : Invulnérabilité totale + Chute lente (Slow Falling) + Résistance au feu (configurable)
 5. 🔄 Swaps à intervalles réguliers
 6. 🏆 Dernier vivant déclare vainqueur
 
@@ -302,6 +302,8 @@ gamerules:
   send_command_feedback: "false"
   log_admin_commands: "false"
   respawn_radius: "0"
+  random_tick_speed: "3"        # Vitesse de pousse des plantes (3 = défaut)
+  show_advancement_messages: "true" # Afficher les succès dans le chat
 
 seeds: []
 ```
@@ -742,8 +744,8 @@ Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit
 | Couleur | État |
 |---------|------|
 | 🟡 Jaune | `WAITING` — En attente de joueurs |
-| 🟢 Vert clair | `STARTING` — Countdown en cours |
-| 🟩 Vert | `RUNNING` — Partie en cours |
+| 🟢 Vert clair | `STARTING` — Le monde charge & les joueurs sont invulnérables |
+| 🟩 Vert | `RUNNING` — Partie en cours (après la protection de spawn) |
 | 🔴 Rouge | `ENDED` — Partie terminée |
 | ⬛ Barrier | `DISABLED` — Arène désactivée |
 

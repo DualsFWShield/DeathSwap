@@ -187,7 +187,7 @@ arenas:
       swap-min: 120              # Mode RANDOM : intervalle minimum
       swap-max: 420              # Mode RANDOM : intervalle maximum
       max-game-time: 1800        # Durée max de la partie (30 min)
-      spawn-protection: 30       # Invulnérabilité au début (sec)
+      spawn-protection: 30       # Invulnérabilité + Chute lente au début (sec)
 
     # --- Timers par round (DeathShuffle / BlockShuffle) ---
     round-timers:
@@ -210,6 +210,8 @@ arenas:
       mobGriefing: "true"
       naturalRegeneration: "true"
       doMobSpawning: "true"
+      random_tick_speed: "3"
+      show_advancement_messages: "true"
 
     # --- Seeds prédéfinies ---
     seeds:

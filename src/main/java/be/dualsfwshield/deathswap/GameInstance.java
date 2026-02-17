@@ -176,6 +176,12 @@ public class GameInstance {
         if (!lobbyPlayers.contains(player))
             return;
 
+        // Prevent unready during countdown if configured
+        if (state == GameState.STARTING && config.preventCancelAfterCountdown) {
+            sendMessage(player, "&cLe compte à rebours est lancé, impossible d'annuler !");
+            return;
+        }
+
         if (readyPlayers.contains(player)) {
             // Unready
             readyPlayers.remove(player);
@@ -189,6 +195,23 @@ public class GameInstance {
                     .decoration(TextDecoration.ITALIC, false));
             notReady.setItemMeta(meta);
             player.getInventory().setItem(4, notReady);
+
+            // If game was starting, maybe cancel?
+            if (state == GameState.STARTING && !config.startIfMinPlayersMet) {
+                // If config says cancel on unready, we cancel
+                // But current logic doesn't explicitly cancel task here, just relies on check
+                // later?
+                // Actually startCountdown() doesn't check ready status during run.
+                // onCountdownFinished() checks alivePlayers size, not ready status.
+                // So unready during countdown has no effect unless we add code here.
+                // Let's force cancel if we drop below min players and !startIfMinPlayersMet
+                if (readyPlayers.size() < config.minPlayers) {
+                    broadcastLobby("&cAnnulation du lancement : Plus assez de joueurs prêts.");
+                    state = GameState.WAITING;
+                    // Note: The countdown task checks state != STARTING and will cancel itself.
+                }
+            }
+
         } else {
             // Ready
             readyPlayers.add(player);
@@ -253,8 +276,16 @@ public class GameInstance {
      * Teleport a player to an exact location in a Multiverse world.
      * Uses: /mvtp <player> e:<world>:<x>,<y>,<z>:<yaw>:<pitch>
      */
+    /**
+     * Teleport a player to an exact location in a Multiverse world.
+     * Uses: /mvtp <player> e:<world>:<x>,<y>,<z>:<yaw>:<pitch>
+     */
     private void mvtp(Player player, String worldName, Location loc) {
-        String cmd = plugin.getConfigManager().getTeleportCommand();
+        // Try arena config first, then global
+        String cmd = config.teleportCommand;
+        if (cmd == null || cmd.isEmpty()) {
+            cmd = plugin.getConfigManager().getTeleportCommand();
+        }
         if (cmd == null || cmd.isEmpty()) {
             cmd = "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%";
         }
@@ -333,7 +364,11 @@ public class GameInstance {
      */
     private void continueStartWithSeed(SeedEntry seed) {
         // Execute configured world reset commands
-        List<String> commands = plugin.getConfigManager().getWorldResetCommands();
+        List<String> commands = config.worldResetCommands;
+        if (commands == null) {
+            commands = plugin.getConfigManager().getWorldResetCommands();
+        }
+
         if (commands != null && !commands.isEmpty()) {
             for (String cmd : commands) {
                 String finalCmd = cmd.replace("%world%", config.gameWorld)
@@ -441,13 +476,19 @@ public class GameInstance {
                 }
 
                 // Verify player count
-                broadcastLobby("&e[Debug] Alive Players: " + alivePlayers.size() + "/" + config.minPlayers);
-                if (!testMode && alivePlayers.size() < config.minPlayers) {
-                    broadcastLobby("&cPas assez de joueurs (" + alivePlayers.size() + "/" + config.minPlayers
-                            + "). Annulation.");
-                    state = GameState.WAITING;
-                    cleanup();
-                    return;
+                // If startIfMinPlayersMet is true, we allow starting if >= minPlayers, even if
+                // someone left
+                if (!testMode) {
+                    if (alivePlayers.size() < config.minPlayers) {
+                        // Default behavior: Not enough players
+                        plugin.getLogger().warning(
+                                "Not enough players to start (" + alivePlayers.size() + "/" + config.minPlayers + ")");
+                        broadcastLobby("&cPas assez de joueurs (" + alivePlayers.size() + "/" + config.minPlayers
+                                + "). Annulation.");
+                        state = GameState.WAITING;
+                        cleanup();
+                        return;
+                    }
                 }
 
                 // Start!
@@ -570,16 +611,17 @@ public class GameInstance {
             return;
 
         StringBuilder names = new StringBuilder();
-        Player firstPlayer = null;
         for (Player p : alivePlayers) {
-            if (firstPlayer == null)
-                firstPlayer = p;
-            names.append(" ").append(p.getName());
+            names.append(" \"").append(p.getName()).append("\"");
         }
 
-        if (firstPlayer != null) {
+        try {
+            // Run spreadplayers directly from console without execute at
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                    "execute at " + firstPlayer.getName() + " run spreadplayers 0 0 10 100 false" + names);
+                    "spreadplayers 0 0 10 100 false" + names.toString());
+        } catch (Exception e) {
+            plugin.getLogger().severe("Failed to spread players: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -595,7 +637,10 @@ public class GameInstance {
         gameLoopTask = new BukkitRunnable() {
             @Override
             public void run() {
+                // plugin.getLogger().info("[Debug] GameLoop tick. State: " + state + ", Timer:
+                // " + swapTimer);
                 if (state != GameState.RUNNING) {
+                    plugin.getLogger().warning("[Debug] Game loop running but state is " + state + ". Cancelling.");
                     cancel();
                     return;
                 }
