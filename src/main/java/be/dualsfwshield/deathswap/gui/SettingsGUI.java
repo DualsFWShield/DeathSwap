@@ -101,8 +101,8 @@ public class SettingsGUI implements Listener {
         inv.setItem(34, createItem(Material.WHEAT_SEEDS, "&6Seeds",
                 "&7Total: &e" + config.seeds.size() + " seeds",
                 "",
-                "&7Les seeds sont configurables",
-                "&7dans le fichier config.yml"));
+                "\u00a77Les seeds sont configurables",
+                "\u00a77dans arenas/" + arenaId + ".yml"));
 
         // Row 4: Player limits
         inv.setItem(37, createItem(Material.PLAYER_HEAD, "&6Joueurs Min",
@@ -185,28 +185,26 @@ public class SettingsGUI implements Listener {
                 // Max game time: +/- 60s
                 config.maxGameTime += isLeftClick ? 60 : -60;
                 config.maxGameTime = Math.max(60, config.maxGameTime);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId); // Refresh
             }
             case 14 -> {
                 // Load time: +/- 10s
                 config.loadTime += isLeftClick ? 10 : -10;
                 config.loadTime = Math.max(10, config.loadTime);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 16 -> {
                 // Toggle PvP
                 config.pvpEnabled = !config.pvpEnabled;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 22 -> {
                 // Toggle UI Mode
                 config.uiMode = (config.uiMode == UIMode.RICH) ? UIMode.CLEAN : UIMode.RICH;
-                plugin.getConfigManager().save();
-                config.uiMode = (config.uiMode == UIMode.RICH) ? UIMode.CLEAN : UIMode.RICH;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 24 -> {
@@ -218,33 +216,33 @@ public class SettingsGUI implements Listener {
                 // Min players: +/- 1
                 config.minPlayers += isLeftClick ? 1 : -1;
                 config.minPlayers = Math.max(1, config.minPlayers);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 39 -> {
                 // Max players: +/- 1
                 config.maxPlayers += isLeftClick ? 1 : -1;
                 config.maxPlayers = Math.max(config.minPlayers, config.maxPlayers);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 41 -> {
                 // Spawn protection: +/- 5s
                 config.spawnProtection += isLeftClick ? 5 : -5;
                 config.spawnProtection = Math.max(0, config.spawnProtection);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 43 -> {
                 // Toggle Nether
                 config.netherEnabled = !config.netherEnabled;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 44 -> {
                 // Toggle End
                 config.endEnabled = !config.endEnabled;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 49 -> player.closeInventory();

@@ -174,7 +174,7 @@ public class SwapTimerGUI implements Listener {
             int minutes = PRESETS[slot];
             config.swapMode = SwapMode.FIXED;
             config.swapInterval = minutes * 60;
-            plugin.getConfigManager().save();
+            plugin.getConfigManager().saveArena(config);
             open(player, arenaId); // Refresh
             return;
         }
@@ -183,13 +183,13 @@ public class SwapTimerGUI implements Listener {
             case 12 -> {
                 // Switch to FIXED mode
                 config.swapMode = SwapMode.FIXED;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 14 -> {
                 // Switch to RANDOM mode
                 config.swapMode = SwapMode.RANDOM;
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 21 -> {
@@ -199,14 +199,14 @@ public class SwapTimerGUI implements Listener {
                 if (config.swapMin > config.swapMax) {
                     config.swapMax = config.swapMin;
                 }
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 23 -> {
                 // Random MAX: +/- 30s
                 config.swapMax += isLeftClick ? 30 : -30;
                 config.swapMax = Math.max(config.swapMin, config.swapMax);
-                plugin.getConfigManager().save();
+                plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
             case 26 -> {

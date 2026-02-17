@@ -2,17 +2,22 @@ package be.dualsfwshield.deathswap;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Manages loading, saving, and accessing the plugin configuration.
- * Supports multi-arena configs with per-arena settings, per-mode prefixes,
+ * Supports multi-arena configs with per-arena settings (in arenas/ folder),
+ * per-mode prefixes,
  * and feature toggles (stats, sounds, challenges, voting).
  */
 public class ConfigManager {
@@ -47,7 +52,8 @@ public class ConfigManager {
     }
 
     /**
-     * Load or reload all configuration from config.yml.
+     * Load or reload all configuration.
+     * Migrates old config.yml arenas to arenas/ folder if found.
      */
     public void load() {
         plugin.saveDefaultConfig();
@@ -141,25 +147,123 @@ public class ConfigManager {
             voteOptionsCount = 3;
         }
 
-        // Load arenas
+        // --- Arena Migration Logic ---
+        File arenasFolder = new File(plugin.getDataFolder(), "arenas");
+        if (!arenasFolder.exists()) {
+            arenasFolder.mkdirs();
+        }
+
+        ConfigurationSection oldArenasSection = config.getConfigurationSection("arenas");
+        if (oldArenasSection != null) {
+            plugin.getLogger().info("Migrating arenas from config.yml to arenas/ folder...");
+            for (String key : oldArenasSection.getKeys(false)) {
+                ConfigurationSection section = oldArenasSection.getConfigurationSection(key);
+                if (section == null)
+                    continue;
+                ArenaConfig ac = loadArenaConfigFromSection(key, section);
+                saveArena(ac); // Save to individual file
+                plugin.getLogger().info("Migrated arena: " + key);
+            }
+            // Clear arenas from config.yml
+            config.set("arenas", null);
+            plugin.saveConfig();
+        }
+
+        // --- Load Arenas from File ---
         arenaConfigs.clear();
-        ConfigurationSection arenasSection = config.getConfigurationSection("arenas");
-        if (arenasSection == null) {
-            plugin.getLogger().warning("No arenas defined in config.yml!");
-            return;
+        File[] files = arenasFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+        if (files != null) {
+            for (File file : files) {
+                String fileName = file.getName();
+                String id = fileName.substring(0, fileName.lastIndexOf('.'));
+                YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
+                ArenaConfig ac = loadArenaConfigFromSection(id, arenaConfig);
+                arenaConfigs.put(id, ac);
+            }
         }
 
-        for (String arenaId : arenasSection.getKeys(false)) {
-            ConfigurationSection section = arenasSection.getConfigurationSection(arenaId);
-            if (section == null)
-                continue;
-            arenaConfigs.put(arenaId, loadArenaConfig(arenaId, section));
+        // If no arenas exist, create default
+        if (arenaConfigs.isEmpty()) {
+            createArena("default");
         }
 
-        plugin.getLogger().info("Loaded " + arenaConfigs.size() + " arena(s) from config.");
+        plugin.getLogger().info("Loaded " + arenaConfigs.size() + " arena(s) from arenas/ folder.");
     }
 
-    private ArenaConfig loadArenaConfig(String id, ConfigurationSection section) {
+    public void createArena(String id) {
+        if (arenaConfigs.containsKey(id))
+            return;
+        ArenaConfig ac = new ArenaConfig();
+        ac.id = id;
+        ac.gameWorld = id + "_Game";
+        ac.lobbyWorld = id + "_Lobby";
+        arenaConfigs.put(id, ac);
+        saveArena(ac);
+        plugin.getLogger().info("Created new arena: " + id);
+    }
+
+    /**
+     * Delete an arena config and its file.
+     * 
+     * @return true if the arena existed and was deleted
+     */
+    public boolean deleteArena(String id) {
+        ArenaConfig removed = arenaConfigs.remove(id);
+        if (removed == null)
+            return false;
+
+        File arenaFile = new File(plugin.getDataFolder(), "arenas/" + id + ".yml");
+        if (arenaFile.exists()) {
+            arenaFile.delete();
+        }
+        plugin.getLogger().info("Deleted arena: " + id);
+        return true;
+    }
+
+    /**
+     * Clone an existing arena config to a new ID.
+     * 
+     * @return true if cloning succeeded
+     */
+    public boolean cloneArena(String sourceId, String targetId) {
+        ArenaConfig source = arenaConfigs.get(sourceId);
+        if (source == null)
+            return false;
+        if (arenaConfigs.containsKey(targetId))
+            return false;
+
+        ArenaConfig clone = new ArenaConfig();
+        clone.id = targetId;
+        clone.gameType = source.gameType;
+        clone.gameWorld = targetId + "_Game";
+        clone.lobbyWorld = targetId + "_Lobby";
+        clone.minPlayers = source.minPlayers;
+        clone.maxPlayers = source.maxPlayers;
+        clone.uiMode = source.uiMode;
+        clone.loadTime = source.loadTime;
+        clone.swapMode = source.swapMode;
+        clone.swapInterval = source.swapInterval;
+        clone.swapMin = source.swapMin;
+        clone.swapMax = source.swapMax;
+        clone.maxGameTime = source.maxGameTime;
+        clone.spawnProtection = source.spawnProtection;
+        clone.roundTimeEasy = source.roundTimeEasy;
+        clone.roundTimeMedium = source.roundTimeMedium;
+        clone.roundTimeHard = source.roundTimeHard;
+        clone.pvpEnabled = source.pvpEnabled;
+        clone.netherEnabled = source.netherEnabled;
+        clone.endEnabled = source.endEnabled;
+        clone.runnerCount = source.runnerCount;
+        clone.seeds = new ArrayList<>(source.seeds);
+        clone.gamerules = new HashMap<>(source.gamerules);
+
+        arenaConfigs.put(targetId, clone);
+        saveArena(clone);
+        plugin.getLogger().info("Cloned arena '" + sourceId + "' → '" + targetId + "'");
+        return true;
+    }
+
+    private ArenaConfig loadArenaConfigFromSection(String id, ConfigurationSection section) {
         ArenaConfig ac = new ArenaConfig();
         ac.id = id;
 
@@ -245,7 +349,8 @@ public class ConfigManager {
     }
 
     /**
-     * Save current arena configs back to config.yml.
+     * Save global configuration to config.yml (feature toggles, etc.).
+     * Does NOT save individual arenas. Use saveArena() for that.
      */
     public void save() {
         FileConfiguration config = plugin.getConfig();
@@ -265,49 +370,67 @@ public class ConfigManager {
         config.set("voting.vote-time", voteTime);
         config.set("voting.options-count", voteOptionsCount);
 
-        for (Map.Entry<String, ArenaConfig> entry : arenaConfigs.entrySet()) {
-            String path = "arenas." + entry.getKey();
-            ArenaConfig ac = entry.getValue();
+        plugin.saveConfig();
 
-            config.set(path + ".game-type", ac.gameType.name());
-            config.set(path + ".game-world", ac.gameWorld);
-            config.set(path + ".lobby-world", ac.lobbyWorld);
-            config.set(path + ".min-players", ac.minPlayers);
-            config.set(path + ".max-players", ac.maxPlayers);
-            config.set(path + ".ui-mode", ac.uiMode.name());
+        // Also save all arenas just in case
+        for (ArenaConfig ac : arenaConfigs.values()) {
+            saveArena(ac);
+        }
+    }
 
-            config.set(path + ".timers.load-time", ac.loadTime);
-            config.set(path + ".timers.swap-mode", ac.swapMode.name());
-            config.set(path + ".timers.swap-interval", ac.swapInterval);
-            config.set(path + ".timers.swap-min", ac.swapMin);
-            config.set(path + ".timers.swap-max", ac.swapMax);
-            config.set(path + ".timers.max-game-time", ac.maxGameTime);
-            config.set(path + ".timers.spawn-protection", ac.spawnProtection);
+    /**
+     * Save a specific arena's configuration to arenas/<id>.yml.
+     */
+    public void saveArena(ArenaConfig ac) {
+        File arenasFolder = new File(plugin.getDataFolder(), "arenas");
+        if (!arenasFolder.exists())
+            arenasFolder.mkdirs();
 
-            config.set(path + ".round-timers.easy", ac.roundTimeEasy);
-            config.set(path + ".round-timers.medium", ac.roundTimeMedium);
-            config.set(path + ".round-timers.hard", ac.roundTimeHard);
+        File arenaFile = new File(arenasFolder, ac.id + ".yml");
+        YamlConfiguration config = new YamlConfiguration();
 
-            config.set(path + ".game.pvp-enabled", ac.pvpEnabled);
-            config.set(path + ".game.nether-enabled", ac.netherEnabled);
-            config.set(path + ".game.end-enabled", ac.endEnabled);
+        config.set("game-type", ac.gameType.name());
+        config.set("game-world", ac.gameWorld);
+        config.set("lobby-world", ac.lobbyWorld);
+        config.set("min-players", ac.minPlayers);
+        config.set("max-players", ac.maxPlayers);
+        config.set("ui-mode", ac.uiMode.name());
 
-            ConfigurationSection rulesSection = config.createSection(path + ".gamerules");
-            for (Map.Entry<String, String> ruleEntry : ac.gamerules.entrySet()) {
-                rulesSection.set(ruleEntry.getKey(), ruleEntry.getValue());
-            }
+        config.set("timers.load-time", ac.loadTime);
+        config.set("timers.swap-mode", ac.swapMode.name());
+        config.set("timers.swap-interval", ac.swapInterval);
+        config.set("timers.swap-min", ac.swapMin);
+        config.set("timers.swap-max", ac.swapMax);
+        config.set("timers.max-game-time", ac.maxGameTime);
+        config.set("timers.spawn-protection", ac.spawnProtection);
 
-            List<Map<String, String>> seedMaps = new ArrayList<>();
-            for (SeedEntry se : ac.seeds) {
-                Map<String, String> map = new HashMap<>();
-                map.put("seed", se.seed());
-                map.put("name", se.name());
-                seedMaps.add(map);
-            }
-            config.set(path + ".seeds", seedMaps);
+        config.set("round-timers.easy", ac.roundTimeEasy);
+        config.set("round-timers.medium", ac.roundTimeMedium);
+        config.set("round-timers.hard", ac.roundTimeHard);
+
+        config.set("game.pvp-enabled", ac.pvpEnabled);
+        config.set("game.nether-enabled", ac.netherEnabled);
+        config.set("game.end-enabled", ac.endEnabled);
+
+        ConfigurationSection rulesSection = config.createSection("gamerules");
+        for (Map.Entry<String, String> ruleEntry : ac.gamerules.entrySet()) {
+            rulesSection.set(ruleEntry.getKey(), ruleEntry.getValue());
         }
 
-        plugin.saveConfig();
+        List<Map<String, String>> seedMaps = new ArrayList<>();
+        for (SeedEntry se : ac.seeds) {
+            Map<String, String> map = new HashMap<>();
+            map.put("seed", se.seed());
+            map.put("name", se.name());
+            seedMaps.add(map);
+        }
+        config.set("seeds", seedMaps);
+
+        try {
+            config.save(arenaFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not save arena config: " + ac.id, e);
+        }
     }
 
     // --- Getters ---

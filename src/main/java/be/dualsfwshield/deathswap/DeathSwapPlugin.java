@@ -28,6 +28,7 @@ public class DeathSwapPlugin extends JavaPlugin {
     private be.dualsfwshield.deathswap.gui.PlayerListGUI playerListGUI;
     private be.dualsfwshield.deathswap.gui.PlayerActionGUI playerActionGUI;
     private be.dualsfwshield.deathswap.gui.ConfirmationGUI confirmationGUI;
+    private be.dualsfwshield.deathswap.gui.ArenaListGUI arenaListGUI;
 
     @Override
     public void onEnable() {
@@ -62,6 +63,7 @@ public class DeathSwapPlugin extends JavaPlugin {
         this.playerListGUI = new be.dualsfwshield.deathswap.gui.PlayerListGUI(this);
         this.playerActionGUI = new be.dualsfwshield.deathswap.gui.PlayerActionGUI(this);
         this.confirmationGUI = new be.dualsfwshield.deathswap.gui.ConfirmationGUI(this);
+        this.arenaListGUI = new be.dualsfwshield.deathswap.gui.ArenaListGUI(this);
         getServer().getPluginManager().registerEvents(settingsGUI, this);
         getServer().getPluginManager().registerEvents(swapTimerGUI, this);
         getServer().getPluginManager().registerEvents(gamerulesGUI, this);
@@ -70,6 +72,7 @@ public class DeathSwapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(playerListGUI, this);
         getServer().getPluginManager().registerEvents(playerActionGUI, this);
         getServer().getPluginManager().registerEvents(confirmationGUI, this);
+        getServer().getPluginManager().registerEvents(arenaListGUI, this);
 
         // 3. Register Mode Listeners
         getServer().getPluginManager().registerEvents(new DeathShuffleListener(this), this);
@@ -79,7 +82,9 @@ public class DeathSwapPlugin extends JavaPlugin {
         this.arenaManager = new ArenaManager(this);
 
         // 5. Commands
-        getCommand("ds").setExecutor(new DeathSwapCommand(this));
+        DeathSwapCommand dsCommand = new DeathSwapCommand(this);
+        getCommand("ds").setExecutor(dsCommand);
+        getCommand("ds").setTabCompleter(dsCommand);
 
         getLogger().info("DeathSwap v" + getDescription().getVersion() + " est activé !");
     }
@@ -153,5 +158,9 @@ public class DeathSwapPlugin extends JavaPlugin {
 
     public be.dualsfwshield.deathswap.gui.ConfirmationGUI getConfirmationGUI() {
         return confirmationGUI;
+    }
+
+    public be.dualsfwshield.deathswap.gui.ArenaListGUI getArenaListGUI() {
+        return arenaListGUI;
     }
 }

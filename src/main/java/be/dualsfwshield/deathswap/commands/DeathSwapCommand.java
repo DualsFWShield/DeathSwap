@@ -78,7 +78,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 return handleVote(sender, args);
             }
             case "admin" -> {
-                return handleAdmin(sender);
+                return handleAdmin(sender, args);
             }
             default -> sendHelp(sender);
         }
@@ -231,7 +231,15 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("Permission refusée.", NamedTextColor.RED));
             return true;
         }
-        sender.sendMessage(Component.text("Settings GUI à venir...", NamedTextColor.GRAY));
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Commande joueur uniquement.", NamedTextColor.RED));
+            return true;
+        }
+
+        // Open settings for the arena the player is in, or default
+        GameInstance game = plugin.getArenaManager().getPlayerArena(player);
+        String arenaId = (game != null) ? game.getArenaId() : "default";
+        plugin.getSettingsGUI().open(player, arenaId);
         return true;
     }
 
@@ -339,7 +347,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean handleAdmin(CommandSender sender) {
+    private boolean handleAdmin(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Cette commande est réservée aux joueurs.", NamedTextColor.RED));
             return true;
@@ -350,7 +358,104 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        plugin.getAdminGUI().open(player);
+        // No subcommand → open admin GUI
+        if (args.length < 2) {
+            plugin.getAdminGUI().open(player);
+            return true;
+        }
+
+        String adminSub = args[1].toLowerCase();
+
+        switch (adminSub) {
+            case "create" -> {
+                if (args.length < 3) {
+                    player.sendMessage(Component.text("Usage: /ds admin create <nom>", NamedTextColor.RED));
+                    return true;
+                }
+                String name = args[2].toLowerCase();
+                if (plugin.getConfigManager().getArenaConfig(name) != null) {
+                    player.sendMessage(Component.text("L'arène '" + name + "' existe déjà !", NamedTextColor.RED));
+                    return true;
+                }
+                plugin.getConfigManager().createArena(name);
+                plugin.getArenaManager().reload();
+                player.sendMessage(Component.text("✔ Arène '" + name + "' créée ! Ouverture des settings...",
+                        NamedTextColor.GREEN));
+                plugin.getSettingsGUI().open(player, name);
+            }
+            case "edit" -> {
+                if (args.length < 3) {
+                    player.sendMessage(Component.text("Usage: /ds admin edit <nom>", NamedTextColor.RED));
+                    return true;
+                }
+                String editName = args[2].toLowerCase();
+                if (plugin.getConfigManager().getArenaConfig(editName) == null) {
+                    player.sendMessage(
+                            Component.text("Arène introuvable : " + editName, NamedTextColor.RED));
+                    return true;
+                }
+                plugin.getSettingsGUI().open(player, editName);
+            }
+            case "save" -> {
+                plugin.getConfigManager().save();
+                player.sendMessage(Component.text("✔ Toutes les configurations sauvegardées.", NamedTextColor.GREEN));
+            }
+            case "delete" -> {
+                if (args.length < 3) {
+                    player.sendMessage(Component.text("Usage: /ds admin delete <nom>", NamedTextColor.RED));
+                    return true;
+                }
+                String delName = args[2].toLowerCase();
+                if (plugin.getConfigManager().getArenaConfig(delName) == null) {
+                    player.sendMessage(Component.text("Arène introuvable : " + delName, NamedTextColor.RED));
+                    return true;
+                }
+                // Open confirmation GUI
+                plugin.getConfirmationGUI().open(player,
+                        "Supprimer: " + delName,
+                        "L'arène et son fichier seront supprimés.",
+                        NamedTextColor.RED,
+                        () -> {
+                            plugin.getConfigManager().deleteArena(delName);
+                            plugin.getArenaManager().reload();
+                            player.sendMessage(Component.text("✔ Arène '" + delName + "' supprimée.",
+                                    NamedTextColor.GREEN));
+                        },
+                        () -> player.sendMessage(Component.text("Suppression annulée.", NamedTextColor.YELLOW)));
+            }
+            case "clone" -> {
+                if (args.length < 4) {
+                    player.sendMessage(Component.text("Usage: /ds admin clone <source> <destination>",
+                            NamedTextColor.RED));
+                    return true;
+                }
+                String srcName = args[2].toLowerCase();
+                String dstName = args[3].toLowerCase();
+                if (plugin.getConfigManager().getArenaConfig(srcName) == null) {
+                    player.sendMessage(Component.text("Arène source introuvable : " + srcName, NamedTextColor.RED));
+                    return true;
+                }
+                if (plugin.getConfigManager().getArenaConfig(dstName) != null) {
+                    player.sendMessage(Component.text("L'arène '" + dstName + "' existe déjà !", NamedTextColor.RED));
+                    return true;
+                }
+                boolean success = plugin.getConfigManager().cloneArena(srcName, dstName);
+                if (success) {
+                    plugin.getArenaManager().reload();
+                    player.sendMessage(Component.text("✔ Arène '" + srcName + "' clonée vers '" + dstName + "' !",
+                            NamedTextColor.GREEN));
+                } else {
+                    player.sendMessage(Component.text("Erreur lors du clonage.", NamedTextColor.RED));
+                }
+            }
+            case "list" -> {
+                plugin.getArenaListGUI().open(player);
+            }
+            default -> {
+                // Unknown subcommand, open admin GUI
+                plugin.getAdminGUI().open(player);
+            }
+        }
         return true;
     }
 
@@ -363,7 +468,8 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("/ds stop [arena]", NamedTextColor.RED));
             sender.sendMessage(Component.text("/ds reload", NamedTextColor.RED));
             sender.sendMessage(Component.text("/ds swapnow", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds admin", NamedTextColor.RED));
+            sender.sendMessage(Component.text("/ds admin [create|edit|delete|clone|list|save]", NamedTextColor.RED));
+            sender.sendMessage(Component.text("/ds settings", NamedTextColor.RED));
         }
         sender.sendMessage(Component.text("/ds stats [joueur]", NamedTextColor.AQUA));
         sender.sendMessage(Component.text("/ds top [kills|wins|time|games]", NamedTextColor.AQUA));
@@ -391,6 +497,16 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             }
             if (sub.equals("top")) {
                 return filter(Arrays.asList("wins", "kills", "deaths", "time", "games"), args[1]);
+            }
+            if (sub.equals("admin")) {
+                return filter(Arrays.asList("create", "edit", "delete", "clone", "list", "save"), args[1]);
+            }
+        } else if (args.length == 3) {
+            String sub = args[0].toLowerCase();
+            String adminSub = args[1].toLowerCase();
+            if (sub.equals("admin")
+                    && (adminSub.equals("edit") || adminSub.equals("delete") || adminSub.equals("clone"))) {
+                return filter(new ArrayList<>(plugin.getArenaManager().getArenaIds()), args[2]);
             }
         }
 

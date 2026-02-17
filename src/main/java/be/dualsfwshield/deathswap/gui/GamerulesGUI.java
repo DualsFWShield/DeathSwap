@@ -146,7 +146,7 @@ public class GamerulesGUI implements Listener {
             boolean newVal = !Boolean.parseBoolean(current);
             config.gamerules.put(ruleName, String.valueOf(newVal));
 
-            plugin.getConfigManager().save();
+            plugin.getConfigManager().saveArena(config);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
 
             // Refresh
