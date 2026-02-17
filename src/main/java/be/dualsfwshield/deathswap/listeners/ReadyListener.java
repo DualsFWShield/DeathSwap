@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -28,8 +29,10 @@ public class ReadyListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        // Only handle right clicks
+        // Only handle right clicks and main hand
         if (!event.getAction().isRightClick())
+            return;
+        if (event.getHand() != EquipmentSlot.HAND)
             return;
 
         // Check if player is in a lobby world

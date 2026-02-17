@@ -238,6 +238,12 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         // Open settings for the arena the player is in, or default
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
+        if (game != null && (game.getState() == be.dualsfwshield.deathswap.GameState.RUNNING
+                || game.getState() == be.dualsfwshield.deathswap.GameState.STARTING)) {
+            player.sendMessage(
+                    Component.text("Impossible de modifier les paramètres pendant une partie.", NamedTextColor.RED));
+            return true;
+        }
         String arenaId = (game != null) ? game.getArenaId() : "default";
         plugin.getSettingsGUI().open(player, arenaId);
         return true;

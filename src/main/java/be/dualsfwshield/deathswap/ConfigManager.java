@@ -26,6 +26,9 @@ public class ConfigManager {
 
     // Global
     private String hubWorld;
+
+    private String teleportCommand;
+    private List<String> worldResetCommands;
     private final Map<GameType, String> prefixes = new EnumMap<>(GameType.class);
 
     // Feature toggles
@@ -61,6 +64,17 @@ public class ConfigManager {
         FileConfiguration config = plugin.getConfig();
 
         this.hubWorld = config.getString("hub-world", "MainLobby");
+        this.teleportCommand = config.getString("teleport-command",
+                "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%");
+
+        if (config.contains("world-reset-commands")) {
+            this.worldResetCommands = config.getStringList("world-reset-commands");
+        } else {
+            // Default to CyberWorldReset behavior if missing
+            this.worldResetCommands = new ArrayList<>();
+            this.worldResetCommands.add("cwr edit %world% setSeed %seed%");
+            this.worldResetCommands.add("cwr reset %world%");
+        }
 
         // Load prefixes per mode
         prefixes.clear();
@@ -175,6 +189,8 @@ public class ConfigManager {
         if (files != null) {
             for (File file : files) {
                 String fileName = file.getName();
+                if (fileName.equals("example.yml"))
+                    continue; // Skip example arena
                 String id = fileName.substring(0, fileName.lastIndexOf('.'));
                 YamlConfiguration arenaConfig = YamlConfiguration.loadConfiguration(file);
                 ArenaConfig ac = loadArenaConfigFromSection(id, arenaConfig);
@@ -182,9 +198,9 @@ public class ConfigManager {
             }
         }
 
-        // If no arenas exist, create default
+        // If no arenas exist, create example.yml (but don't load it)
         if (arenaConfigs.isEmpty()) {
-            createArena("default");
+            createArena("example");
         }
 
         plugin.getLogger().info("Loaded " + arenaConfigs.size() + " arena(s) from arenas/ folder.");
@@ -355,6 +371,8 @@ public class ConfigManager {
     public void save() {
         FileConfiguration config = plugin.getConfig();
         config.set("hub-world", hubWorld);
+        config.set("teleport-command", teleportCommand);
+        config.set("world-reset-commands", worldResetCommands);
 
         // Save prefixes
         for (Map.Entry<GameType, String> entry : prefixes.entrySet()) {
@@ -501,6 +519,14 @@ public class ConfigManager {
 
     public void setHubWorld(String hubWorld) {
         this.hubWorld = hubWorld;
+    }
+
+    public String getTeleportCommand() {
+        return teleportCommand;
+    }
+
+    public List<String> getWorldResetCommands() {
+        return worldResetCommands;
     }
 
     // --- Inner classes ---

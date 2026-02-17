@@ -25,6 +25,8 @@ public class LobbyListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (shouldBypass(event.getPlayer()))
+            return;
         if (isInLobby(event.getPlayer())) {
             event.setCancelled(true);
         }
@@ -32,6 +34,8 @@ public class LobbyListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (shouldBypass(event.getPlayer()))
+            return;
         if (isInLobby(event.getPlayer())) {
             event.setCancelled(true);
         }
@@ -57,9 +61,26 @@ public class LobbyListener implements Listener {
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
+        if (shouldBypass(event.getPlayer()))
+            return;
         if (isInLobby(event.getPlayer())) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onInventoryClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+        if (event.getWhoClicked() instanceof Player player) {
+            if (shouldBypass(player))
+                return;
+            if (isInLobby(player)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    private boolean shouldBypass(Player player) {
+        return player.isOp() || player.getGameMode() == org.bukkit.GameMode.CREATIVE;
     }
 
     /**

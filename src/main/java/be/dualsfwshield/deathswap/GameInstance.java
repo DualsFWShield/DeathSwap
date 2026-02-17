@@ -99,21 +99,17 @@ public class GameInstance {
         plugin.getArenaManager().addPlayerToArena(player, arenaId);
 
         // Teleport to lobby world via Multiverse exact destination
+        // Teleport to lobby world via Multiverse exact destination
         World lobbyWorld = Bukkit.getWorld(config.lobbyWorld);
+        if (lobbyWorld == null) {
+            // Force load to get the custom spawn location
+            lobbyWorld = Bukkit.createWorld(new org.bukkit.WorldCreator(config.lobbyWorld));
+        }
+
         if (lobbyWorld != null) {
-            Location spawn = lobbyWorld.getSpawnLocation();
-            mvtp(player, config.lobbyWorld, spawn);
+            mvtp(player, config.lobbyWorld, lobbyWorld.getSpawnLocation());
         } else {
-            // Try loading via Multiverse, then TP
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv load " + config.lobbyWorld);
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                World w = Bukkit.getWorld(config.lobbyWorld);
-                if (w != null) {
-                    mvtp(player, config.lobbyWorld, w.getSpawnLocation());
-                } else {
-                    sendMessage(player, "&cImpossible de charger le monde lobby !");
-                }
-            }, 20L);
+            sendMessage(player, "&cErreur: Le monde lobby '" + config.lobbyWorld + "' est introuvable !");
         }
 
         setupLobbyPlayer(player);
@@ -252,10 +248,20 @@ public class GameInstance {
      * Teleport a player to an exact location in a Multiverse world.
      * Uses: /mvtp <player> e:<world>:<x>,<y>,<z>:<yaw>:<pitch>
      */
-    protected void mvtp(Player player, String worldName, Location loc) {
-        String cmd = "mvtp " + player.getName() + " e:" + worldName + ":"
-                + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ()
-                + ":" + String.format("%.1f", loc.getYaw()) + ":" + String.format("%.1f", loc.getPitch());
+    private void mvtp(Player player, String worldName, Location loc) {
+        String cmd = plugin.getConfigManager().getTeleportCommand();
+        if (cmd == null || cmd.isEmpty()) {
+            cmd = "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%";
+        }
+
+        cmd = cmd.replace("%player%", player.getName())
+                .replace("%world%", worldName)
+                .replace("%x%", String.valueOf(loc.getX()))
+                .replace("%y%", String.valueOf(loc.getY()))
+                .replace("%z%", String.valueOf(loc.getZ()))
+                .replace("%yaw%", String.valueOf(loc.getYaw()))
+                .replace("%pitch%", String.valueOf(loc.getPitch()));
+
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
     }
 
@@ -284,6 +290,9 @@ public class GameInstance {
      * @param debug if true, bypasses minimum player checks
      */
     public void startGame(boolean debug) {
+        if (state == GameState.RUNNING || state == GameState.STARTING) {
+            return;
+        }
         if (state != GameState.WAITING)
             return;
 
@@ -314,15 +323,24 @@ public class GameInstance {
     /**
      * Continue the start sequence after seed selection.
      */
+    /**
+     * Continue the start sequence after seed selection.
+     */
     private void continueStartWithSeed(SeedEntry seed) {
-        // Reset world via CyberWorldReset
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                "cwr edit " + config.gameWorld + " setSeed " + seed.seed());
+        // Execute configured world reset commands
+        List<String> commands = plugin.getConfigManager().getWorldResetCommands();
+        if (commands != null && !commands.isEmpty()) {
+            for (String cmd : commands) {
+                String finalCmd = cmd.replace("%world%", config.gameWorld)
+                        .replace("%seed%", seed.seed());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
+            }
+        }
 
+        // Wait a bit before counting down (give time for async resets if any)
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cwr reset " + config.gameWorld);
             startCountdown();
-        }, 5L);
+        }, 20L); // Increased delay slightly to be safe
     }
 
     /**
@@ -854,15 +872,22 @@ public class GameInstance {
 
         // Send all players to hub
         String hubWorld = plugin.getConfigManager().getHubWorld();
+        World hub = Bukkit.getWorld(hubWorld);
+        if (hub == null) {
+            hub = Bukkit.createWorld(new org.bukkit.WorldCreator(hubWorld));
+        }
+
+        Location hubSpawn = (hub != null) ? hub.getSpawnLocation() : null;
+
         for (Player p : new HashSet<>(gamePlayers)) {
-            p.setGameMode(GameMode.ADVENTURE);
+            p.setGameMode(org.bukkit.GameMode.ADVENTURE);
             p.getInventory().clear();
             plugin.getArenaManager().removePlayer(p);
-            World hub = Bukkit.getWorld(hubWorld);
-            if (hub != null) {
-                mvtp(p, hubWorld, hub.getSpawnLocation());
+
+            if (hubSpawn != null) {
+                mvtp(p, hubWorld, hubSpawn);
             } else {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvtp " + p.getName() + " e:" + hubWorld + ":0,64,0");
+                p.sendMessage(Component.text("Erreur: Monde Hub introuvable (" + hubWorld + ")", NamedTextColor.RED));
             }
         }
 
