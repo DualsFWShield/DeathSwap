@@ -412,6 +412,11 @@ public class GameInstance {
                         BossBar.Overlay.NOTCHED_10);
             }
 
+            // Initialize grace period BEFORE teleport to ensure coverage
+            long protectionMillis = config.spawnProtection * 1000L;
+            // Add buffer for spread/loading logic
+            gracePeriodEndTime = System.currentTimeMillis() + protectionMillis + 15000L;
+
             // Teleport players
             teleportPlayersToGame();
 
@@ -421,24 +426,25 @@ public class GameInstance {
 
                 // Apply spawn protection
                 // Apply spawn protection
-                long protectionMillis = config.spawnProtection * 1000L;
-                gracePeriodEndTime = System.currentTimeMillis() + protectionMillis;
-
+                // (Already applied in teleportPlayersToGame, but refreshing here after spread
+                // is good practice)
                 for (Player p : alivePlayers) {
+                    // Re-apply to ensure full duration from this point
                     p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, config.spawnProtection * 20, 255,
                             false, false));
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, config.spawnProtection * 20, 0,
                             false, false));
                     p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, config.spawnProtection * 20, 0,
                             false, false));
-                    // Saturation to prevent hunger loss during start
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, config.spawnProtection * 20, 255,
                             false, false));
                 }
 
                 // Verify player count
+                broadcastLobby("&e[Debug] Alive Players: " + alivePlayers.size() + "/" + config.minPlayers);
                 if (!testMode && alivePlayers.size() < config.minPlayers) {
-                    broadcastLobby("&cPas assez de joueurs. Annulation.");
+                    broadcastLobby("&cPas assez de joueurs (" + alivePlayers.size() + "/" + config.minPlayers
+                            + "). Annulation.");
                     state = GameState.WAITING;
                     cleanup();
                     return;
