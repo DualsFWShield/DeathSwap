@@ -42,6 +42,14 @@ public class GameListener implements Listener {
 
         // Suppress default death message (we handle our own)
         event.deathMessage(null);
+
+        // Double check grace period (should not happen with listeners, but safety
+        // first)
+        if (arena.isGracePeriod()) {
+            event.setCancelled(true);
+            return;
+        }
+
         arena.handleDeath(player);
     }
 
@@ -82,6 +90,12 @@ public class GameListener implements Listener {
         // If PvP is disabled, cancel player-vs-player only
         if (!arena.getConfig().pvpEnabled) {
             event.setCancelled(true);
+            return;
+        }
+
+        // Grace period check (no PvP during spawn protection)
+        if (arena.isGracePeriod()) {
+            event.setCancelled(true);
         }
     }
 
@@ -101,6 +115,9 @@ public class GameListener implements Listener {
 
         // Resistance potion handles this, but as a backup safety net
         // (player has resistance 255 for spawn-protection seconds)
+        if (arena.isGracePeriod()) {
+            event.setCancelled(true);
+        }
     }
 
     /**

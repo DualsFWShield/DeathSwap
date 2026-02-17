@@ -65,6 +65,11 @@ public class GameInstance {
 
     // Track game start time for survival time stats
     private long gameStartEpoch;
+    private long gracePeriodEndTime = 0;
+
+    public boolean isGracePeriod() {
+        return System.currentTimeMillis() < gracePeriodEndTime;
+    }
 
     public GameInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         this.plugin = plugin;
@@ -415,9 +420,20 @@ public class GameInstance {
                 spreadPlayers();
 
                 // Apply spawn protection
+                // Apply spawn protection
+                long protectionMillis = config.spawnProtection * 1000L;
+                gracePeriodEndTime = System.currentTimeMillis() + protectionMillis;
+
                 for (Player p : alivePlayers) {
-                    p.addPotionEffect(new PotionEffect(
-                            PotionEffectType.RESISTANCE, config.spawnProtection * 20, 254, false, false));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, config.spawnProtection * 20, 255,
+                            false, false));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, config.spawnProtection * 20, 0,
+                            false, false));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, config.spawnProtection * 20, 0,
+                            false, false));
+                    // Saturation to prevent hunger loss during start
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, config.spawnProtection * 20, 255,
+                            false, false));
                 }
 
                 // Verify player count

@@ -198,9 +198,18 @@ public class ConfigManager {
             }
         }
 
-        // If no arenas exist, create example.yml (but don't load it)
-        if (arenaConfigs.isEmpty()) {
-            createArena("example");
+        // Always ensure example.yml exists as a reference
+        File exampleFile = new File(arenasFolder, "example.yml");
+        if (!exampleFile.exists()) {
+            // Save example.yml from resources if available
+            try {
+                plugin.saveResource("arenas/example.yml", false);
+                plugin.getLogger().info("Created example.yml from resources.");
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Could not find arenas/example.yml in resources!");
+                // Fallback to programmatic creation if resource missing
+                createArena("example");
+            }
         }
 
         plugin.getLogger().info("Loaded " + arenaConfigs.size() + " arena(s) from arenas/ folder.");

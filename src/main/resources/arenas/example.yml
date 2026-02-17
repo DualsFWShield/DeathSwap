@@ -1,0 +1,66 @@
+# ==========================================
+#      DEATHSWAP ARENA CONFIGURATION
+# ==========================================
+# ID: example
+# This file serves as a reference for all settings.
+
+# Mode de jeu : DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
+game-type: DEATHSWAP
+
+# Mondes (doivent être gérés par Multiverse)
+game-world: "example_Game"
+lobby-world: "example_Lobby"
+
+# Joueurs
+min-players: 2
+max-players: 20
+ui-mode: RICH  # RICH (BossBar + ActionBar) ou CLEAN (Chat uniquement)
+
+# ==========================================
+#                 TIMERS
+# ==========================================
+timers:
+  load-time: 40           # Temps d'attente dans le lobby avant TP (secondes)
+  swap-mode: FIXED        # FIXED (fixe) ou RANDOM (aléatoire)
+  swap-interval: 300      # Temps entre les swaps (si FIXED)
+  swap-min: 120           # Minimum temps de swap (si RANDOM)
+  swap-max: 420           # Maximum temps de swap (si RANDOM)
+  max-game-time: 1800     # Durée max de la partie (secondes). 0 = Illimité.
+  spawn-protection: 30    # Invulnérabilité au début (secondes)
+
+# ==========================================
+#              ROUND TIMERS
+# ==========================================
+# Utilisés uniquement pour DeathShuffle / BlockShuffle
+round-timers:
+  easy: 90
+  medium: 70
+  hard: 50
+
+# ==========================================
+#              GAME RULES
+# ==========================================
+game:
+  pvp-enabled: true
+  nether-enabled: true
+  end-enabled: true
+
+# Règles classiques Minecraft (format Snake Case 1.21+)
+gamerules:
+  keep_inventory: "false"
+  natural_health_regeneration: "true"
+  mob_griefing: "true"
+  do_fire_tick: "true"
+  show_death_messages: "true"
+  announce_advancements: "true"
+  immediate_respawn: "true"
+
+# ==========================================
+#           STRUCTURES (SEEDS)
+# ==========================================
+# Liste des seeds disponibles pour la génération du monde
+seeds:
+  - seed: "-123456789"
+    name: "Village Côtier"
+  - seed: "987654321"
+    name: "Montagnes Enneigées"
