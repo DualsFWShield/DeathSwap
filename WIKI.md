@@ -192,6 +192,120 @@ Le nom du monde Multiverse où les joueurs sont envoyés après :
 
 > ⚠️ Ce monde **doit exister** dans Multiverse. Créez-le avec `mv create MainLobby normal`.
 
+### `teleport-command` & `world-reset-commands`
+
+```yaml
+teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+world-reset-commands:
+  - "cwr edit %world% setSeed %seed%"
+  - "cwr reset %world%"
+```
+
+- **`teleport-command`** : Commande exécutée pour téléporter les joueurs.
+  - **Défaut** : Utilise Multiverse (`mvtp`).
+  - **Vanilla** : `execute in %world% run tp %player% %x% %y% %z% %yaw% %pitch%`
+- **`world-reset-commands`** : Liste de commandes pour reset le monde.
+  - **Défaut** : Utilise CyberWorldReset (`cwr`).
+  - **Sans Reset** : Laissez la liste vide `[]` pour jouer sur une map statique.
+
+---
+
+## 📂 Fichiers de Configuration de Référence
+
+### `config.yml` Par Défaut
+```yaml
+# DeathSwap Global Configuration
+# ------------------------------
+
+# Monde de retour après partie/kick
+hub-world: "MainLobby"
+
+# Commande de téléportation.
+# Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%
+# Défaut (Multiverse): "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+# Vanilla: "execute in %world% run tp %player% %x% %y% %z% %yaw% %pitch%"
+teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+
+# Commandes de reset du monde avant la partie.
+# Placeholders: %world%, %seed%
+# Liste vide [] = pas de reset (map statique).
+world-reset-commands:
+  - "cwr edit %world% setSeed %seed%"
+  - "cwr reset %world%"
+
+prefixes:
+  deathswap: "&c[DS]"
+  deathshuffle: "&6[DSh]"
+  blockshuffle: "&b[BS]"
+
+stats:
+  enabled: true
+  auto-save-minutes: 5
+
+sounds:
+  enabled: true
+  # ... (voir section Sons)
+
+challenges:
+  enabled: true
+  list:
+    - type: CRAFT
+      target: CRAFTING_TABLE
+      amount: 1
+      reward: SPEED
+      description: "Craft une table de craft"
+
+voting:
+  enabled: true
+  vote-time: 30
+  options-count: 3
+```
+
+### Exemple Arène (`arenas/example.yml`)
+> **Note :** Copiez ce fichier pour créer de nouvelles arènes (ex: `monarene.yml`). Le plugin ignore le fichier `example.yml` par défaut.
+
+```yaml
+game-type: DEATHSWAP
+game-world: "example_Game"
+lobby-world: "example_Lobby"
+min-players: 2
+max-players: 20
+ui-mode: RICH
+
+timers:
+  load-time: 40
+  swap-mode: FIXED
+  swap-interval: 300
+  swap-min: 120
+  swap-max: 420
+  max-game-time: 1800
+  spawn-protection: 30
+
+round-timers:
+  easy: 90
+  medium: 70
+  hard: 50
+
+game:
+  pvp-enabled: true
+  nether-enabled: true
+  end-enabled: true
+
+gamerules:
+  keep_inventory: "false"
+  immediate_respawn: "true"
+  do_daylight_cycle: "true"
+  do_weather_cycle: "true"
+  mob_griefing: "true"
+  natural_regeneration: "true"
+  do_mob_spawning: "true"
+  send_command_feedback: "false"
+  log_admin_commands: "false"
+  respawn_radius: "0"
+
+seeds: []
+```
+
 ### `prefixes`
 
 ```yaml

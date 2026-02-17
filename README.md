@@ -33,7 +33,9 @@
 - **Gamerules** : Configurable en jeu via GUI
 - **Sons** : Chaque événement sonore est configurable
 - **Seeds** : Système de vote avec seeds prédéfinies
+- **Seeds** : Système de vote avec seeds prédéfinies
 - **Challenges** : Craft, mine, kill avec récompenses (DeathSwap)
+- **Commandes Configurables** : Téléportation et Reset de monde 100% configurables (support Vanilla/autres plugins)
 
 ### 📊 Statistiques
 - Kills, morts, victoires, temps de jeu, parties jouées
@@ -107,7 +109,14 @@ cp target/deathswap-1.0.0.jar /chemin/serveur/plugins/
 # =========================================
 
 # Monde hub (retour après game/kick)
+# Monde hub (retour après game/kick)
 hub-world: "MainLobby"
+
+# Commandes configurables (valeurs par défaut pour Multiverse/CyberWorldReset)
+teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+world-reset-commands:
+  - "cwr edit %world% setSeed %seed%"
+  - "cwr reset %world%"
 
 # Préfixes chat par mode de jeu
 prefixes:
