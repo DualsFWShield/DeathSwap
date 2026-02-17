@@ -98,17 +98,18 @@ public class GameInstance {
         readyPlayers.remove(player);
         plugin.getArenaManager().addPlayerToArena(player, arenaId);
 
-        // Teleport to lobby world
+        // Teleport to lobby world via Multiverse exact destination
         World lobbyWorld = Bukkit.getWorld(config.lobbyWorld);
         if (lobbyWorld != null) {
-            player.teleport(lobbyWorld.getSpawnLocation());
+            Location spawn = lobbyWorld.getSpawnLocation();
+            mvtp(player, config.lobbyWorld, spawn);
         } else {
-            // Try loading via Multiverse
+            // Try loading via Multiverse, then TP
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv load " + config.lobbyWorld);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 World w = Bukkit.getWorld(config.lobbyWorld);
                 if (w != null) {
-                    player.teleport(w.getSpawnLocation());
+                    mvtp(player, config.lobbyWorld, w.getSpawnLocation());
                 } else {
                     sendMessage(player, "&cImpossible de charger le monde lobby !");
                 }
@@ -237,7 +238,25 @@ public class GameInstance {
         player.setGameMode(GameMode.ADVENTURE);
 
         String hubWorld = plugin.getConfigManager().getHubWorld();
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " " + hubWorld);
+        World hub = Bukkit.getWorld(hubWorld);
+        if (hub != null) {
+            mvtp(player, hubWorld, hub.getSpawnLocation());
+        } else {
+            // Fallback: basic mv tp
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                    "mvtp " + player.getName() + " e:" + hubWorld + ":0,64,0");
+        }
+    }
+
+    /**
+     * Teleport a player to an exact location in a Multiverse world.
+     * Uses: /mvtp <player> e:<world>:<x>,<y>,<z>:<yaw>:<pitch>
+     */
+    protected void mvtp(Player player, String worldName, Location loc) {
+        String cmd = "mvtp " + player.getName() + " e:" + worldName + ":"
+                + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ()
+                + ":" + String.format("%.1f", loc.getYaw()) + ":" + String.format("%.1f", loc.getPitch());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
     }
 
     // =========================================
@@ -456,9 +475,10 @@ public class GameInstance {
                     }
                 }
             } else {
-                // Fallback to command dispatch if unknown (maybe custom/modded rule)
+                // Fallback to Multiverse command for unknown/modded rules
+                plugin.getLogger().warning("Unknown GameRule '" + entry.getKey() + "', trying via Multiverse...");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        "execute in " + world.getName() + " run gamerule " + entry.getKey() + " " + entry.getValue());
+                        "mv gamerule set " + entry.getKey() + " " + entry.getValue() + " " + world.getName());
             }
         }
     }
@@ -483,8 +503,8 @@ public class GameInstance {
             player.setFoodLevel(20);
             player.setSaturation(20);
 
-            // TP high up
-            player.teleport(new Location(gameWorld, 0, 200, 0));
+            // TP to game world via Multiverse (high up, will be spread later)
+            mvtp(player, config.gameWorld, new Location(gameWorld, 0, 200, 0));
 
             gamePlayers.add(player);
             alivePlayers.add(player);
@@ -838,7 +858,12 @@ public class GameInstance {
             p.setGameMode(GameMode.ADVENTURE);
             p.getInventory().clear();
             plugin.getArenaManager().removePlayer(p);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + p.getName() + " " + hubWorld);
+            World hub = Bukkit.getWorld(hubWorld);
+            if (hub != null) {
+                mvtp(p, hubWorld, hub.getSpawnLocation());
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvtp " + p.getName() + " e:" + hubWorld + ":0,64,0");
+            }
         }
 
         cleanup();

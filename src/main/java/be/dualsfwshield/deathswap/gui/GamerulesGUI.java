@@ -41,15 +41,15 @@ public class GamerulesGUI implements Listener {
 
         // Define boolean rules to manage
         List<String> rules = Arrays.asList(
-                "keepInventory",
-                "immediateRespawn",
-                "doDaylightCycle",
-                "doWeatherCycle",
-                "mobGriefing",
-                "naturalRegeneration",
-                "doMobSpawning",
-                "sendCommandFeedback",
-                "logAdminCommands");
+                "keep_inventory",
+                "immediate_respawn",
+                "advance_time",
+                "advance_weather",
+                "mob_griefing",
+                "natural_health_regeneration",
+                "spawn_mobs",
+                "send_command_feedback",
+                "log_admin_commands");
 
         int slot = 0;
         for (String rule : rules) {

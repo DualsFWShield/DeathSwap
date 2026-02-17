@@ -550,17 +550,17 @@ public class ConfigManager {
         public Map<String, String> gamerules = new HashMap<>();
 
         public ArenaConfig() {
-            // Default gamerules
-            gamerules.put("keepInventory", "false");
-            gamerules.put("immediateRespawn", "true");
-            gamerules.put("respawnRadius", "0");
-            gamerules.put("sendCommandFeedback", "false");
-            gamerules.put("logAdminCommands", "false");
-            gamerules.put("doDaylightCycle", "true");
-            gamerules.put("doWeatherCycle", "true");
-            gamerules.put("mobGriefing", "true");
-            gamerules.put("naturalRegeneration", "true");
-            gamerules.put("doMobSpawning", "true");
+            // Default gamerules (JE 1.21.5+ snake_case names)
+            gamerules.put("keep_inventory", "false");
+            gamerules.put("immediate_respawn", "true");
+            gamerules.put("respawn_radius", "0");
+            gamerules.put("send_command_feedback", "false");
+            gamerules.put("log_admin_commands", "false");
+            gamerules.put("advance_time", "true");
+            gamerules.put("advance_weather", "true");
+            gamerules.put("mob_griefing", "true");
+            gamerules.put("natural_health_regeneration", "true");
+            gamerules.put("spawn_mobs", "true");
         }
 
         /**

@@ -5,6 +5,10 @@ import be.dualsfwshield.deathswap.challenges.ChallengeManager;
 import be.dualsfwshield.deathswap.commands.DeathSwapCommand;
 import be.dualsfwshield.deathswap.modes.BlockShuffleListener;
 import be.dualsfwshield.deathswap.modes.DeathShuffleListener;
+import be.dualsfwshield.deathswap.listeners.GameListener;
+import be.dualsfwshield.deathswap.listeners.LobbyListener;
+import be.dualsfwshield.deathswap.listeners.ReadyListener;
+import be.dualsfwshield.deathswap.listeners.SpectatorListener;
 import be.dualsfwshield.deathswap.sounds.SoundManager;
 import be.dualsfwshield.deathswap.stats.LeaderboardManager;
 import be.dualsfwshield.deathswap.stats.StatsManager;
@@ -80,6 +84,12 @@ public class DeathSwapPlugin extends JavaPlugin {
 
         // 4. Arena Manager (after config loaded)
         this.arenaManager = new ArenaManager(this);
+
+        // 4b. Register gameplay listeners (need ArenaManager)
+        getServer().getPluginManager().registerEvents(new ReadyListener(this), this);
+        getServer().getPluginManager().registerEvents(new LobbyListener(this), this);
+        getServer().getPluginManager().registerEvents(new GameListener(this), this);
+        getServer().getPluginManager().registerEvents(new SpectatorListener(this), this);
 
         // 5. Commands
         DeathSwapCommand dsCommand = new DeathSwapCommand(this);
