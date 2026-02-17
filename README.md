@@ -23,9 +23,10 @@
 - Configuration par arène via `config.yml`
 
 ### 🎛️ Dashboard Admin (`/ds admin`)
-- Vue d'ensemble de toutes les arènes
+- Vue d'ensemble de toutes les arènes (`ArenaListGUI`)
+- Configuration complète en jeu (`SettingsGUI`) : Mondes, Gamerules, Timers, etc.
 - Force start/stop de jeux
-- Régénération de monde Multiverse
+- Régénération de monde (Multiverse ou Custom)
 - Gestion des joueurs (kick, ban, teleport, inventaire)
 
 ### 🔧 Personnalisation Profonde
@@ -95,6 +96,10 @@ cp target/deathswap-1.0.0.jar /chemin/serveur/plugins/
 | `/ds swapnow` | Forcer un swap immédiat | `deathswap.admin` |
 | `/ds reload` | Recharger la configuration | `deathswap.admin` |
 | `/ds admin` | Ouvrir le Dashboard Admin (GUI) | `deathswap.admin` |
+| `/ds admin set <arène> <prop> <val>` | Modifier une proprété (lobby, game, gametype...) | `deathswap.admin` |
+| `/ds admin gamerule <arène> ...` | Modifier les gamerules | `deathswap.admin` |
+| `/ds admin command <arène> ...` | Configurer les commandes de TP/Reset | `deathswap.admin` |
+| `/ds admin create/delete/clone` | Gestion des arènes | `deathswap.admin` |
 
 ---
 

@@ -156,6 +156,13 @@ After the first launch:
 | `/ds reload` | — | Reload full configuration | `/ds reload` |
 | `/ds settings` | — | *(Reserved)* Arena Settings GUI | `/ds settings` |
 | `/ds admin` | — | Open Admin Dashboard (GUI) | `/ds admin` |
+| `/ds admin create` | `<name>` | Create a new arena | `/ds admin create arena2` |
+| `/ds admin delete` | `<name>` | Delete an arena (with confirm) | `/ds admin delete arena2` |
+| `/ds admin clone` | `<src> <dst>` | Clone an arena | `/ds admin clone default arena2` |
+| `/ds admin list` | — | List arenas | `/ds admin list` |
+| `/ds admin set` | `<arena> <prop> <val>` | Modify a property (lobby, game, type...) | `/ds admin set default lobby world_lobby` |
+| `/ds admin gamerule` | `<arena> set/remove <rule> [val]` | Modify a gamerule | `/ds admin gamerule default set keepInventory true` |
+| `/ds admin command` | `<arena> tp/reset <val>` | Modify TP/Reset command | `/ds admin command default tp mvtp %player% ...` |
 
 > **Alias:** `/deathswap` also works instead of `/ds`
 
@@ -343,6 +350,8 @@ arenas:
 | `min-players` | Int | `2` | Minimum players to start |
 | `max-players` | Int | `20` | Maximum players accepted |
 | `ui-mode` | Enum | `RICH` | Display mode: `RICH` or `CLEAN` |
+| `start-if-min-players-met` | Boolean | `false` | If `true`, ignores "Not Ready" if min-players reached |
+| `prevent-cancel-after-countdown` | Boolean | `false` | If `true`, countdown continues even if someone quits (as long as >= min) |
 
 #### `timers` (DeathSwap)
 
@@ -612,10 +621,22 @@ The Admin Dashboard is a GUI system accessible via `/ds admin`. It provides a fu
 |---------|--------|
 | **Arena Item** (colored concrete) | Shows status and player count |
 | **Left Click** on arena | → Open arena details |
-| **Right Click** on arena | → Teleport to arena lobby |
-| **Middle Click** on arena | → Open Settings GUI |
+| **Right Click** on arena | → Teleport to arena lobby (Shift+Left Click) |
+| **Middle Click** on arena | → Open Settings GUI (Shift+Right Click) |
 | **Nether Star** | Reload all configuration |
 | **Barrier** | Close GUI |
+
+### 🛠️ In-Game Configuration (Settings GUI)
+
+Accessible via **Middle Click** (or Shift+Right Click) on an arena in the Dashboard, or via `/ds settings`.
+This menu allows modifying **all** aspects of the arena without touching the `config.yml` file:
+
+- **Worlds**: Change Lobby and Game worlds (keyboard input in chat)
+- **Game Mode**: Switch between DeathSwap, DeathShuffle, BlockShuffle
+- **Gamerules**: Enable/Disable rules (KeepInventory, etc.)
+- **Timers**: Adjust swap times, max game time, etc.
+- **Commands**: Configure TP command (Multiverse/Vanilla) and Reset command (CWR/Multiverse)
+- **Resilience**: Enable robust start options
 
 **Status Colors:**
 

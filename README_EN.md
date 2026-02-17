@@ -23,9 +23,10 @@
 - Per-arena configuration via `config.yml`
 
 ### 🎛️ Admin Dashboard (`/ds admin`)
-- Overview of all arenas
+- Overview of all arenas (`ArenaListGUI`)
+- Full in-game configuration (`SettingsGUI`): Worlds, Gamerules, Timers, etc.
 - Force start/stop games
-- Multiverse world regeneration
+- World regeneration (Multiverse or Custom)
 - Player management (kick, ban, teleport, inventory)
 
 ### 🔧 Deep Customization
@@ -94,6 +95,10 @@ cp target/deathswap-1.0.0.jar /path/to/server/plugins/
 | `/ds swapnow` | Force immediate swap | `deathswap.admin` |
 | `/ds reload` | Reload configuration | `deathswap.admin` |
 | `/ds admin` | Open Admin Dashboard (GUI) | `deathswap.admin` |
+| `/ds admin set <arena> <prop> <val>` | Modify a property (lobby, game, gametype...) | `deathswap.admin` |
+| `/ds admin gamerule <arena> ...` | Modify gamerules | `deathswap.admin` |
+| `/ds admin command <arena> ...` | Configure TP/Reset commands | `deathswap.admin` |
+| `/ds admin create/delete/clone` | Arena management | `deathswap.admin` |
 
 ---
 

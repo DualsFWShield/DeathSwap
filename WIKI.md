@@ -156,6 +156,13 @@ Après le premier lancement :
 | `/ds reload` | — | Recharger toute la configuration | `/ds reload` |
 | `/ds settings` | — | *(Réservé)* GUI Settings de l'arène | `/ds settings` |
 | `/ds admin` | — | Ouvrir le Dashboard Admin (GUI) | `/ds admin` |
+| `/ds admin create` | `<nom>` | Créer une nouvelle arène | `/ds admin create arena2` |
+| `/ds admin delete` | `<nom>` | Supprimer une arène (avec confirm) | `/ds admin delete arena2` |
+| `/ds admin clone` | `<src> <dst>` | Cloner une arène | `/ds admin clone default arena2` |
+| `/ds admin list` | — | Lister les arènes | `/ds admin list` |
+| `/ds admin set` | `<arène> <prop> <val>` | Modifier une priorité (lobby, game, type...) | `/ds admin set default lobby world_lobby` |
+| `/ds admin gamerule` | `<arène> set/remove <rule> [val]` | Modifier une gamerule | `/ds admin gamerule default set keepInventory true` |
+| `/ds admin command` | `<arène> tp/reset <val>` | Modifier commande TP/Reset | `/ds admin command default tp mvtp %player% ...` |
 
 > **Alias :** `/deathswap` fonctionne aussi à la place de `/ds`
 
@@ -435,6 +442,8 @@ arenas:
 | `min-players` | Int | `2` | Minimum de joueurs pour démarrer |
 | `max-players` | Int | `20` | Maximum de joueurs acceptés |
 | `ui-mode` | Enum | `RICH` | Mode d'affichage : `RICH` ou `CLEAN` |
+| `start-if-min-players-met` | Boolean | `false` | Si `true`, ignore les "Not Ready" si min-players atteint |
+| `prevent-cancel-after-countdown` | Boolean | `false` | Si `true`, le countdown continue même si quelqu'un quitte (tant que >= min) |
 
 #### `timers` (DeathSwap)
 
@@ -734,10 +743,22 @@ Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit
 |---------|--------|
 | **Item arène** (béton coloré) | Affiche le statut et nombre de joueurs |
 | **Clic gauche** sur arène | → Ouvre les détails de l'arène |
-| **Clic droit** sur arène | → Téléporte au lobby de l'arène |
-| **Clic molette** sur arène | → Ouvre les settings GUI |
+| **Clic droit** sur arène | → Téléporte au lobby de l'arène (Shift+Clic Gauche) |
+| **Clic molette** sur arène | → Ouvre les settings GUI (Shift+Clic Droit) |
 | **Étoile du Nether** | Recharger toute la configuration |
 | **Barrier** | Fermer le GUI |
+
+### 🛠️ Configuration en jeu (Settings GUI)
+
+Accessible via le **Clic Molette** (ou Shift+Clic Droit) sur une arène dans le Dashboard, ou via `/ds settings`.
+Ce menu permet de modifier **tous** les aspects de l'arène sans toucher au fichier `config.yml` :
+
+- **Mondes** : Changer le monde Lobby et Game (saisie clavier dans le chat)
+- **Mode de Jeu** : Changer entre DeathSwap, DeathShuffle, BlockShuffle
+- **Gamerules** : Activer/Désactiver les règles (KeepInventory, etc.)
+- **Timers** : Ajuster les temps de swap, max game time, etc.
+- **Commandes** : Configurer la commande de TP (Multiverse/Vanilla) et de Reset (CWR/Multiverse)
+- **Résilience** : Activer les options de démarrage robuste
 
 **Couleurs de statut :**
 
