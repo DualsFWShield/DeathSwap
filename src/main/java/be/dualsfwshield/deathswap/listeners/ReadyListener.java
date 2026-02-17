@@ -25,6 +25,8 @@ public class ReadyListener implements Listener {
         this.plugin = plugin;
     }
 
+    private final java.util.Set<java.util.UUID> interactionCooldowns = new java.util.HashSet<>();
+
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -35,6 +37,11 @@ public class ReadyListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND)
             return;
 
+        // Check cooldown to prevent double firing
+        if (interactionCooldowns.contains(player.getUniqueId())) {
+            return;
+        }
+
         // Check if player is in a lobby world
         GameInstance arena = plugin.getArenaManager().findByLobbyWorld(player.getWorld().getName());
         if (arena == null)
@@ -43,6 +50,12 @@ public class ReadyListener implements Listener {
         ItemStack item = event.getItem();
         if (item == null || !item.hasItemMeta() || item.getItemMeta().displayName() == null)
             return;
+
+        // Add cooldown
+        interactionCooldowns.add(player.getUniqueId());
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            interactionCooldowns.remove(player.getUniqueId());
+        }, 5L); // 250ms cooldown
 
         event.setCancelled(true);
         Material type = item.getType();
@@ -59,26 +72,6 @@ public class ReadyListener implements Listener {
         }
     }
 
-    /**
-     * When a player enters a lobby world directly (e.g. via /mv tp), register them.
-     */
-    @EventHandler
-    public void onWorldChange(PlayerChangedWorldEvent event) {
-        Player player = event.getPlayer();
-        String newWorld = player.getWorld().getName();
-
-        // Check if the new world is a lobby world
-        GameInstance arena = plugin.getArenaManager().findByLobbyWorld(newWorld);
-        if (arena != null) {
-            // If player isn't registered in this arena, register them
-            if (plugin.getArenaManager().getPlayerArena(player) == null) {
-                arena.getLobbyPlayers().add(player);
-                plugin.getArenaManager().addPlayerToArena(player, arena.getArenaId());
-            }
-            arena.setupLobbyPlayer(player);
-        }
-    }
-
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -86,5 +79,6 @@ public class ReadyListener implements Listener {
         if (arena != null) {
             arena.removePlayer(player);
         }
+        interactionCooldowns.remove(player.getUniqueId());
     }
 }
