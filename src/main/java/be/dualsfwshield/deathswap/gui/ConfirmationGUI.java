@@ -27,7 +27,13 @@ import java.util.UUID;
  */
 public class ConfirmationGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (27 slots, 3 rows) ─────────────────────────
+     *
+     * Row 1 │ · · · · · · · · ·
+     * Row 2 │ · · CANCEL · WARNING · CONFIRM · ·
+     * Row 3 │ · · · · · · · · ·
+     */
     private static final int INV_SIZE = 27;
     private static final int SLOT_CANCEL = 11;
     private static final int SLOT_WARNING = 13;

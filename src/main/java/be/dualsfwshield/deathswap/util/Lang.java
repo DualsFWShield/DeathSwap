@@ -2,6 +2,7 @@ package be.dualsfwshield.deathswap.util;
 
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -87,7 +88,7 @@ public class Lang {
     }
 
     public static Component getComponent(String key) {
-        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand()
+        return LegacyComponentSerializer.legacyAmpersand()
                 .deserialize(get(key));
     }
 
@@ -96,7 +97,7 @@ public class Lang {
     }
 
     public static Component colorize(String text) {
-        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
     }
 
     public static void send(CommandSender sender, String key) {
@@ -110,7 +111,7 @@ public class Lang {
                 msg = msg.replace(placeholders[i], placeholders[i + 1]);
             }
         }
-        sender.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand()
+        sender.sendMessage(LegacyComponentSerializer.legacyAmpersand()
                 .deserialize(msg));
     }
 }

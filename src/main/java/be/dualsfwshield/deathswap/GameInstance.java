@@ -1,35 +1,41 @@
 package be.dualsfwshield.deathswap;
 
 import be.dualsfwshield.deathswap.vote.VoteManager;
+import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.Material;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a single DeathSwap game instance (one arena).
@@ -87,15 +93,15 @@ public class GameInstance {
     public void joinLobby(Player player) {
         // Check if game is starting or full
         if (state == GameState.STARTING) {
-            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-start-countdown"));
+            sendMessage(player, Lang.get("game-start-countdown"));
             return;
         }
         if (state == GameState.RUNNING) {
-            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-started"));
+            sendMessage(player, Lang.get("game-started"));
             return;
         }
         if (lobbyPlayers.size() >= config.maxPlayers) {
-            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-join-full"));
+            sendMessage(player, Lang.get("game-join-full"));
             return;
         }
 
@@ -107,18 +113,18 @@ public class GameInstance {
         World lobbyWorld = Bukkit.getWorld(config.lobbyWorld);
         if (lobbyWorld == null) {
             // Force load to get the custom spawn location
-            lobbyWorld = Bukkit.createWorld(new org.bukkit.WorldCreator(config.lobbyWorld));
+            lobbyWorld = Bukkit.createWorld(new WorldCreator(config.lobbyWorld));
         }
 
         if (lobbyWorld != null) {
             mvtp(player, config.lobbyWorld, lobbyWorld.getSpawnLocation());
         } else {
-            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("error-lobby-world-not-found", "%world%",
+            sendMessage(player, Lang.get("error-lobby-world-not-found", "%world%",
                     config.lobbyWorld));
         }
 
         setupLobbyPlayer(player);
-        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-join", "%player%", player.getName(), "%count%",
+        broadcastLobby(Lang.get("game-join", "%player%", player.getName(), "%count%",
                 String.valueOf(lobbyPlayers.size()), "%max%", String.valueOf(config.maxPlayers)));
     }
 
@@ -153,7 +159,7 @@ public class GameInstance {
         // Slot 4: Not Ready
         ItemStack notReady = new ItemStack(Material.RED_CONCRETE);
         ItemMeta notReadyMeta = notReady.getItemMeta();
-        notReadyMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("item-not-ready")
+        notReadyMeta.displayName(Lang.getComponent("item-not-ready")
                 .decoration(TextDecoration.ITALIC, false));
         notReady.setItemMeta(notReadyMeta);
         player.getInventory().setItem(4, notReady);
@@ -161,7 +167,7 @@ public class GameInstance {
         // Slot 8: Return to Hub
         ItemStack hubReturn = new ItemStack(Material.RED_BED);
         ItemMeta hubMeta = hubReturn.getItemMeta();
-        hubMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("item-hub-return")
+        hubMeta.displayName(Lang.getComponent("item-hub-return")
                 .decoration(TextDecoration.ITALIC, false));
         hubReturn.setItemMeta(hubMeta);
         player.getInventory().setItem(8, hubReturn);
@@ -176,21 +182,21 @@ public class GameInstance {
 
         // Prevent unready during countdown if configured
         if (state == GameState.STARTING && config.preventCancelAfterCountdown) {
-            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("lobby-already-starting"));
+            sendMessage(player, Lang.get("lobby-already-starting"));
             return;
         }
 
         if (readyPlayers.contains(player)) {
             // Unready
             readyPlayers.remove(player);
-            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-unready", "%player%", player.getName()));
+            broadcastLobby(Lang.get("lobby-unready", "%player%", player.getName()));
 
             // Update item to Not Ready
             ItemStack notReady = new ItemStack(Material.RED_CONCRETE);
             ItemMeta meta = notReady.getItemMeta();
-            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("emoji-not-ready")
+            meta.displayName(Lang.getComponent("emoji-not-ready")
                     .color(NamedTextColor.RED)
-                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-right")
+                    .append(Lang.getComponent("item-click-right")
                             .color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             notReady.setItemMeta(meta);
@@ -206,7 +212,7 @@ public class GameInstance {
                 // So unready during countdown has no effect unless we add code here.
                 // Let's force cancel if we drop below min players and !startIfMinPlayersMet
                 if (readyPlayers.size() < config.minPlayers) {
-                    broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-cancel-not-enough"));
+                    broadcastLobby(Lang.get("lobby-cancel-not-enough"));
                     state = GameState.WAITING;
                     // Note: The countdown task checks state != STARTING and will cancel itself.
                 }
@@ -215,15 +221,15 @@ public class GameInstance {
         } else {
             // Ready
             readyPlayers.add(player);
-            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-ready", "%player%", player.getName()));
+            broadcastLobby(Lang.get("lobby-ready", "%player%", player.getName()));
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
             // Update item to Ready
             ItemStack ready = new ItemStack(Material.LIME_CONCRETE);
             ItemMeta meta = ready.getItemMeta();
-            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("emoji-ready")
+            meta.displayName(Lang.getComponent("emoji-ready")
                     .color(NamedTextColor.GREEN)
-                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-cancel")
+                    .append(Lang.getComponent("item-click-cancel")
                             .color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             ready.setItemMeta(meta);
@@ -314,7 +320,7 @@ public class GameInstance {
         if (readyPlayers.size() != lobbyPlayers.size())
             return;
 
-        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-all-ready"));
+        broadcastLobby(Lang.get("lobby-all-ready"));
         Bukkit.getScheduler().runTaskLater(plugin, () -> startGame(false), 60L); // 3 seconds
     }
 
@@ -338,7 +344,7 @@ public class GameInstance {
                 && !config.seeds.isEmpty() && lobbyPlayers.size() >= 2) {
             // Start a vote, then continue with the winner
             plugin.getVoteManager().startVote(this, config.seeds, lobbyPlayers, (seed) -> {
-                broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("vote-result", "%seed%", seed.name()));
+                broadcastLobby(Lang.get("vote-result", "%seed%", seed.name()));
                 continueStartWithSeed(seed);
             });
         } else {
@@ -349,7 +355,7 @@ public class GameInstance {
             } else {
                 seed = config.seeds.get(ThreadLocalRandom.current().nextInt(config.seeds.size()));
             }
-            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("vote-random", "%seed%", seed.name()));
+            broadcastLobby(Lang.get("vote-random", "%seed%", seed.name()));
             continueStartWithSeed(seed);
         }
     }
@@ -383,7 +389,7 @@ public class GameInstance {
      */
     private void startCountdown() {
         final int waitTime = config.loadTime;
-        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-generating", "%time%", String.valueOf(waitTime)));
+        broadcastLobby(Lang.get("game-generating", "%time%", String.valueOf(waitTime)));
 
         new BukkitRunnable() {
             int remaining = waitTime;
@@ -396,7 +402,7 @@ public class GameInstance {
                 }
 
                 if (remaining <= 5 && remaining > 0) {
-                    broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-teleporting", "%time%",
+                    broadcastLobby(Lang.get("game-teleporting", "%time%",
                             String.valueOf(remaining)));
                     if (plugin.getSoundManager() != null) {
                         for (Player p : lobbyPlayers) {
@@ -437,7 +443,7 @@ public class GameInstance {
             currentSwapInterval = config.getNextSwapInterval();
             if (config.uiMode == UIMode.RICH) {
                 bossBar = BossBar.bossBar(
-                        be.dualsfwshield.deathswap.util.Lang.getComponent("bossbar-next-swap")
+                        Lang.getComponent("bossbar-next-swap")
                                 .color(NamedTextColor.GOLD),
                         1.0f,
                         BossBar.Color.YELLOW,
@@ -504,8 +510,7 @@ public class GameInstance {
 
         // Initialize teleportation tracker
         final int totalPlayers = lobbyPlayers.size();
-        final java.util.concurrent.atomic.AtomicInteger teleportedCount = new java.util.concurrent.atomic.AtomicInteger(
-                0);
+        final AtomicInteger teleportedCount = new AtomicInteger(0);
 
         // We will clear lobbyPlayers and readyPlayers AFTER everyone is teleported or
         // process individually
@@ -573,7 +578,7 @@ public class GameInstance {
             if (alivePlayers.size() < config.minPlayers) {
                 plugin.getLogger()
                         .warning("Not enough players to start (" + alivePlayers.size() + "/" + config.minPlayers + ")");
-                broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-not-enough-players", "%count%",
+                broadcastLobby(Lang.get("game-not-enough-players", "%count%",
                         String.valueOf(alivePlayers.size()), "%min%", String.valueOf(config.minPlayers)));
                 state = GameState.WAITING;
                 cleanup();
@@ -594,7 +599,7 @@ public class GameInstance {
             }
         }
 
-        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-started"));
+        broadcastGame(Lang.get("game-started"));
 
         if (plugin.getSoundManager() != null) {
             plugin.getSoundManager().playSoundAll("game-start", gamePlayers);
@@ -602,14 +607,14 @@ public class GameInstance {
 
         if (config.gameType == GameType.DEATHSWAP) {
             if (config.pvpEnabled) {
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-on", "%time%",
+                broadcastGame(Lang.get("game-pvp-on", "%time%",
                         String.valueOf(config.spawnProtection)));
             } else {
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-off", "%time%",
+                broadcastGame(Lang.get("game-pvp-off", "%time%",
                         String.valueOf(config.spawnProtection)));
             }
             if (!config.netherEnabled || !config.endEnabled) {
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-nether-end-disabled"));
+                broadcastGame(Lang.get("game-nether-end-disabled"));
             }
         }
 
@@ -619,8 +624,8 @@ public class GameInstance {
     /**
      * Async random teleport logic.
      */
-    private java.util.concurrent.CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world) {
-        java.util.concurrent.CompletableFuture<Boolean> future = new java.util.concurrent.CompletableFuture<>();
+    private CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         findSafeLocationAsync(world, 5000).thenAccept(loc -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
@@ -636,14 +641,14 @@ public class GameInstance {
         return future;
     }
 
-    private java.util.concurrent.CompletableFuture<Location> findSafeLocationAsync(World world, int radius) {
-        java.util.concurrent.CompletableFuture<Location> future = new java.util.concurrent.CompletableFuture<>();
+    private CompletableFuture<Location> findSafeLocationAsync(World world, int radius) {
+        CompletableFuture<Location> future = new CompletableFuture<>();
         findSafeLocationRecursive(world, radius, 10, future);
         return future;
     }
 
     private void findSafeLocationRecursive(World world, int radius, int attempts,
-            java.util.concurrent.CompletableFuture<Location> future) {
+            CompletableFuture<Location> future) {
         if (attempts <= 0) {
             plugin.getLogger().warning("Could not find safe RTP location after retries.");
             future.complete(world.getSpawnLocation()); // Fallback
@@ -658,7 +663,7 @@ public class GameInstance {
             int y = world.getHighestBlockYAt(x, z);
             Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
 
-            Material block = loc.getBlock().getRelative(org.bukkit.block.BlockFace.DOWN).getType();
+            Material block = loc.getBlock().getRelative(BlockFace.DOWN).getType();
             if (isSafeBlock(block)) {
                 future.complete(loc);
             } else {
@@ -730,7 +735,7 @@ public class GameInstance {
 
                 // Global time check
                 if (globalTimer <= 0) {
-                    broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-timeout"));
+                    broadcastGame(Lang.get("game-timeout"));
                     stopGame();
                 }
             }
@@ -748,7 +753,7 @@ public class GameInstance {
         int seconds = swapTimer % 60;
         String timeText = String.format("%d:%02d", minutes, seconds);
 
-        bossBar.name(be.dualsfwshield.deathswap.util.Lang.getComponent("bossbar-next-swap")
+        bossBar.name(Lang.getComponent("bossbar-next-swap")
                 .color(NamedTextColor.GOLD)
                 .append(Component.text(timeText, NamedTextColor.YELLOW)));
 
@@ -768,7 +773,7 @@ public class GameInstance {
     private void updateActionBar() {
         for (Player p : alivePlayers) {
             if (swapTimer <= 10) {
-                p.sendActionBar(be.dualsfwshield.deathswap.util.Lang.getComponent("actionbar-swap")
+                p.sendActionBar(Lang.getComponent("actionbar-swap")
                         .replaceText(b -> b.matchLiteral("%time%").replacement(String.valueOf(swapTimer)))
                         .color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true));
                 if (swapTimer <= 5) {
@@ -779,7 +784,7 @@ public class GameInstance {
                     }
                 }
             } else {
-                p.sendActionBar(be.dualsfwshield.deathswap.util.Lang.getComponent("actionbar-survivors")
+                p.sendActionBar(Lang.getComponent("actionbar-survivors")
                         .color(NamedTextColor.GRAY)
                         .append(Component.text(String.valueOf(alivePlayers.size()), NamedTextColor.WHITE)));
             }
@@ -794,7 +799,7 @@ public class GameInstance {
      * Perform the swap: circular rotation of all alive players' positions.
      */
     public void performSwap() {
-        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("swap-blindness"));
+        broadcastGame(Lang.get("swap-blindness"));
 
         List<Player> survivors = new ArrayList<>(alivePlayers);
         int count = survivors.size();
@@ -829,9 +834,9 @@ public class GameInstance {
 
             current.teleport(targetLoc);
             current.showTitle(Title.title(
-                    be.dualsfwshield.deathswap.util.Lang.getComponent("title-swap")
+                    Lang.getComponent("title-swap")
                             .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
-                    be.dualsfwshield.deathswap.util.Lang.getComponent("subtitle-swap")
+                    Lang.getComponent("subtitle-swap")
                             .replaceText(b -> b.matchLiteral("%player%").replacement(swappedWith.getName()))
                             .color(NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
@@ -869,7 +874,7 @@ public class GameInstance {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             player.setGameMode(GameMode.SPECTATOR);
-            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-death", "%player%", player.getName()));
+            broadcastGame(Lang.get("game-death", "%player%", player.getName()));
 
             if (plugin.getSoundManager() != null) {
                 plugin.getSoundManager().playSoundAll("death", gamePlayers);
@@ -893,8 +898,8 @@ public class GameInstance {
 
             ItemStack compass = new ItemStack(Material.COMPASS);
             ItemMeta meta = compass.getItemMeta();
-            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("spectator-item-teleport")
-                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-right")
+            meta.displayName(Lang.getComponent("spectator-item-teleport")
+                    .append(Lang.getComponent("item-click-right")
                             .color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             compass.setItemMeta(meta);
@@ -916,9 +921,9 @@ public class GameInstance {
 
         for (Player alive : alivePlayers) {
             Component tpButton = Component.text("[TP -> " + alive.getName() + "]", NamedTextColor.GREEN)
-                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/ds tp " + alive.getName()))
-                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
-                            be.dualsfwshield.deathswap.util.Lang.getComponent("spectator-tp-hover", "%player%",
+                    .clickEvent(ClickEvent.runCommand("/ds tp " + alive.getName()))
+                    .hoverEvent(HoverEvent.showText(
+                            Lang.getComponent("spectator-tp-hover", "%player%",
                                     alive.getName())));
             player.sendMessage(tpButton);
         }
@@ -945,15 +950,15 @@ public class GameInstance {
         if (alivePlayers.size() <= 1) {
             state = GameState.ENDED;
 
-            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-ended"));
+            broadcastGame(Lang.get("game-ended"));
 
             if (alivePlayers.size() == 1) {
                 Player winner = alivePlayers.iterator().next();
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-winner", "%winner%", winner.getName()));
+                broadcastGame(Lang.get("game-winner", "%winner%", winner.getName()));
                 winner.showTitle(Title.title(
-                        be.dualsfwshield.deathswap.util.Lang.getComponent("title-victory")
+                        Lang.getComponent("title-victory")
                                 .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
-                        be.dualsfwshield.deathswap.util.Lang.getComponent("subtitle-victory")
+                        Lang.getComponent("subtitle-victory")
                                 .color(NamedTextColor.YELLOW),
                         Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(5), Duration.ofMillis(500))));
 
@@ -969,7 +974,7 @@ public class GameInstance {
                     plugin.getStatsManager().addSurvivalTime(winner.getUniqueId(), survivalSeconds);
                 }
             } else {
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-draw"));
+                broadcastGame(Lang.get("game-draw"));
             }
 
             Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, 100L); // 5 seconds
@@ -1009,13 +1014,13 @@ public class GameInstance {
         String hubWorld = plugin.getConfigManager().getHubWorld();
         World hub = Bukkit.getWorld(hubWorld);
         if (hub == null) {
-            hub = Bukkit.createWorld(new org.bukkit.WorldCreator(hubWorld));
+            hub = Bukkit.createWorld(new WorldCreator(hubWorld));
         }
 
         Location hubSpawn = (hub != null) ? hub.getSpawnLocation() : null;
 
         for (Player p : new HashSet<>(gamePlayers)) {
-            p.setGameMode(org.bukkit.GameMode.ADVENTURE);
+            p.setGameMode(GameMode.ADVENTURE);
             p.getInventory().clear();
             plugin.getArenaManager().removePlayer(p);
 
@@ -1080,8 +1085,7 @@ public class GameInstance {
      * Convert legacy color codes (&) to a Component.
      */
     protected Component colorize(String text) {
-        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-                .legacyAmpersand().deserialize(text);
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
     }
 
     // --- Getters (protected for subclass access) ---
@@ -1160,7 +1164,7 @@ public class GameInstance {
         // Critical swap warnings
         if (swapTimer == 60 || swapTimer == 30 || swapTimer == 10 || (swapTimer <= 5 && swapTimer > 0)) {
             broadcastGame(
-                    be.dualsfwshield.deathswap.util.Lang.get("swap-warning", "%time%", String.valueOf(swapTimer)));
+                    Lang.get("swap-warning", "%time%", String.valueOf(swapTimer)));
 
             // Play sound even in CLEAN mode (user only asked for UI cleanup)
             if (swapTimer <= 5) {

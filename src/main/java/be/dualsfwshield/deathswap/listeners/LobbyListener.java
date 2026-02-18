@@ -9,7 +9,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.GameMode;
 
 /**
  * Protects the lobby world: prevents block placement/breaking, damage, hunger,
@@ -69,7 +71,7 @@ public class LobbyListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player player) {
             if (shouldBypass(player))
                 return;
@@ -80,7 +82,7 @@ public class LobbyListener implements Listener {
     }
 
     private boolean shouldBypass(Player player) {
-        return player.isOp() || player.getGameMode() == org.bukkit.GameMode.CREATIVE;
+        return player.isOp() || player.getGameMode() == GameMode.CREATIVE;
     }
 
     /**

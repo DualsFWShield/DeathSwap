@@ -19,14 +19,20 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 public class PlayerActionGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (27 slots, 3 rows) ─────────────────────────
+     *
+     * Row 1 │ (hidden) · · · HEAD · · · ·
+     * Row 2 │ · TP · INVSEE · KICK · BAN ·
+     * Row 3 │ · · · · BACK · · · ·
+     */
     private static final int INV_SIZE = 27;
     private static final int SLOT_HEAD = 4;
     private static final int SLOT_TP = 10;
     private static final int SLOT_INVSEE = 12;
     private static final int SLOT_KICK = 14;
     private static final int SLOT_BAN = 16;
-    private static final int SLOT_HIDDEN = 0;
+    private static final int SLOT_HIDDEN = 0; // stores target player name
     private static final int SLOT_BACK = 22;
 
     private final DeathSwapPlugin plugin;

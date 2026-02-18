@@ -15,8 +15,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
 import java.util.List;
 import java.time.Duration;
 import java.util.HashMap;
@@ -115,7 +117,7 @@ public class DeathShuffleInstance extends GameInstance {
         // Pick random death cause from difficulty tier
         // Pick random death cause from difficulty tier
         // Filter by allowed causes
-        DeathCause[] causes = java.util.Arrays.stream(DeathCause.getByDifficulty(difficulty))
+        DeathCause[] causes = Arrays.stream(DeathCause.getByDifficulty(difficulty))
                 .filter(allowedCauses::contains)
                 .toArray(DeathCause[]::new);
 
@@ -257,7 +259,7 @@ public class DeathShuffleInstance extends GameInstance {
      *
      * @return true if this was a correct death (player should respawn)
      */
-    public boolean onPlayerDeath(Player player, org.bukkit.event.entity.EntityDamageEvent.DamageCause cause) {
+    public boolean onPlayerDeath(Player player, EntityDamageEvent.DamageCause cause) {
         if (getState() != GameState.RUNNING)
             return false;
         if (!getAlivePlayers().contains(player))

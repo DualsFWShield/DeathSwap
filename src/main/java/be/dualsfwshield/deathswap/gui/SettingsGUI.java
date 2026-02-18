@@ -30,7 +30,16 @@ import java.util.List;
  */
 public class SettingsGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (54 slots, 6 rows) ─────────────────────────
+     *
+     * Row 1 │ TYPE · LOBBY · WORLD · RULES · UI
+     * Row 2 │ · SWAP · MAX_T · LOAD · PVP
+     * Row 3 │ · · MIN_P · MAX_P · PROT
+     * Row 4 │ · NETHER · END · SEEDS
+     * Row 5 │ · TP_CMD · RST_CMD· RESIL
+     * Row 6 │ INFO · · · STOP · · · · BACK
+     */
     private static final int INV_SIZE = 54;
 
     // Row 1 (0-8): Core settings

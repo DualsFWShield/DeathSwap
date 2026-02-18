@@ -19,7 +19,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 public class PlayerListGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (54 slots, 6 rows) ─────────────────────────
+     *
+     * Rows 1-5 │ [player heads fill dynamically]
+     * Row 6 │ · · · · · · · · · BACK
+     */
     private static final int INV_SIZE = 54;
     private static final int SLOT_BACK = 53;
 

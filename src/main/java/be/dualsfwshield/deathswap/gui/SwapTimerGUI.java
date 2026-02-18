@@ -32,7 +32,13 @@ import static be.dualsfwshield.deathswap.gui.GuiUtils.formatTime;
  */
 public class SwapTimerGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (27 slots, 3 rows) ─────────────────────────
+     *
+     * Row 1 │ · · · · · · · · ·
+     * Row 2 │ · · · FIXED · RANDOM · · ·
+     * Row 3 │ TAG · · R_MIN · R_MAX · · BACK
+     */
     private static final int INV_SIZE = 27;
     private static final int SLOT_FIXED = 12;
     private static final int SLOT_RANDOM = 14;

@@ -21,7 +21,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ArenaDetailsGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (27 slots, 3 rows) ─────────────────────────
+     *
+     * Row 1 │ · STATUS · START/STOP · SWAP/REGEN · PLAYERS ·
+     * Row 2 │ · · · · BACK · · · ·
+     * Row 3 │ · · · · · · · · SETTINGS
+     */
     private static final int INV_SIZE = 27;
     private static final int SLOT_STATUS = 10;
     private static final int SLOT_START_STOP = 12;

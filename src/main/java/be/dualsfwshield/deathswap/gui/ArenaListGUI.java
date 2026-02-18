@@ -32,7 +32,15 @@ import java.util.Map;
  */
 public class ArenaListGUI implements Listener {
 
-    // ── Bottom-row button offsets (relative to lastRow) ─────────────────
+    /*
+     * ── Inventory layout (dynamic size) ─────────────────────────────
+     * Inventory size adapts to arena count (9 per row, min 18 slots).
+     *
+     * Rows 1..N-1 │ [arena items fill dynamically]
+     * Last row │ INFO · · · CREATE · · · CLOSE
+     *
+     * Offsets are relative to `lastRow = size - 9`.
+     */
     private static final int BTN_INFO_OFFSET = 0;
     private static final int BTN_CREATE_OFFSET = 4;
     private static final int BTN_CLOSE_OFFSET = 8;

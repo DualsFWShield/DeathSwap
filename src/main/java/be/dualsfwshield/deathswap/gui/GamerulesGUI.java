@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,7 +26,13 @@ import java.util.Map;
 
 public class GamerulesGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (27 slots, 3 rows) ─────────────────────────
+     *
+     * Row 1 │ [gamerule toggles 0..8]
+     * Row 2 │ [gamerule toggle 9 if present, rest empty]
+     * Row 3 │ · · · · BACK · · · ·
+     */
     private static final int INV_SIZE = 27;
     private static final int SLOT_BACK = 22;
 
@@ -125,7 +132,7 @@ public class GamerulesGUI implements Listener {
             // Use legacy display name for logic triggers
             String ruleName = clicked.getItemMeta().getDisplayName();
             // Strip colors
-            ruleName = net.md_5.bungee.api.ChatColor.stripColor(ruleName);
+            ruleName = ChatColor.stripColor(ruleName);
 
             // Toggle
             String current = config.gamerules.getOrDefault(ruleName, "false");

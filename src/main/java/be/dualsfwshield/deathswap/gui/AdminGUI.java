@@ -26,7 +26,12 @@ import java.util.List;
 
 public class AdminGUI implements Listener {
 
-    // ── Inventory layout ──────────────────────────────────────────────
+    /*
+     * ── Inventory layout (54 slots, 6 rows) ─────────────────────────
+     *
+     * Rows 1-5 │ [arena items fill dynamically]
+     * Row 6 │ · · · · RELOAD · · · CLOSE
+     */
     private static final int INV_SIZE = 54;
     private static final int SLOT_RELOAD = 49;
     private static final int SLOT_CLOSE = 53;
