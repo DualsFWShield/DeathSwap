@@ -4,7 +4,7 @@
 >
 > **Un plugin Minecraft professionnel** pour Paper 1.21+ avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
 >
-> ⚠️ **Note :** Les messages en jeu sont actuellement en **Français** uniquement.
+> ⚠️ **Note :** Le plugin supporte désormais le **Français** et l'**Anglais** (configurable).
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
 [![Paper 1.21](https://img.shields.io/badge/Paper-1.21+-blue)](https://papermc.io)
@@ -18,8 +18,8 @@
 | Mode | Description |
 |------|-------------|
 | **DeathSwap** | Les joueurs sont échangés aléatoirement. Piège la zone avant le swap ! |
-| **DeathShuffle** | Chaque round, un type de mort est assigné. Meurt de la bonne façon pour survivre ! |
-| **BlockShuffle** | Trouve et tiens-toi sur le bon bloc avant la fin du timer ! |
+| **DeathShuffle** | Chaque round, un type de mort est assigné. Meurt de la bonne façon pour survivre ! (Causes configurables) |
+| **BlockShuffle** | Trouve et tiens-toi sur le bon bloc avant la fin du timer ! (Blocs configurables) |
 
 ### 🏟️ Multi-Arènes
 - Chaque arène est **indépendante** (monde, joueurs, config, timers)
@@ -89,6 +89,7 @@ cp target/deathswap-1.0.0.jar /chemin/serveur/plugins/
 | `/ds stats [joueur]` | Voir les statistiques | `deathswap.play` |
 | `/ds top [catégorie]` | Classement (wins/kills/deaths/time/games) | `deathswap.play` |
 | `/ds vote <arène> <choix>` | Voter pour un seed | `deathswap.play` |
+| `/ds help gui` | Ouvrir le menu d'aide visuel | `deathswap.play` |
 | `/ds list` | Liste des arènes et leur statut | `deathswap.play` |
 | `/ds tp <joueur>` | TP vers un joueur (spectateur uniquement) | `deathswap.play` |
 

@@ -5,9 +5,9 @@
 > Guide technique et utilisateur complet pour le plugin DeathSwap.  
 > Dernière mise à jour : Février 2026
 >
-> ⚠️ **Limitations Actuelles :**
-> - Les messages en jeu sont en **Français** uniquement.
-> - Les objectifs de **BlockShuffle** et les causes de mort **DeathShuffle** sont prédéfinis (non configurables pour l'instant).
+> **Nouveautés :**
+> - Messages traduits (FR/EN).
+> - Objectifs BlockShuffle et causes DeathShuffle entièrement configurables via fichiers YAML.
 
 ---
 
@@ -119,6 +119,7 @@ Après le premier lancement :
 - Exemples : mourir de lave, de chute, de noyade, d'explosion...
 - Timer par round basé sur la difficulté (easy/medium/hard)
 - Si tu ne meurs pas du bon type → **éliminé**
+- **Causes configurables** dans `modes/deathshuffle.yml`
 
 **Types de mort par difficulté :**
 | Facile | Moyen | Difficile |
@@ -136,6 +137,7 @@ Après le premier lancement :
 - Les joueurs doivent trouver et se **tenir debout sur** ce bloc
 - Timer par round basé sur la rareté du bloc
 - Dernier joueur éliminé à chaque round
+- **Blocs configurables** dans `modes/blockshuffle.yml`
 
 ### Architecture Simplifiée
 
@@ -256,6 +258,7 @@ classDiagram
 | `/ds stats` | `[joueur]` | Voir ses stats ou celles d'un joueur | `/ds stats`, `/ds stats Steve` |
 | `/ds top` | `[catégorie]` | Classement. Catégories : `wins`, `kills`, `deaths`, `time`, `games` | `/ds top`, `/ds top kills` |
 | `/ds vote` | `<arène> <choix>` | Voter pour un seed (déclenché par clic en jeu) | `/ds vote default 2` |
+| `/ds help gui` | — | Ouvrir le menu d'aide visuel avec items cliquables | `/ds help gui` |
 | `/ds tp` | `<joueur>` | Téléporter vers un joueur (spectateurs uniquement) | `/ds tp Steve` |
 
 ### Commandes Admin
