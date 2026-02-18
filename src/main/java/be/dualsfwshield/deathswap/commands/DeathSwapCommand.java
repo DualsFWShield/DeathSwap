@@ -647,6 +647,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-stats")));
         sender.sendMessage(Component.text("/ds top [stat]", NamedTextColor.AQUA)
             .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-top")));
+        sender.sendMessage(Component.text("/ds vote <arena> <choix>", NamedTextColor.AQUA)
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-vote")));
+
         if (sender instanceof Player) {
             sender.sendMessage(Component.text("/ds help gui", NamedTextColor.GREEN)
                 .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-gui")));
@@ -654,17 +657,16 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             
         if (sender.hasPermission("deathswap.admin")) {
             sender.sendMessage(Component.empty());
-            be.dualsfwshield.deathswap.util.Lang.send(sender, "help-admin-title");
-            be.dualsfwshield.deathswap.util.Lang.send(sender, "help-admin-see-more");
-            sender.sendMessage(Component.text("/ds help commands", NamedTextColor.YELLOW, net.kyori.adventure.text.format.TextDecoration.BOLD)
-                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(be.dualsfwshield.deathswap.util.Lang.getComponent("help-admin-hover")))
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/ds help commands")));
+            sendAdminHelp(sender);
         }
     }
     
     private void sendAdminHelp(CommandSender sender) {
         be.dualsfwshield.deathswap.util.Lang.send(sender, "admin-help-title");
         
+        sender.sendMessage(Component.text("/ds admin", NamedTextColor.YELLOW)
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-dashboard"))); // You might need to add this key or reuse another
+
         sender.sendMessage(Component.text("/ds admin list", NamedTextColor.YELLOW)
             .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-list")));
             

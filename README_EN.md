@@ -58,12 +58,12 @@
 
 ### Prerequisites
 
-| Component       | Version | Required         |
-| --------------- | ------- | ---------------- |
-| Java            | 21+     | ✅               |
-| Paper           | 1.21.1  | ✅ (1.21.1 only) |
-| Multiverse-Core | 4.x     | ✅               |
-| CyberWorldReset | *       | ⬜ Optional      |
+| Component       | Version | Required                                                             |
+| --------------- | ------- | -------------------------------------------------------------------- |
+| Java            | 21+     | ✅                                                                   |
+| Paper           | 1.21.1  | ✅ (1.21.1 only)                                                     |
+| Multiverse-Core | 4.x     | ⬜ Recommended and required by default but it can be used without it |
+| CyberWorldReset | *       | ⬜ Optional                                                          |
 
 ### Installation
 
@@ -98,6 +98,7 @@ cp target/deathswap-1.0.0.jar /path/to/server/plugins/
 | `/ds stats [player]`        | View statistics                            | `deathswap.play` |
 | `/ds top [category]`        | Leaderboard (wins/kills/deaths/time/games) | `deathswap.play` |
 | `/ds vote <arena> <choice>` | Vote for a seed                            | `deathswap.play` |
+| `/ds help`                  | Display main commands in chat              | `deathswap.play` |
 | `/ds help gui`              | Open the visual help menu                  | `deathswap.play` |
 | `/ds list`                  | List arenas and their status               | `deathswap.play` |
 | `/ds tp <player>`           | TP to a player (spectator only)            | `deathswap.play` |

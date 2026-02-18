@@ -258,7 +258,8 @@ classDiagram
 | `/ds stats` | `[joueur]` | Voir ses stats ou celles d'un joueur | `/ds stats`, `/ds stats Steve` |
 | `/ds top` | `[catégorie]` | Classement. Catégories : `wins`, `kills`, `deaths`, `time`, `games` | `/ds top`, `/ds top kills` |
 | `/ds vote` | `<arène> <choix>` | Voter pour un seed (déclenché par clic en jeu) | `/ds vote default 2` |
-| `/ds help gui` | — | Ouvrir le menu d'aide visuel avec items cliquables | `/ds help gui` |
+| `/ds help` | — | Affiche les commandes principales en chat. | `/ds help` |
+| `/ds help gui` | — | Ouvre le menu d'aide visuel avec items cliquables | `/ds help gui` |
 | `/ds tp` | `<joueur>` | Téléporter vers un joueur (spectateurs uniquement) | `/ds tp Steve` |
 
 ### Commandes Admin

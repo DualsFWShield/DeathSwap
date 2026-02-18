@@ -256,6 +256,7 @@ classDiagram
 | `/ds stats` | `[player]` | View your stats or another player's | `/ds stats`, `/ds stats Steve` |
 | `/ds top` | `[category]` | Leaderboard. Categories: `wins`, `kills`, `deaths`, `time`, `games` | `/ds top`, `/ds top kills` |
 | `/ds vote` | `<arena> <choice>` | Vote for a seed (triggered by in-game click) | `/ds vote default 2` |
+| `/ds help` | — | Display main commands in chat. | `/ds help` |
 | `/ds help gui` | — | Open the visual help menu with clickable items | `/ds help gui` |
 | `/ds tp` | `<player>` | Teleport to a player (spectators only) | `/ds tp Steve` |
 
