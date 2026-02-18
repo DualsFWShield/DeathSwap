@@ -1,0 +1,8 @@
+# BlockShuffle Configuration
+# List of blocks/items to use for challenges.
+# If this list is empty or missing, the plugin will use the default hardcoded list
+# which includes varying difficulties and assignment types (Stand vs Craft).
+#
+# Currently, defining blocks here forces them all to Difficulty 1 and "Stand" type.
+# To keep the default balanced game, keep this list empty.
+blocks: []

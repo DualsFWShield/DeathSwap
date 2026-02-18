@@ -1,0 +1,8 @@
+# DeathShuffle Configuration
+# List of death causes to use.
+# If empty, all implemented causes are used.
+# Available causes:
+# - DROWNING, FALL, FIRE, CONTACT, STARVATION, SUFFOCATION (Easy)
+# - LAVA, EXPLOSION, PROJECTILE, MAGIC, HOT_FLOOR, FREEZE (Medium)
+# - LIGHTNING, FLY_INTO_WALL, FALLING_BLOCK, VOID (Hard)
+causes: []
