@@ -8,7 +8,7 @@
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
 [![Paper 1.21](https://img.shields.io/badge/Paper-1.21+-blue)](https://papermc.io)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-Custom-yellow)](LICENSE.md)
 
 ---
 
@@ -547,4 +547,7 @@ classDiagram
 
 ## 📝 License
 
-MIT — Use, modify, and redistribute freely.
+This project is under a custom license.
+- **Usage and Modification**: Free (private or public).
+- **Redistribution**: Allowed with mandatory credit.
+- **Commercial Use**: Strictly prohibited without agreement (see [LICENSE.md](LICENSE.md)).

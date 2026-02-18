@@ -29,6 +29,7 @@
 14. [Multi-Arènes](#-multi-arènes)
 15. [Dépendances](#-dépendances)
 16. [FAQ et Dépannage](#-faq-et-dépannage)
+17. [Licence](#-licence)
 
 ---
 
@@ -1076,3 +1077,14 @@ Utilisé pour :
 ---
 
 *Documentation rédigée pour DeathSwap v1.0.0 — Plugin par [DualsFWShield](https://dualsfwshield.be)*
+
+---
+
+## 📜 Licence
+
+Ce projet est sous **licence personnalisée**.
+Voir le fichiers [LICENSE.md](LICENSE.md) pour les détails complets.
+
+* **Utilisation et modification** : Libres (privé ou public).
+* **Redistribution** : Autorisée avec crédit obligatoire.
+* **Usage commercial** : Strictement interdit sans accord préalable.

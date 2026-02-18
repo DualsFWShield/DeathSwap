@@ -29,6 +29,7 @@
 14. [Multi-Arenas](#-multi-arenas)
 15. [Dependencies](#-dependencies)
 16. [FAQ and Troubleshooting](#-faq-and-troubleshooting)
+17. [License](#-license)
 
 ---
 
@@ -1014,3 +1015,14 @@ gamerules:
 
 seeds: []
 ```
+
+---
+
+## 📜 License
+
+This project is under a **custom license**.
+See the [LICENSE.md](LICENSE.md) file for full details.
+
+* **Usage and Modification**: Free (private or public).
+* **Redistribution**: Allowed with mandatory credit.
+* **Commercial Use**: Strictly prohibited without prior agreement.
