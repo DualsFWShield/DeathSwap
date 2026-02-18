@@ -40,7 +40,7 @@
 | Composant | Version minimum | Rôle |
 |-----------|----------------|------|
 | **Java** | 21+ | Runtime |
-| **Paper** | 1.21+ | Serveur Minecraft |
+| **Paper** | 1.21.1 | Serveur Minecraft (1.21.1 uniquement) |
 | **Multiverse-Core** | 4.x | Gestion des mondes (création, chargement, TP) |
 | **CyberWorldReset** | * | Régénération de mondes (reset) |
 

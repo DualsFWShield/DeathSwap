@@ -2,12 +2,13 @@
 
 > **[English Version](README_EN.md)**
 >
-> **Un plugin Minecraft professionnel** pour Paper 1.21+ avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
+> **Un plugin Minecraft professionnel** pour Paper 1.21.1 (Testé uniquement en 1.21.1) avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
 >
 > ⚠️ **Note :** Le plugin supporte désormais le **Français** et l'**Anglais** (configurable).
+> ⚠️ **Important :** Ce plugin a été conçu et testé pour **Minecraft 1.21.1**. La compatibilité avec d'autres versions (même 1.21.x) n'est pas garantie.
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
-[![Paper 1.21](https://img.shields.io/badge/Paper-1.21+-blue)](https://papermc.io)
+[![Paper 1.21.1](https://img.shields.io/badge/Paper-1.21.1-blue)](https://papermc.io)
 [![License](https://img.shields.io/badge/license-Custom-yellow)](LICENSE.md)
 
 ---
@@ -55,7 +56,7 @@
 | Composant | Version | Requis |
 |-----------|---------|--------|
 | Java | 21+ | ✅ |
-| Paper | 1.21+ | ✅ |
+| Paper | 1.21.1 | ✅ (1.21.1 uniquement) |
 | Multiverse-Core | 4.x | ✅ |
 | CyberWorldReset | * | ⬜ Optionnel |
 
