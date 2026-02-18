@@ -4,7 +4,7 @@
 >
 > **A professional Minecraft plugin** for Paper 1.21.1 (Tested on 1.21.1 only) with 3 game modes, multi-arenas, admin dashboard, and full customization.
 >
-> ⚠️ **Note:** The plugin now supports **English** and **French** (configurable).
+> **Note:** The plugin now supports **English** and **French** (configurable).
 > ⚠️ **Important:** This plugin was designed and tested for **Minecraft 1.21.1**. Compatibility with other versions (even 1.21.x) is not guaranteed.
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
@@ -16,18 +16,21 @@
 ## ✨ Features
 
 ### 🕹️ 3 Game Modes
-| Mode | Description |
-|------|-------------|
-| **DeathSwap** | Players swapped randomly. Trap the area before the swap! |
+
+| Mode                   | Description                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------- |
+| **DeathSwap**    | Players swapped randomly. Trap the area before the swap!                                    |
 | **DeathShuffle** | Each round, a death type is assigned. Die the correct way to survive! (Configurable causes) |
-| **BlockShuffle** | Find and stand on the correct block before the timer runs out! (Configurable blocks) |
+| **BlockShuffle** | Find and stand on the correct block before the timer runs out! (Configurable blocks)        |
 
 ### 🏟️ Multi-Arenas
+
 - Each arena is **independent** (world, players, config, timers)
 - Multiple simultaneous games possible
 - Per-arena configuration via `config.yml`
 
 ### 🎛️ Admin Dashboard (`/ds admin`)
+
 - Overview of all arenas (`ArenaListGUI`)
 - Full in-game configuration (`SettingsGUI`): Worlds, Gamerules, Timers, etc.
 - Force start/stop games
@@ -35,14 +38,16 @@
 - Player management (kick, ban, teleport, inventory)
 
 ### 🔧 Deep Customization
+
 - **UI Mode**: RICH (BossBar + ActionBar) or CLEAN (chat only)
-- **Gamerules**: Configurable in-game via GUI
+- **Gamerules**: Configurable in-game via GUI or commands.
 - **Sounds**: Every sound event is configurable
 - **Seeds**: Voting system with predefined seeds
 - **Challenges**: Craft, mine, kill with rewards (DeathSwap)
 - **Configurable Commands**: Teleportation and World Reset are 100% configurable (Vanilla/other plugin support)
 
 ### 📊 Statistics
+
 - Kills, deaths, wins, play time, games played
 - Leaderboards per category (`/ds top`)
 - Auto-save to YAML
@@ -52,14 +57,16 @@
 ## 📥 Installation
 
 ### Prerequisites
-| Component | Version | Required |
-|-----------|---------|----------|
-| Java | 21+ | ✅ |
-| Paper | 1.21.1 | ✅ (1.21.1 only) |
-| Multiverse-Core | 4.x | ✅ |
-| CyberWorldReset | * | ⬜ Optional |
+
+| Component       | Version | Required         |
+| --------------- | ------- | ---------------- |
+| Java            | 21+     | ✅               |
+| Paper           | 1.21.1  | ✅ (1.21.1 only) |
+| Multiverse-Core | 4.x     | ✅               |
+| CyberWorldReset | *       | ⬜ Optional      |
 
 ### Installation
+
 ```bash
 # 1. Build the plugin
 mvn clean package
@@ -72,6 +79,7 @@ cp target/deathswap-1.0.0.jar /path/to/server/plugins/
 ```
 
 ### Quick Configuration
+
 1. Create a lobby world via Multiverse: `mv create DS_WaitingLobby normal`
 2. Create a game world: `mv create DeathSwap_Game normal`
 3. Configure `plugins/DeathSwap/config.yml` (see below)
@@ -82,29 +90,31 @@ cp target/deathswap-1.0.0.jar /path/to/server/plugins/
 ## 📋 Commands
 
 ### Player
-| Command | Description | Permission |
-|---------|-------------|------------|
-| `/ds join [arena]` | Join an arena (default: `default`) | `deathswap.play` |
-| `/ds leave` | Leave current game | `deathswap.play` |
-| `/ds stats [player]` | View statistics | `deathswap.play` |
-| `/ds top [category]` | Leaderboard (wins/kills/deaths/time/games) | `deathswap.play` |
-| `/ds vote <arena> <choice>` | Vote for a seed | `deathswap.play` |
-| `/ds help gui` | Open the visual help menu | `deathswap.play` |
-| `/ds list` | List arenas and their status | `deathswap.play` |
-| `/ds tp <player>` | TP to a player (spectator only) | `deathswap.play` |
+
+| Command                       | Description                                | Permission         |
+| ----------------------------- | ------------------------------------------ | ------------------ |
+| `/ds join [arena]`          | Join an arena (default:`default`)        | `deathswap.play` |
+| `/ds leave`                 | Leave current game                         | `deathswap.play` |
+| `/ds stats [player]`        | View statistics                            | `deathswap.play` |
+| `/ds top [category]`        | Leaderboard (wins/kills/deaths/time/games) | `deathswap.play` |
+| `/ds vote <arena> <choice>` | Vote for a seed                            | `deathswap.play` |
+| `/ds help gui`              | Open the visual help menu                  | `deathswap.play` |
+| `/ds list`                  | List arenas and their status               | `deathswap.play` |
+| `/ds tp <player>`           | TP to a player (spectator only)            | `deathswap.play` |
 
 ### Admin
-| Command | Description | Permission |
-|---------|-------------|------------|
-| `/ds start [debug]` | Start game (debug = 1 min player) | `deathswap.admin` |
-| `/ds stop [arena]` | Stop an arena | `deathswap.admin` |
-| `/ds swapnow` | Force immediate swap | `deathswap.admin` |
-| `/ds reload` | Reload configuration | `deathswap.admin` |
-| `/ds admin` | Open Admin Dashboard (GUI) | `deathswap.admin` |
+
+| Command                                | Description                                  | Permission          |
+| -------------------------------------- | -------------------------------------------- | ------------------- |
+| `/ds start [debug]`                  | Start game (debug = 1 min player)            | `deathswap.admin` |
+| `/ds stop [arena]`                   | Stop an arena                                | `deathswap.admin` |
+| `/ds swapnow`                        | Force immediate swap                         | `deathswap.admin` |
+| `/ds reload`                         | Reload configuration                         | `deathswap.admin` |
+| `/ds admin`                          | Open Admin Dashboard (GUI)                   | `deathswap.admin` |
 | `/ds admin set <arena> <prop> <val>` | Modify a property (lobby, game, gametype...) | `deathswap.admin` |
-| `/ds admin gamerule <arena> ...` | Modify gamerules | `deathswap.admin` |
-| `/ds admin command <arena> ...` | Configure TP/Reset commands | `deathswap.admin` |
-| `/ds admin create/delete/clone` | Arena management | `deathswap.admin` |
+| `/ds admin gamerule <arena> ...`     | Modify gamerules                             | `deathswap.admin` |
+| `/ds admin command <arena> ...`      | Configure TP/Reset commands                  | `deathswap.admin` |
+| `/ds admin create/delete/clone`      | Arena management                             | `deathswap.admin` |
 
 ---
 
@@ -274,25 +284,28 @@ Then create the worlds via Multiverse: `mv create DS_Game_2 normal` and `mv crea
 
 ## 🔐 Permissions
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `deathswap.play` | Play DeathSwap | `true` (all) |
-| `deathswap.admin` | Full admin access | `op` |
+| Permission          | Description       | Default        |
+| ------------------- | ----------------- | -------------- |
+| `deathswap.play`  | Play DeathSwap    | `true` (all) |
+| `deathswap.admin` | Full admin access | `op`         |
 
 ---
 
 ## 🎨 Interface Modes (UI Modes)
 
 ### RICH (default)
+
 - **BossBar** for swap/round timer
 - **ActionBar** for real-time info
 - Visual titles for events
 
 ### CLEAN
+
 - Information only in **chat**
 - Ideal for lightweight servers or players who prefer less HUD
 
 Change via:
+
 - `config.yml` → `ui-mode: RICH` or `CLEAN`
 - In-game → Settings GUI (`/ds settings` per arena)
 
@@ -301,15 +314,17 @@ Change via:
 ## 📊 Statistics & Leaderboards
 
 ### Tracked Categories
-| Stat | Command |
-|------|---------|
-| Wins | `/ds top wins` |
-| Kills | `/ds top kills` |
-| Deaths | `/ds top deaths` |
-| Play Time | `/ds top time` |
-| Games Played | `/ds top games` |
+
+| Stat         | Command            |
+| ------------ | ------------------ |
+| Wins         | `/ds top wins`   |
+| Kills        | `/ds top kills`  |
+| Deaths       | `/ds top deaths` |
+| Play Time    | `/ds top time`   |
+| Games Played | `/ds top games`  |
 
 ### Storage
+
 - YAML file in `plugins/DeathSwap/stats/`
 - Configurable auto-save (`stats.auto-save-minutes`)
 
@@ -318,6 +333,7 @@ Change via:
 ## 🎯 Challenges (DeathSwap only)
 
 Available types:
+
 - **CRAFT** – Craft an item
 - **MINE** – Mine a block
 - **KILL** – Kill a mob
@@ -331,6 +347,7 @@ Enable them in `config.yml` → `challenges.enabled: true`
 ## 🗳️ Voting System
 
 When enabled, players vote for a seed before game start:
+
 1. The system proposes `X` random seeds (configurable)
 2. Players click to vote
 3. Video winning seed is used for world generation
@@ -341,19 +358,19 @@ When enabled, players vote for a seed before game start:
 
 Every sound event is configurable in `config.yml` → `sounds.*`
 
-| Event | Config Key |
-|-------|------------|
-| Game start | `game-start` |
-| Tick countdown | `countdown-tick` |
-| Go ! | `countdown-go` |
-| Swap | `swap` |
-| Shuffle (new round) | `shuffle` |
-| Death | `death` |
-| Win | `win` |
-| Round success | `round-success` |
-| Round fail | `round-fail` |
+| Event               | Config Key             |
+| ------------------- | ---------------------- |
+| Game start          | `game-start`         |
+| Tick countdown      | `countdown-tick`     |
+| Go !                | `countdown-go`       |
+| Swap                | `swap`               |
+| Shuffle (new round) | `shuffle`            |
+| Death               | `death`              |
+| Win                 | `win`                |
+| Round success       | `round-success`      |
+| Round fail          | `round-fail`         |
 | Challenge completed | `challenge-complete` |
-| Vote cast | `vote-cast` |
+| Vote cast           | `vote-cast`          |
 
 Disable all sounds: `sounds.enabled: false`
 
@@ -364,6 +381,7 @@ Disable all sounds: `sounds.enabled: false`
 Accessible via `/ds admin` (permission `deathswap.admin`).
 
 ### Navigation
+
 ```
 📋 Admin Dashboard
 ├── 🏟️ [Arena] (left click → Details, right click → TP lobby)
@@ -442,18 +460,18 @@ graph TD
     Plugin --> AM[ArenaManager]
     Plugin --> CMD[DeathSwapCommand]
     Plugin --> L[Listeners]
-    
+  
     AM --> GI[GameInstance]
     GI --> BSI[BlockShuffleInstance]
     GI --> DSI[DeathShuffleInstance]
-    
+  
     GI --> VM[VoteManager]
     GI --> CHM[ChallengeManager]
     GI --> SM[SoundManager]
-    
+  
     CMD --> AM
     CMD --> GUIs
-    
+  
     L --> AM
     L --> GI
 ```
@@ -468,20 +486,20 @@ classDiagram
         +getArenaManager()
         +getConfigManager()
     }
-    
+  
     class ConfigManager {
         +load()
         +saveArena()
         +getArenaConfig()
     }
-    
+  
     class ArenaManager {
         -Map~String, GameInstance~ arenas
         +initArenas()
         +getArena(id)
         +getPlayerArena(player)
     }
-    
+  
     class GameInstance {
         -GameState state
         -Set~Player~ players
@@ -490,17 +508,17 @@ classDiagram
         +stopGame()
         +performSwap()
     }
-    
+  
     class BlockShuffleInstance {
         +startNextRound()
         +onPlayerStandOnBlock()
     }
-    
+  
     class DeathShuffleInstance {
         +startNextRound()
         +onPlayerDeath()
     }
-    
+  
     class Listeners {
         <<Interface>>
         +GameListener
@@ -508,7 +526,7 @@ classDiagram
         +BlockShuffleListener
         +DeathShuffleListener
     }
-    
+  
     class Managers {
         <<Interface>>
         +VoteManager
@@ -516,7 +534,7 @@ classDiagram
         +SoundManager
         +StatsManager
     }
-    
+  
     class GUIs {
         <<Interface>>
         +SettingsGUI
@@ -528,13 +546,13 @@ classDiagram
     DeathSwapPlugin --> ArenaManager
     DeathSwapPlugin --> Managers
     DeathSwapPlugin --> GUIs
-    
+  
     ArenaManager --> GameInstance
     GameInstance <|-- BlockShuffleInstance
     GameInstance <|-- DeathShuffleInstance
-    
+  
     GameInstance --> Managers
-    
+  
     Listeners --> ArenaManager
     Listeners --> GameInstance
 ```
@@ -550,6 +568,7 @@ classDiagram
 ## 📝 License
 
 This project is under a custom license.
+
 - **Usage and Modification**: Free (private or public).
 - **Redistribution**: Allowed with mandatory credit.
 - **Commercial Use**: Strictly prohibited without agreement (see [LICENSE.md](LICENSE.md)).
