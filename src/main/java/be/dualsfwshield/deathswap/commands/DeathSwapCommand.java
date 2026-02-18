@@ -80,6 +80,20 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             case "admin" -> {
                 return handleAdmin(sender, args);
             }
+            case "help" -> {
+                if (args.length > 1) {
+                    if (args[1].equalsIgnoreCase("commands") && sender.hasPermission("deathswap.admin")) {
+                         sendAdminHelp(sender);
+                         return true;
+                    }
+                    if (args[1].equalsIgnoreCase("gui") && sender instanceof Player player) {
+                        plugin.getHelpGUI().open(player);
+                        return true;
+                    }
+                }
+                sendHelp(sender);
+                return true;
+            }
             default -> sendHelp(sender);
         }
         return true;
@@ -491,14 +505,46 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         try {
             switch (property) {
+                // Worlds
                 case "lobby" -> config.lobbyWorld = value;
                 case "game" -> config.gameWorld = value;
+                
+                // Game Type
                 case "gametype" -> config.gameType = be.dualsfwshield.deathswap.GameType.valueOf(value.toUpperCase());
+                
+                // Players
+                case "minplayers" -> config.minPlayers = Integer.parseInt(value);
+                case "maxplayers" -> config.maxPlayers = Integer.parseInt(value);
+                
+                // UI Mode
+                case "uimode" -> config.uiMode = be.dualsfwshield.deathswap.UIMode.valueOf(value.toUpperCase());
+                
+                // Timers
+                case "loadtime" -> config.loadTime = Integer.parseInt(value);
+                case "swapmode" -> config.swapMode = be.dualsfwshield.deathswap.SwapMode.valueOf(value.toUpperCase());
+                case "swapinterval" -> config.swapInterval = Integer.parseInt(value);
+                case "swapmin" -> config.swapMin = Integer.parseInt(value);
+                case "swapmax" -> config.swapMax = Integer.parseInt(value);
+                case "maxgametime" -> config.maxGameTime = Integer.parseInt(value);
+                case "spawnprotection" -> config.spawnProtection = Integer.parseInt(value);
+                
+                // Round Timers
+                case "roundtimeeasy" -> config.roundTimeEasy = Integer.parseInt(value);
+                case "roundtimemedium" -> config.roundTimeMedium = Integer.parseInt(value);
+                case "roundtimehard" -> config.roundTimeHard = Integer.parseInt(value);
+                
+                // Game Rules
+                case "pvp" -> config.pvpEnabled = Boolean.parseBoolean(value);
+                case "nether" -> config.netherEnabled = Boolean.parseBoolean(value);
+                case "end" -> config.endEnabled = Boolean.parseBoolean(value);
+                
+                // Resilience
                 case "resilience" -> {
                     boolean b = Boolean.parseBoolean(value);
                     config.startIfMinPlayersMet = b;
                     config.preventCancelAfterCountdown = b;
                 }
+                
                 default -> {
                     player.sendMessage(Component.text("Propriété inconnue: " + property, NamedTextColor.RED));
                     return;
@@ -602,18 +648,64 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(Component.text("--- Aide DeathSwap ---", NamedTextColor.GOLD));
-        sender.sendMessage(Component.text("/ds join [arena]", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/ds leave", NamedTextColor.YELLOW));
-        if (sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("/ds start [debug]", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds stop [arena]", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds reload", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds swapnow", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds admin [create|edit|delete|clone|list|save]", NamedTextColor.RED));
-            sender.sendMessage(Component.text("/ds settings", NamedTextColor.RED));
+        sender.sendMessage(Component.text("/ds join [arena]", NamedTextColor.YELLOW)
+            .append(Component.text(" - Rejoindre une partie", NamedTextColor.GRAY)));
+        sender.sendMessage(Component.text("/ds leave", NamedTextColor.YELLOW)
+            .append(Component.text(" - Quitter la partie", NamedTextColor.GRAY)));
+        sender.sendMessage(Component.text("/ds stats [joueur]", NamedTextColor.AQUA)
+            .append(Component.text(" - Voir les stats", NamedTextColor.GRAY)));
+        sender.sendMessage(Component.text("/ds top [stat]", NamedTextColor.AQUA)
+            .append(Component.text(" - Voir le classement", NamedTextColor.GRAY)));
+        if (sender instanceof Player) {
+            sender.sendMessage(Component.text("/ds help gui", NamedTextColor.GREEN)
+                .append(Component.text(" - Ouvrir le menu d'aide interactif", NamedTextColor.GRAY)));
         }
-        sender.sendMessage(Component.text("/ds stats [joueur]", NamedTextColor.AQUA));
-        sender.sendMessage(Component.text("/ds top [kills|wins|time|games]", NamedTextColor.AQUA));
+            
+        if (sender.hasPermission("deathswap.admin")) {
+            sender.sendMessage(Component.empty());
+            sender.sendMessage(Component.text("--- Commandes Admin ---", NamedTextColor.RED));
+            sender.sendMessage(Component.text("Pour voir toutes les commandes admin détaillées:", NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("/ds help commands", NamedTextColor.YELLOW, net.kyori.adventure.text.format.TextDecoration.BOLD)
+                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Cliquez pour voir l'aide admin", NamedTextColor.GREEN)))
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/ds help commands")));
+        }
+    }
+    
+    private void sendAdminHelp(CommandSender sender) {
+        sender.sendMessage(Component.text("--- Aide Admin DeathSwap ---", NamedTextColor.RED));
+        
+        sender.sendMessage(Component.text("/ds admin list", NamedTextColor.YELLOW)
+            .append(Component.text(" - Ouvrir le Dashboard GUI", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin create <nom>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Créer une arène", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin delete <nom>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Supprimer une arène", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin clone <src> <dst>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Cloner une arène", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin set <arena> <prop> <val>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Modifier une propriété", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin gamerule <arena> set <rule> <val>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Modifier une gamerule", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds admin command <arena> <tp|reset> <val>", NamedTextColor.YELLOW)
+            .append(Component.text(" - Modifier commandes avancées", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds start [debug]", NamedTextColor.YELLOW)
+            .append(Component.text(" - Lancer la partie (Debug = bypass min players)", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds stop [arena]", NamedTextColor.YELLOW)
+            .append(Component.text(" - Arrêter la partie", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds swapnow", NamedTextColor.YELLOW)
+            .append(Component.text(" - Forcer un swap immédiat", NamedTextColor.GRAY)));
+            
+        sender.sendMessage(Component.text("/ds reload", NamedTextColor.YELLOW)
+            .append(Component.text(" - Recharger la config", NamedTextColor.GRAY)));
     }
 
     // --- Tab Completion ---
@@ -623,7 +715,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             @NotNull String[] args) {
         if (args.length == 1) {
             List<String> subcommands = new ArrayList<>(Arrays.asList(
-                    "join", "leave", "list", "stats", "top", "vote"));
+                    "join", "leave", "list", "stats", "top", "vote", "help"));
             if (sender.hasPermission("deathswap.admin")) {
                 subcommands.addAll(Arrays.asList("start", "stop", "swapnow", "reload", "settings", "admin"));
             }
@@ -636,8 +728,14 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             if (sub.equals("stats")) {
                 return null; // Player names
             }
+            if (sub.equals("help")) {
+                return filter(Arrays.asList("commands", "gui"), args[1]);
+            }
             if (sub.equals("top")) {
                 return filter(Arrays.asList("wins", "kills", "deaths", "time", "games"), args[1]);
+            }
+            if (sub.equals("start")) {
+                return filter(Collections.singletonList("debug"), args[1]);
             }
             if (sub.equals("admin")) {
                 return filter(Arrays.asList("create", "edit", "delete", "clone", "list", "save", "set", "gamerule",
@@ -651,6 +749,40 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                             || adminSub.equals("set") || adminSub.equals("gamerule") || adminSub.equals("command"))) {
                 return filter(new ArrayList<>(plugin.getArenaManager().getArenaIds()), args[2]);
             }
+        } else if (args.length == 4) {
+             String sub = args[0].toLowerCase();
+             String adminSub = args[1].toLowerCase();
+             if (sub.equals("admin")) {
+                 if (adminSub.equals("set")) {
+                     return filter(Arrays.asList(
+                         "lobby", "game", "gametype", "minplayers", "maxplayers", "uimode",
+                         "loadtime", "swapmode", "swapinterval", "swapmin", "swapmax", 
+                         "maxgametime", "spawnprotection", "roundtimeeasy", "roundtimemedium", 
+                         "roundtimehard", "pvp", "nether", "end", "resilience"
+                     ), args[3]);
+                 }
+                 if (adminSub.equals("gamerule")) {
+                     return filter(Arrays.asList("set", "remove"), args[3]);
+                 }
+                 if (adminSub.equals("command")) {
+                     return filter(Arrays.asList("tp", "reset"), args[3]);
+                 }
+             }
+        } else if (args.length == 5) {
+             String sub = args[0].toLowerCase();
+             String adminSub = args[1].toLowerCase();
+             if (sub.equals("admin")) {
+                 if (adminSub.equals("set")) {
+                     String prop = args[3].toLowerCase();
+                     if (prop.equals("gametype")) return filter(Arrays.stream(be.dualsfwshield.deathswap.GameType.values()).map(Enum::name).collect(Collectors.toList()), args[4]);
+                     if (prop.equals("uimode")) return filter(Arrays.stream(be.dualsfwshield.deathswap.UIMode.values()).map(Enum::name).collect(Collectors.toList()), args[4]);
+                     if (prop.equals("swapmode")) return filter(Arrays.stream(be.dualsfwshield.deathswap.SwapMode.values()).map(Enum::name).collect(Collectors.toList()), args[4]);
+                     if (Arrays.asList("pvp", "nether", "end", "resilience").contains(prop)) return filter(Arrays.asList("true", "false"), args[4]);
+                 }
+                 if (adminSub.equals("command") && args[3].equalsIgnoreCase("reset")) {
+                     return filter(Arrays.asList("none", "mv", "cwr"), args[4]);
+                 }
+             }
         }
 
         return Collections.emptyList();

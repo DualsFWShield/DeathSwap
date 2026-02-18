@@ -278,7 +278,7 @@ public class ConfigManager {
         clone.pvpEnabled = source.pvpEnabled;
         clone.netherEnabled = source.netherEnabled;
         clone.endEnabled = source.endEnabled;
-        clone.runnerCount = source.runnerCount;
+
         clone.seeds = new ArrayList<>(source.seeds);
         clone.gamerules = new HashMap<>(source.gamerules);
 
@@ -349,11 +349,7 @@ public class ConfigManager {
             ac.endEnabled = game.getBoolean("end-enabled", true);
         }
 
-        // DeathRun config (unused for now, reserved)
-        ConfigurationSection deathrun = section.getConfigurationSection("deathrun");
-        if (deathrun != null) {
-            ac.runnerCount = deathrun.getInt("runner-count", 1);
-        }
+
 
         // Seeds
         ac.seeds = new ArrayList<>();
@@ -492,11 +488,7 @@ public class ConfigManager {
         return prefixes.getOrDefault(type, type.getDefaultPrefix());
     }
 
-    /** @deprecated Use getPrefix(GameType) instead */
-    @Deprecated
-    public String getPrefix() {
-        return getPrefix(GameType.DEATHSWAP);
-    }
+
 
     public ArenaConfig getArenaConfig(String id) {
         return arenaConfigs.get(id);
@@ -597,8 +589,7 @@ public class ConfigManager {
         public boolean netherEnabled = true;
         public boolean endEnabled = true;
 
-        // DeathRun (reserved)
-        public int runnerCount = 1;
+
 
         // Seeds
         public List<SeedEntry> seeds = new ArrayList<>();

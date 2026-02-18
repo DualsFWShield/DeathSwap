@@ -192,7 +192,7 @@ public class SettingsGUI implements Listener {
                     "&Click G pour arrêter !"));
         }
 
-        inv.setItem(53, createItem(Material.ARROW, "&cFermer"));
+        inv.setItem(53, createItem(Material.ARROW, "&eRetour", "&7Vers le menu de l'arène"));
 
         // Fill empty slots with glass panes
         ItemStack filler = createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
@@ -392,7 +392,13 @@ public class SettingsGUI implements Listener {
                     open(player, arenaId);
                 }
             }
-            case 53 -> player.closeInventory();
+            case 53 -> {
+                 if (plugin.getArenaDetailsGUI() != null) {
+                     plugin.getArenaDetailsGUI().open(player, arenaId);
+                 } else {
+                     player.closeInventory();
+                 }
+            }
         }
     }
 

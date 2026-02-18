@@ -194,8 +194,12 @@ public class ArenaListGUI implements Listener {
                 return;
 
             if (event.getClick() == ClickType.LEFT) {
-                // Edit → open SettingsGUI
-                plugin.getSettingsGUI().open(player, arenaId);
+                // Edit → open ArenaDetailsGUI
+                if (plugin.getArenaDetailsGUI() != null) {
+                    plugin.getArenaDetailsGUI().open(player, arenaId);
+                } else {
+                    player.sendMessage(Component.text("Menu détails indisponible.", NamedTextColor.RED));
+                }
             } else if (event.getClick() == ClickType.SHIFT_LEFT) {
                 // TP Lobby
                 GameInstance game = plugin.getArenaManager().getArena(arenaId);

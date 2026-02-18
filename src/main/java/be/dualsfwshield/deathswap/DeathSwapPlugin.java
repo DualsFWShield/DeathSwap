@@ -33,6 +33,7 @@ public class DeathSwapPlugin extends JavaPlugin {
     private be.dualsfwshield.deathswap.gui.PlayerActionGUI playerActionGUI;
     private be.dualsfwshield.deathswap.gui.ConfirmationGUI confirmationGUI;
     private be.dualsfwshield.deathswap.gui.ArenaListGUI arenaListGUI;
+    private be.dualsfwshield.deathswap.gui.HelpGUI helpGUI;
     private be.dualsfwshield.deathswap.listeners.ChatInputListener chatInputListener;
 
     @Override
@@ -78,7 +79,10 @@ public class DeathSwapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(playerActionGUI, this);
         getServer().getPluginManager().registerEvents(playerActionGUI, this);
         getServer().getPluginManager().registerEvents(confirmationGUI, this);
+        getServer().getPluginManager().registerEvents(confirmationGUI, this);
         getServer().getPluginManager().registerEvents(arenaListGUI, this);
+        this.helpGUI = new be.dualsfwshield.deathswap.gui.HelpGUI(this);
+        getServer().getPluginManager().registerEvents(helpGUI, this);
 
         // Chat Input Listener
         this.chatInputListener = new be.dualsfwshield.deathswap.listeners.ChatInputListener(this);
@@ -178,6 +182,10 @@ public class DeathSwapPlugin extends JavaPlugin {
 
     public be.dualsfwshield.deathswap.gui.ArenaListGUI getArenaListGUI() {
         return arenaListGUI;
+    }
+
+    public be.dualsfwshield.deathswap.gui.HelpGUI getHelpGUI() {
+        return helpGUI;
     }
 
     public be.dualsfwshield.deathswap.listeners.ChatInputListener getChatInputListener() {
