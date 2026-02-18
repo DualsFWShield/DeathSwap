@@ -13,7 +13,7 @@ softdepend:
 commands:
   ds:
     description: DeathSwap main command
-    usage: /ds <join|leave|start|stop|swapnow|stats|top|vote|list|tp>
+    usage: /ds <join|leave|start|stop|swapnow|stats|top|vote|list|tp|help|reload|admin>
     aliases: [deathswap]
 
 permissions:

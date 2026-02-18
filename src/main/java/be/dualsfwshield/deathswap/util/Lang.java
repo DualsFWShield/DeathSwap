@@ -2,7 +2,7 @@ package be.dualsfwshield.deathswap.util;
 
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -47,11 +47,12 @@ public class Lang {
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        
+
         // Load defaults from internal resource to fallback
         InputStream defStream = plugin.getResource(fileName);
         if (defStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8));
+            YamlConfiguration defConfig = YamlConfiguration
+                    .loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8));
             config.setDefaults(defConfig);
         }
 
@@ -60,12 +61,13 @@ public class Lang {
                 messages.put(key, config.getString(key));
             }
         }
-        
+
         plugin.getLogger().info("Loaded " + messages.size() + " messages for language: " + languageCode);
     }
 
     public static String get(String key) {
-        if (instance == null) return key;
+        if (instance == null)
+            return key;
         String msg = instance.messages.get(key);
         if (msg == null) {
             // Try fallback to default config or return key
@@ -74,14 +76,33 @@ public class Lang {
         return msg;
     }
 
-    public static Component getComponent(String key) {
-        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(get(key));
+    public static String get(String key, String... placeholders) {
+        String msg = get(key);
+        for (int i = 0; i < placeholders.length; i += 2) {
+            if (i + 1 < placeholders.length) {
+                msg = msg.replace(placeholders[i], placeholders[i + 1]);
+            }
+        }
+        return msg;
     }
-    
+
+    public static Component getComponent(String key) {
+        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand()
+                .deserialize(get(key));
+    }
+
+    public static Component getComponent(String key, String... placeholders) {
+        return colorize(get(key, placeholders));
+    }
+
+    public static Component colorize(String text) {
+        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+    }
+
     public static void send(CommandSender sender, String key) {
         sender.sendMessage(getComponent(key));
     }
-    
+
     public static void send(CommandSender sender, String key, String... placeholders) {
         String msg = get(key);
         for (int i = 0; i < placeholders.length; i += 2) {
@@ -89,6 +110,7 @@ public class Lang {
                 msg = msg.replace(placeholders[i], placeholders[i + 1]);
             }
         }
-        sender.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(msg));
+        sender.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand()
+                .deserialize(msg));
     }
 }

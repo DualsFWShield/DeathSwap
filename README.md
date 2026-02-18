@@ -224,15 +224,15 @@ arenas:
 
     # --- Gamerules Minecraft ---
     gamerules:
-      keepInventory: "false"
-      immediateRespawn: "true"
-      doDaylightCycle: "true"
-      doWeatherCycle: "true"
-      mobGriefing: "true"
-      naturalRegeneration: "true"
-      doMobSpawning: "true"
+      keep_inventory: "false"
+      immediate_respawn: "true"
+      do_daylight_cycle: "true"
+      do_weather_cycle: "true"
+      mob_griefing: "true"
+      natural_regeneration: "true"
+      do_mob_spawning: "true"
       random_tick_speed: "3"
-      show_advancement_messages: "true"
+      announce_advancements: "true"
 
     # --- Seeds prédéfinies ---
     seeds:
@@ -410,24 +410,34 @@ src/main/java/be/dualsfwshield/deathswap/
 ├── DeathSwapPlugin.java      # Classe principale
 ├── GameInstance.java          # Logique de jeu (base)
 ├── GameState.java             # États (WAITING/STARTING/RUNNING/ENDED/DISABLED)
+├── GameType.java              # Enum modes de jeu
+├── SwapMode.java              # Enum FIXED/RANDOM
+├── UIMode.java                # Enum RICH/CLEAN
+├── SeedEntry.java             # Record seed prédéfini
 ├── ArenaManager.java          # Gestion multi-arènes
 ├── ConfigManager.java         # Configuration YAML
 ├── commands/
 │   └── DeathSwapCommand.java  # Toutes les commandes /ds
 ├── gui/
+│   ├── AdminGUI.java          # Dashboard admin
+│   ├── ArenaListGUI.java      # Liste des arènes
+│   ├── ArenaDetailsGUI.java   # Détails arène
 │   ├── SettingsGUI.java       # Settings par arène
 │   ├── GamerulesGUI.java      # Gamerules en jeu
 │   ├── SwapTimerGUI.java      # Timer de swap
-│   ├── AdminGUI.java          # Dashboard admin
-│   ├── ArenaDetailsGUI.java   # Détails arène
 │   ├── PlayerListGUI.java     # Liste joueurs
 │   ├── PlayerActionGUI.java   # Actions joueur
-│   └── ConfirmationGUI.java   # Confirmation actions destructives
+│   ├── ConfirmationGUI.java   # Confirmation actions destructives
+│   └── HelpGUI.java           # Menu d'aide visuel
 ├── listeners/
-│   └── GameListener.java      # Events Bukkit
+│   ├── GameListener.java      # Events Bukkit (mort, dégâts, etc.)
+│   ├── ReadyListener.java     # Toggle prêt dans le lobby
+│   ├── ChatInputListener.java # Saisie texte via chat
+│   └── SpectatorListener.java # Events spectateurs
 ├── modes/
 │   ├── DeathShuffleInstance.java
 │   ├── DeathShuffleListener.java
+│   ├── DeathCause.java        # Enum causes de mort
 │   ├── BlockShuffleInstance.java
 │   └── BlockShuffleListener.java
 ├── stats/
@@ -440,8 +450,10 @@ src/main/java/be/dualsfwshield/deathswap/
 │   └── ChallengeListener.java
 ├── vote/
 │   └── VoteManager.java
-└── sounds/
-    └── SoundManager.java
+├── sounds/
+│   └── SoundManager.java
+└── util/
+    └── Lang.java              # Gestion i18n (FR/EN)
 ```
 
 ---

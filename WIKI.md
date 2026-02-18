@@ -424,9 +424,9 @@ gamerules:
   do_mob_spawning: "true"
   send_command_feedback: "false"
   log_admin_commands: "false"
-  respawn_radius: "0"
+  spawn_radius: "0"
   random_tick_speed: "3"        # Vitesse de pousse des plantes (3 = défaut)
-  show_advancement_messages: "true" # Afficher les succès dans le chat
+  announce_advancements: "true" # Afficher les succès dans le chat
 
 seeds: []
 ```

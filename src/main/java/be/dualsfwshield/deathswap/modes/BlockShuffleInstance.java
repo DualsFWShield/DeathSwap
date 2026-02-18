@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -123,7 +124,7 @@ public class BlockShuffleInstance extends GameInstance {
                 }
             }
         }
-        
+
         // Fallback if config empty
         if (targets.isEmpty()) {
             targets.addAll(TARGETS);
@@ -164,7 +165,7 @@ public class BlockShuffleInstance extends GameInstance {
         // Pick random target from difficulty tier
         // Pick random target from difficulty tier
         // If we loaded from config (simple list), everything is difficulty 1.
-        // So validation: check if we have targets for this difficulty. 
+        // So validation: check if we have targets for this difficulty.
         // If not, use all available targets.
         List<ShuffleTarget> pool = targets.stream()
                 .filter(t -> t.difficulty() == difficulty)
@@ -176,8 +177,9 @@ public class BlockShuffleInstance extends GameInstance {
 
         if (pool.isEmpty()) {
             // Should not happen if fallback used, unless targets is empty
-            if (targets.isEmpty()) targets.addAll(TARGETS);
-            pool = targets; 
+            if (targets.isEmpty())
+                targets.addAll(TARGETS);
+            pool = targets;
         }
         currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
 

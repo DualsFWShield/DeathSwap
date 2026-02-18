@@ -67,11 +67,16 @@ public class SwapTimerGUI implements Listener {
 
             ItemStack item = new ItemStack(clockMaterials[i], Math.min(minutes, 64));
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(colorize(isSelected ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-selected", "%minutes%", String.valueOf(minutes)) : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-unselected", "%minutes%", String.valueOf(minutes)))
+            meta.displayName(colorize(isSelected
+                    ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-selected", "%minutes%",
+                            String.valueOf(minutes))
+                    : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-unselected", "%minutes%",
+                            String.valueOf(minutes)))
                     .decoration(TextDecoration.ITALIC, false));
 
             List<Component> lore = new ArrayList<>();
-            lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-seconds", "%seconds%", String.valueOf(seconds))));
+            lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-seconds", "%seconds%",
+                    String.valueOf(seconds))));
             if (isSelected) {
                 lore.add(Component.empty());
                 lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-selected")));
@@ -90,11 +95,13 @@ public class SwapTimerGUI implements Listener {
         // Slot 12: Fixed mode
         boolean isFixed = config.swapMode == SwapMode.FIXED;
         ItemStack fixedItem = createItem(Material.IRON_BLOCK,
-                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-inactive"),
+                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-active")
+                        : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-inactive"),
                 be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-lore-1"),
                 be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-lore-2"),
                 "",
-                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
+                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active")
+                        : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
         if (isFixed) {
             ItemMeta fixedMeta = fixedItem.getItemMeta();
             fixedMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
@@ -106,11 +113,13 @@ public class SwapTimerGUI implements Listener {
         // Slot 14: Random mode
         boolean isRandom = config.swapMode == SwapMode.RANDOM;
         ItemStack randomItem = createItem(Material.GOLD_BLOCK,
-                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-inactive"),
+                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-active")
+                        : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-inactive"),
                 be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-lore-1"),
                 be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-lore-2"),
                 "",
-                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
+                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active")
+                        : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
         if (isRandom) {
             ItemMeta randomMeta = randomItem.getItemMeta();
             randomMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
@@ -121,21 +130,26 @@ public class SwapTimerGUI implements Listener {
 
         // Row 3: Random min/max controls (only visible/active if RANDOM mode)
         if (isRandom) {
-            inv.setItem(21, createItem(Material.RED_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-min-name"),
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%", formatTime(config.swapMin)),
-                    "",
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
+            inv.setItem(21,
+                    createItem(Material.RED_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-min-name"),
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%",
+                                    formatTime(config.swapMin)),
+                            "",
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
 
-            inv.setItem(23, createItem(Material.GREEN_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-max-name"),
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%", formatTime(config.swapMax)),
-                    "",
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
-                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
+            inv.setItem(23,
+                    createItem(Material.GREEN_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-max-name"),
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%",
+                                    formatTime(config.swapMax)),
+                            "",
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
         }
 
         // Slot 18: Arena ID tag (hidden data)
-        inv.setItem(18, createItem(Material.NAME_TAG, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-arena", "%arena%", arenaId)));
+        inv.setItem(18, createItem(Material.NAME_TAG,
+                be.dualsfwshield.deathswap.util.Lang.get("gui-timer-arena", "%arena%", arenaId)));
 
         // Slot 26: Back to main settings
         inv.setItem(26, createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-back")));
@@ -227,18 +241,18 @@ public class SwapTimerGUI implements Listener {
         if (nameTag == null || !nameTag.hasItemMeta())
             return "default";
 
-            return "default";
-
         Component display = nameTag.getItemMeta().displayName();
         if (display == null)
             return "default";
-        
+
         // Use parsing of key if possible, but regex based extraction on "Arena: <id>"
         // Since we use keys, regex might be tricky if key format changes.
-        // Best practice: Store ID in persistent data container (PDC), but we want to avoid complex changes?
-        // Let's stick to parsing the localized string if it maintains structure "Arena: ID"
+        // Best practice: Store ID in persistent data container (PDC), but we want to
+        // avoid complex changes?
+        // Let's stick to parsing the localized string if it maintains structure "Arena:
+        // ID"
         // Or better: Use regex that looks for ": "
-        
+
         String plain = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
                 .plainText().serialize(display);
         if (plain.contains(": ")) {

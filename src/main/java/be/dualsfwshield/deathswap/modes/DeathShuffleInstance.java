@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.List;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +44,7 @@ public class DeathShuffleInstance extends GameInstance {
     private final Set<UUID> completedRound = new HashSet<>();
     // Track players pending respawn (died the right way)
     private final Map<UUID, Boolean> pendingRespawn = new HashMap<>();
-    
+
     // Allowed causes from config
     private final Set<DeathCause> allowedCauses = new HashSet<>();
 
@@ -68,7 +69,7 @@ public class DeathShuffleInstance extends GameInstance {
                 }
             }
         }
-        
+
         // Fallback
         if (allowedCauses.isEmpty()) {
             for (DeathCause dc : DeathCause.values()) {
@@ -117,7 +118,7 @@ public class DeathShuffleInstance extends GameInstance {
         DeathCause[] causes = java.util.Arrays.stream(DeathCause.getByDifficulty(difficulty))
                 .filter(allowedCauses::contains)
                 .toArray(DeathCause[]::new);
-                
+
         if (causes.length == 0) {
             // Fallback to all allowed causes
             causes = allowedCauses.toArray(new DeathCause[0]);

@@ -229,20 +229,9 @@ public class ConfigManager {
             plugin.saveResource("modes/blockshuffle.yml", false);
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        
-        List<BlockShuffleTarget> targets = new ArrayList<>();
-        List<String> blockList = config.getStringList("blocks");
-        if (blockList != null) {
-            for (String matName : blockList) {
-                // For simplicity, we assume basic STAND items for now or infer logic?
-                // The current implementation has difficulty and type (STAND/CRAFT).
-                // To support full config, we might need a more complex YAML structure.
-                // For now, let's keep the hardcoded list as FALLBACK or default, 
-                // and if config has simple list, try to map it.
-                // Actually, let's just make the Config object available and let the Instance handle parsing/defaults.
-            }
-        }
-        
+
+        // Config reading logic moved to BlockShuffleInstance or kept minimal here
+
         this.blockShuffleConfig = new BlockShuffleConfig(config);
     }
 
@@ -389,8 +378,6 @@ public class ConfigManager {
             ac.endEnabled = game.getBoolean("end-enabled", true);
         }
 
-
-
         // Seeds
         ac.seeds = new ArrayList<>();
         List<?> seedList = section.getList("seeds");
@@ -528,8 +515,6 @@ public class ConfigManager {
         return prefixes.getOrDefault(type, type.getDefaultPrefix());
     }
 
-
-
     public ArenaConfig getArenaConfig(String id) {
         return arenaConfigs.get(id);
     }
@@ -629,8 +614,6 @@ public class ConfigManager {
         public boolean netherEnabled = true;
         public boolean endEnabled = true;
 
-
-
         // Seeds
         public List<SeedEntry> seeds = new ArrayList<>();
 
@@ -646,19 +629,19 @@ public class ConfigManager {
         public List<String> worldResetCommands = null;
 
         public ArenaConfig() {
-            // Default gamerules (JE 1.21.5+ snake_case names)
+            // Default gamerules (1.21.1 snake_case names)
             gamerules.put("keep_inventory", "false");
             gamerules.put("immediate_respawn", "true");
-            gamerules.put("respawn_radius", "0");
+            gamerules.put("spawn_radius", "0");
             gamerules.put("send_command_feedback", "false");
             gamerules.put("log_admin_commands", "false");
             gamerules.put("random_tick_speed", "3");
-            gamerules.put("show_advancement_messages", "true");
-            gamerules.put("advance_time", "true");
-            gamerules.put("advance_weather", "true");
+            gamerules.put("announce_advancements", "true");
+            gamerules.put("do_daylight_cycle", "true");
+            gamerules.put("do_weather_cycle", "true");
             gamerules.put("mob_griefing", "true");
-            gamerules.put("natural_health_regeneration", "true");
-            gamerules.put("spawn_mobs", "true");
+            gamerules.put("natural_regeneration", "true");
+            gamerules.put("do_mob_spawning", "true");
         }
 
         /**
@@ -708,22 +691,26 @@ public class ConfigManager {
 
     public static class BlockShuffleConfig {
         private final FileConfiguration config;
-        
+
         public BlockShuffleConfig(FileConfiguration config) {
             this.config = config;
         }
-        
-        public FileConfiguration getConfig() { return config; }
+
+        public FileConfiguration getConfig() {
+            return config;
+        }
     }
 
     public static class DeathShuffleConfig {
         private final FileConfiguration config;
-        
+
         public DeathShuffleConfig(FileConfiguration config) {
             this.config = config;
         }
-        
-        public FileConfiguration getConfig() { return config; }
+
+        public FileConfiguration getConfig() {
+            return config;
+        }
     }
 
 }

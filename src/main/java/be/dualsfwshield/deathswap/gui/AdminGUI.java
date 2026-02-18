@@ -26,7 +26,6 @@ import java.util.Arrays;
 public class AdminGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private final DeathSwapPlugin plugin;
     // Removed static TITLE, using key instead
 
     public AdminGUI(DeathSwapPlugin plugin) {
@@ -59,11 +58,17 @@ public class AdminGUI implements Listener {
             meta.displayName(Component.text(id, NamedTextColor.GOLD, TextDecoration.BOLD));
 
             List<Component> lore = new ArrayList<>();
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-status", "%status%", "").append(Component.text(state.name(), getColorForState(state))));
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-players", "%current%", String.valueOf(connected), "%max%", String.valueOf(max)));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-status", "%status%", "")
+                    .append(Component.text(state.name(), getColorForState(state))));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-players", "%current%",
+                    String.valueOf(connected), "%max%", String.valueOf(max)));
             lore.add(Component.empty());
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-lobby", "%world%", arena.getConfig().lobbyWorld).color(NamedTextColor.DARK_GRAY));
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-game", "%world%", arena.getConfig().gameWorld).color(NamedTextColor.DARK_GRAY));
+            lore.add(be.dualsfwshield.deathswap.util.Lang
+                    .getComponent("gui-admin-lobby", "%world%", arena.getConfig().lobbyWorld)
+                    .color(NamedTextColor.DARK_GRAY));
+            lore.add(be.dualsfwshield.deathswap.util.Lang
+                    .getComponent("gui-admin-game", "%world%", arena.getConfig().gameWorld)
+                    .color(NamedTextColor.DARK_GRAY));
             lore.add(Component.empty());
             lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-click-details"));
             lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-click-tp"));
@@ -79,14 +84,16 @@ public class AdminGUI implements Listener {
         // Slot 49: Reload
         ItemStack reload = new ItemStack(Material.NETHER_STAR);
         ItemMeta reloadMeta = reload.getItemMeta();
-        reloadMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-reload-name").decoration(TextDecoration.ITALIC, false));
+        reloadMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-reload-name")
+                .decoration(TextDecoration.ITALIC, false));
         reload.setItemMeta(reloadMeta);
         inv.setItem(49, reload);
 
         // Slot 53: Close
         ItemStack close = new ItemStack(Material.BARRIER);
         ItemMeta closeMeta = close.getItemMeta();
-        closeMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-close-name").decoration(TextDecoration.ITALIC, false));
+        closeMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-close-name")
+                .decoration(TextDecoration.ITALIC, false));
         close.setItemMeta(closeMeta);
         inv.setItem(53, close);
 
@@ -120,8 +127,6 @@ public class AdminGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player))
-            return;
         if (!(event.getWhoClicked() instanceof Player player))
             return;
         Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-admin-title");
@@ -182,7 +187,8 @@ public class AdminGUI implements Listener {
                 } else if (event.getClick() == ClickType.RIGHT) {
                     // TP to lobby
                     player.teleport(arena.getLobbyLocation());
-                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-admin-tp-success", "%arena%", arena.getArenaId());
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-admin-tp-success", "%arena%",
+                            arena.getArenaId());
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     // Config
                     plugin.getSettingsGUI().open(player, arena.getArenaId());
