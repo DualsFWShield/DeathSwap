@@ -103,7 +103,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleJoin(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Seul un joueur peut rejoindre.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
@@ -114,7 +114,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         GameInstance game = plugin.getArenaManager().getArena(arenaId);
         if (game == null) {
-            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", arenaId);
             return true;
         }
 
@@ -124,35 +124,35 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleLeave(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Seul un joueur peut quitter.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
         if (game == null) {
-            player.sendMessage(Component.text("Tu n'es dans aucune partie.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-leave-not-in-game");
             return true;
         }
 
         game.sendToHub(player);
-        player.sendMessage(Component.text("Tu as quitté la partie.", NamedTextColor.YELLOW));
+        be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-leave-success");
         return true;
     }
 
     private boolean handleStart(CommandSender sender, String[] args) {
         if (!sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("Tu n'as pas la permission.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "no-permission");
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Commande joueur uniquement.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
         if (game == null) {
-            sender.sendMessage(Component.text("Tu dois être dans une arène pour la démarrer.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-start-not-in-game");
             return true;
         }
 
@@ -163,7 +163,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleStop(CommandSender sender, String[] args) {
         if (!sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("Permission refusée.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "no-permission");
             return true;
         }
 
@@ -174,29 +174,29 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         GameInstance game = plugin.getArenaManager().getArena(arenaId);
         if (game == null) {
-            sender.sendMessage(Component.text("Arène introuvable.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-stop-not-found");
             return true;
         }
 
         game.stopGame();
-        sender.sendMessage(Component.text("Arène " + arenaId + " arrêtée.", NamedTextColor.GREEN));
+        be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-stop-success", "%arena%", arenaId);
         return true;
     }
 
     private boolean handleSwapNow(CommandSender sender) {
         if (!sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("Permission refusée.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "no-permission");
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Commande joueur uniquement.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
         if (game == null) {
-            sender.sendMessage(Component.text("Tu n'es pas dans une partie.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-swap-not-in-game");
             return true;
         }
 
@@ -205,11 +205,12 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleList(CommandSender sender) {
-        sender.sendMessage(Component.text("--- Arènes ---", NamedTextColor.GOLD));
+        be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-list-header");
         for (GameInstance game : plugin.getArenaManager().getAllArenas()) {
-            sender.sendMessage(Component.text(
-                    "- " + game.getArenaId() + " [" + game.getState().name() + "] "
-                            + game.getAlivePlayers().size() + " joueurs"));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-list-format", 
+                "%arena%", game.getArenaId(), 
+                "%state%", game.getState().name(), 
+                "%count%", String.valueOf(game.getAlivePlayers().size()));
         }
         return true;
     }
@@ -220,33 +221,33 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
         if (game == null || !game.getSpectators().contains(player)) {
-            player.sendMessage(Component.text("Tu dois être spectateur.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-tp-spectator-only");
             return true;
         }
 
         if (args.length < 2) {
-            player.sendMessage(Component.text("Usage: /ds tp <joueur>", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "command-usage", "%usage%", "/ds tp <joueur>");
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[1]);
         if (target == null || !game.getAlivePlayers().contains(target)) {
-            player.sendMessage(Component.text("Joueur introuvable ou mort.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-tp-player-not-found");
             return true;
         }
 
         player.teleport(target);
-        player.sendMessage(Component.text("Téléportation vers " + target.getName(), NamedTextColor.GREEN));
+        be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-tp-success", "%player%", target.getName());
         return true;
     }
 
     private boolean handleSettings(CommandSender sender) {
         if (!sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("Permission refusée.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "no-permission");
             return true;
         }
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Commande joueur uniquement.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
@@ -254,8 +255,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         GameInstance game = plugin.getArenaManager().getPlayerArena(player);
         if (game != null && (game.getState() == be.dualsfwshield.deathswap.GameState.RUNNING
                 || game.getState() == be.dualsfwshield.deathswap.GameState.STARTING)) {
-            player.sendMessage(
-                    Component.text("Impossible de modifier les paramètres pendant une partie.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-settings-in-game");
             return true;
         }
         String arenaId = (game != null) ? game.getArenaId() : "default";
@@ -265,7 +265,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleReload(CommandSender sender) {
         if (!sender.hasPermission("deathswap.admin")) {
-            sender.sendMessage(Component.text("Permission refusée.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "no-permission");
             return true;
         }
 
@@ -276,13 +276,13 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         if (plugin.getChallengeManager() != null)
             plugin.getChallengeManager().loadChallenges();
 
-        sender.sendMessage(Component.text("Configuration rechargée.", NamedTextColor.GREEN));
+        be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-admin-reload");
         return true;
     }
 
     private boolean handleStats(CommandSender sender, String[] args) {
         if (plugin.getStatsManager() == null) {
-            sender.sendMessage(Component.text("Les stats sont désactivées.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-stats-disabled");
             return true;
         }
 
@@ -297,7 +297,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             targetUuid = p.getUniqueId();
             targetName = p.getName();
         } else {
-            sender.sendMessage(Component.text("Usage console: /ds stats <joueur>", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-stats-console-usage");
             return true;
         }
 
@@ -310,7 +310,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleTop(CommandSender sender, String[] args) {
         if (plugin.getStatsManager() == null) {
-            sender.sendMessage(Component.text("Les stats sont désactivées.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "cmd-stats-disabled");
             return true;
         }
 
@@ -326,18 +326,18 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleVote(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Commande joueur.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
         if (plugin.getVoteManager() == null || !plugin.getConfigManager().isVotingEnabled()) {
-            player.sendMessage(Component.text("Le vote est désactivé.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-vote-disabled");
             return true;
         }
 
         if (args.length < 3) {
             // Usually triggered by click, so manual usage is rare
-            player.sendMessage(Component.text("Usage: /ds vote <arena> <choix>", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-vote-usage");
             return true;
         }
 
@@ -350,18 +350,18 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!plugin.getVoteManager().isVoteActive(arenaId)) {
-            player.sendMessage(Component.text("Aucun vote en cours.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-vote-no-vote");
             return true;
         }
 
         boolean success = plugin.getVoteManager().castVote(arenaId, player.getUniqueId(), choice);
         if (success) {
-            player.sendMessage(Component.text("✔ Vote enregistré !", NamedTextColor.GREEN));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-vote-success");
             if (plugin.getSoundManager() != null) {
                 plugin.getSoundManager().playSound("vote-cast", player);
             }
         } else {
-            player.sendMessage(Component.text("Vote invalide.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-vote-invalid");
         }
 
         return true;
@@ -369,12 +369,12 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleAdmin(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Cette commande est réservée aux joueurs.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "command-player-only");
             return true;
         }
 
         if (!player.hasPermission("deathswap.admin")) {
-            player.sendMessage(Component.text("Vous n'avez pas la permission.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "no-permission");
             return true;
         }
 
@@ -389,83 +389,78 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         switch (adminSub) {
             case "create" -> {
                 if (args.length < 3) {
-                    player.sendMessage(Component.text("Usage: /ds admin create <nom>", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-create");
                     return true;
                 }
                 String name = args[2].toLowerCase();
                 if (plugin.getConfigManager().getArenaConfig(name) != null) {
-                    player.sendMessage(Component.text("L'arène '" + name + "' existe déjà !", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-arena-exists", "%arena%", name);
                     return true;
                 }
                 plugin.getConfigManager().createArena(name);
                 plugin.getArenaManager().reload();
-                player.sendMessage(Component.text("✔ Arène '" + name + "' créée ! Ouverture des settings...",
-                        NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-create-success", "%arena%", name);
                 plugin.getSettingsGUI().open(player, name);
             }
             case "edit" -> {
                 if (args.length < 3) {
-                    player.sendMessage(Component.text("Usage: /ds admin edit <nom>", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-edit");
                     return true;
                 }
                 String editName = args[2].toLowerCase();
                 if (plugin.getConfigManager().getArenaConfig(editName) == null) {
-                    player.sendMessage(
-                            Component.text("Arène introuvable : " + editName, NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", editName);
                     return true;
                 }
                 plugin.getSettingsGUI().open(player, editName);
             }
             case "save" -> {
                 plugin.getConfigManager().save();
-                player.sendMessage(Component.text("✔ Toutes les configurations sauvegardées.", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-save-success");
             }
             case "delete" -> {
                 if (args.length < 3) {
-                    player.sendMessage(Component.text("Usage: /ds admin delete <nom>", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-delete");
                     return true;
                 }
                 String delName = args[2].toLowerCase();
                 if (plugin.getConfigManager().getArenaConfig(delName) == null) {
-                    player.sendMessage(Component.text("Arène introuvable : " + delName, NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", delName);
                     return true;
                 }
                 // Open confirmation GUI
                 plugin.getConfirmationGUI().open(player,
-                        "Supprimer: " + delName,
-                        "L'arène et son fichier seront supprimés.",
+                        be.dualsfwshield.deathswap.util.Lang.get("cmd-admin-delete-confirm-title", "%arena%", delName),
+                        be.dualsfwshield.deathswap.util.Lang.get("cmd-admin-delete-confirm-subtitle"),
                         NamedTextColor.RED,
                         () -> {
                             plugin.getConfigManager().deleteArena(delName);
                             plugin.getArenaManager().reload();
-                            player.sendMessage(Component.text("✔ Arène '" + delName + "' supprimée.",
-                                    NamedTextColor.GREEN));
+                            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-delete-success", "%arena%", delName);
                         },
-                        () -> player.sendMessage(Component.text("Suppression annulée.", NamedTextColor.YELLOW)));
+                        () -> be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-delete-cancel"));
             }
             case "clone" -> {
                 if (args.length < 4) {
-                    player.sendMessage(Component.text("Usage: /ds admin clone <source> <destination>",
-                            NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-clone");
                     return true;
                 }
                 String srcName = args[2].toLowerCase();
                 String dstName = args[3].toLowerCase();
                 if (plugin.getConfigManager().getArenaConfig(srcName) == null) {
-                    player.sendMessage(Component.text("Arène source introuvable : " + srcName, NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-clone-src-not-found", "%arena%", srcName);
                     return true;
                 }
                 if (plugin.getConfigManager().getArenaConfig(dstName) != null) {
-                    player.sendMessage(Component.text("L'arène '" + dstName + "' existe déjà !", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-arena-exists", "%arena%", dstName);
                     return true;
                 }
                 boolean success = plugin.getConfigManager().cloneArena(srcName, dstName);
                 if (success) {
                     plugin.getArenaManager().reload();
-                    player.sendMessage(Component.text("✔ Arène '" + srcName + "' clonée vers '" + dstName + "' !",
-                            NamedTextColor.GREEN));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-clone-success", "%src%", srcName, "%dst%", dstName);
                 } else {
-                    player.sendMessage(Component.text("Erreur lors du clonage.", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-clone-error");
                 }
             }
             case "list" -> {
@@ -490,7 +485,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
     private void handleAdminSet(Player player, String[] args) {
         if (args.length < 5) {
-            player.sendMessage(Component.text("Usage: /ds admin set <arena> <property> <value>", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-set");
             return;
         }
         String arenaId = args[2].toLowerCase();
@@ -499,7 +494,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
         if (config == null) {
-            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", arenaId);
             return;
         }
 
@@ -546,21 +541,20 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 }
                 
                 default -> {
-                    player.sendMessage(Component.text("Propriété inconnue: " + property, NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-set-unknown", "%prop%", property);
                     return;
                 }
             }
             plugin.getConfigManager().saveArena(config);
-            player.sendMessage(Component.text("Propriété '" + property + "' mise à jour.", NamedTextColor.GREEN));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-set-success", "%prop%", property);
         } catch (IllegalArgumentException e) {
-            player.sendMessage(Component.text("Valeur invalide.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-set-invalid");
         }
     }
 
     private void handleAdminGamerule(Player player, String[] args) {
         if (args.length < 5) {
-            player.sendMessage(Component.text("Usage: /ds admin gamerule <arena> <set|remove> <rule> [value]",
-                    NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-gamerule");
             return;
         }
         String arenaId = args[2].toLowerCase();
@@ -569,30 +563,28 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
         if (config == null) {
-            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", arenaId);
             return;
         }
 
         if (action.equals("remove")) {
             config.gamerules.remove(rule);
-            player.sendMessage(Component.text("Gamerule '" + rule + "' supprimée.", NamedTextColor.GREEN));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-gamerule-removed", "%rule%", rule);
         } else if (action.equals("set")) {
             if (args.length < 6) {
-                player.sendMessage(
-                        Component.text("Usage: /ds admin gamerule <arena> set <rule> <value>", NamedTextColor.RED));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-usage-gamerule");
                 return;
             }
             String val = args[5];
             config.gamerules.put(rule, val);
-            player.sendMessage(Component.text("Gamerule '" + rule + "' définie à " + val, NamedTextColor.GREEN));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-gamerule-set-success", "%rule%", rule, "%value%", val);
         }
         plugin.getConfigManager().saveArena(config);
     }
 
     private void handleAdminCommand(Player player, String[] args) {
         if (args.length < 5) {
-            player.sendMessage(
-                    Component.text("Usage: /ds admin command <arena> <tp|reset> <value...>", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-usage");
             return;
         }
         String arenaId = args[2].toLowerCase();
@@ -607,105 +599,104 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
         if (config == null) {
-            player.sendMessage(Component.text("Arène introuvable : " + arenaId, NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-join-not-found", "%arena%", arenaId);
             return;
         }
 
         if (type.equals("tp")) {
             if (value.equalsIgnoreCase("none") || value.equalsIgnoreCase("default")) {
                 config.teleportCommand = null;
-                player.sendMessage(Component.text("Commande TP réinitialisée (Défaut).", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-tp-reset");
             } else {
                 config.teleportCommand = value;
-                player.sendMessage(Component.text("Commande TP définie.", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-tp-set");
             }
         } else if (type.equals("reset")) {
             if (value.equalsIgnoreCase("none")) {
                 config.worldResetCommands = new ArrayList<>();
-                player.sendMessage(Component.text("Reset désactivé.", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-reset-disabled");
             } else if (value.toLowerCase().startsWith("mv")) {
                 config.worldResetCommands = new ArrayList<>();
                 config.worldResetCommands.add("mv regen %world% -s %seed%");
                 config.worldResetCommands.add("mv confirm");
-                player.sendMessage(Component.text("Reset défini sur Multiverse.", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-reset-mv");
             } else if (value.toLowerCase().startsWith("cwr")) {
                 config.worldResetCommands = new ArrayList<>();
                 config.worldResetCommands.add("cwr edit %world% setSeed %seed%");
                 config.worldResetCommands.add("cwr reset %world%");
-                player.sendMessage(Component.text("Reset défini sur Custom CWR.", NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-reset-cwr");
             } else {
                 // Custom splitted by ';'
                 config.worldResetCommands = new ArrayList<>();
                 for (String cmd : value.split(";")) {
                     config.worldResetCommands.add(cmd.trim());
                 }
-                player.sendMessage(Component.text("Reset défini (" + config.worldResetCommands.size() + " cmds).",
-                        NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-command-reset-custom", "%count%", String.valueOf(config.worldResetCommands.size()));
             }
         }
         plugin.getConfigManager().saveArena(config);
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("--- Aide DeathSwap ---", NamedTextColor.GOLD));
+        be.dualsfwshield.deathswap.util.Lang.send(sender, "help-title");
         sender.sendMessage(Component.text("/ds join [arena]", NamedTextColor.YELLOW)
-            .append(Component.text(" - Rejoindre une partie", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-join")));
         sender.sendMessage(Component.text("/ds leave", NamedTextColor.YELLOW)
-            .append(Component.text(" - Quitter la partie", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-leave")));
         sender.sendMessage(Component.text("/ds stats [joueur]", NamedTextColor.AQUA)
-            .append(Component.text(" - Voir les stats", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-stats")));
         sender.sendMessage(Component.text("/ds top [stat]", NamedTextColor.AQUA)
-            .append(Component.text(" - Voir le classement", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-top")));
         if (sender instanceof Player) {
             sender.sendMessage(Component.text("/ds help gui", NamedTextColor.GREEN)
-                .append(Component.text(" - Ouvrir le menu d'aide interactif", NamedTextColor.GRAY)));
+                .append(be.dualsfwshield.deathswap.util.Lang.getComponent("help-gui")));
         }
             
         if (sender.hasPermission("deathswap.admin")) {
             sender.sendMessage(Component.empty());
-            sender.sendMessage(Component.text("--- Commandes Admin ---", NamedTextColor.RED));
-            sender.sendMessage(Component.text("Pour voir toutes les commandes admin détaillées:", NamedTextColor.GRAY));
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "help-admin-title");
+            be.dualsfwshield.deathswap.util.Lang.send(sender, "help-admin-see-more");
             sender.sendMessage(Component.text("/ds help commands", NamedTextColor.YELLOW, net.kyori.adventure.text.format.TextDecoration.BOLD)
-                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Cliquez pour voir l'aide admin", NamedTextColor.GREEN)))
+                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(be.dualsfwshield.deathswap.util.Lang.getComponent("help-admin-hover")))
                 .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/ds help commands")));
         }
     }
     
     private void sendAdminHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("--- Aide Admin DeathSwap ---", NamedTextColor.RED));
+        be.dualsfwshield.deathswap.util.Lang.send(sender, "admin-help-title");
         
         sender.sendMessage(Component.text("/ds admin list", NamedTextColor.YELLOW)
-            .append(Component.text(" - Ouvrir le Dashboard GUI", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-list")));
             
         sender.sendMessage(Component.text("/ds admin create <nom>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Créer une arène", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-create")));
             
         sender.sendMessage(Component.text("/ds admin delete <nom>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Supprimer une arène", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-delete")));
             
         sender.sendMessage(Component.text("/ds admin clone <src> <dst>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Cloner une arène", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-clone")));
             
         sender.sendMessage(Component.text("/ds admin set <arena> <prop> <val>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Modifier une propriété", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-set")));
             
         sender.sendMessage(Component.text("/ds admin gamerule <arena> set <rule> <val>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Modifier une gamerule", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-gamerule")));
             
         sender.sendMessage(Component.text("/ds admin command <arena> <tp|reset> <val>", NamedTextColor.YELLOW)
-            .append(Component.text(" - Modifier commandes avancées", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-command")));
             
         sender.sendMessage(Component.text("/ds start [debug]", NamedTextColor.YELLOW)
-            .append(Component.text(" - Lancer la partie (Debug = bypass min players)", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-start")));
             
         sender.sendMessage(Component.text("/ds stop [arena]", NamedTextColor.YELLOW)
-            .append(Component.text(" - Arrêter la partie", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-stop")));
             
         sender.sendMessage(Component.text("/ds swapnow", NamedTextColor.YELLOW)
-            .append(Component.text(" - Forcer un swap immédiat", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-swapnow")));
             
         sender.sendMessage(Component.text("/ds reload", NamedTextColor.YELLOW)
-            .append(Component.text(" - Recharger la config", NamedTextColor.GRAY)));
+            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("admin-help-reload")));
     }
 
     // --- Tab Completion ---

@@ -31,7 +31,10 @@ import java.util.Map;
 public class ArenaListGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final Component TITLE = Component.text("📋 Arènes", NamedTextColor.DARK_AQUA, TextDecoration.BOLD);
+    // Removed static TITLE constant as it depends on Lang which may change or need context, 
+    // but typically GUIs re-open or use a dynamic title. 
+    // However, for consistency with listener checking, we might need a method or a fixed key.
+    // Let's use Lang.getComponent("gui-list-title") inside the method.
 
     public ArenaListGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -42,7 +45,8 @@ public class ArenaListGUI implements Listener {
         int size = Math.min(54, ((allConfigs.size() / 9) + 2) * 9); // Dynamic size, min 2 rows
         size = Math.max(27, size);
 
-        Inventory inv = Bukkit.createInventory(null, size, TITLE);
+        Component title = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-title");
+        Inventory inv = Bukkit.createInventory(null, size, title);
 
         int slot = 0;
         for (Map.Entry<String, ConfigManager.ArenaConfig> entry : allConfigs.entrySet()) {
@@ -64,16 +68,13 @@ public class ArenaListGUI implements Listener {
 
             if (isActive) {
                 mat = Material.GREEN_CONCRETE;
-                statusText = "▶ En cours";
-                statusColor = NamedTextColor.GREEN;
+                statusText = be.dualsfwshield.deathswap.util.Lang.get("gui-list-status-running");
             } else if (isWaiting) {
                 mat = Material.YELLOW_CONCRETE;
-                statusText = "⏳ En attente";
-                statusColor = NamedTextColor.YELLOW;
+                statusText = be.dualsfwshield.deathswap.util.Lang.get("gui-list-status-waiting");
             } else {
                 mat = Material.CYAN_CONCRETE;
-                statusText = "⏸ Inactive";
-                statusColor = NamedTextColor.GRAY;
+                statusText = be.dualsfwshield.deathswap.util.Lang.get("gui-list-status-inactive");
             }
 
             ItemStack item = new ItemStack(mat);
@@ -82,32 +83,30 @@ public class ArenaListGUI implements Listener {
                     .decoration(TextDecoration.ITALIC, false));
 
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Statut: ", NamedTextColor.GRAY)
-                    .append(Component.text(statusText, statusColor)));
-            lore.add(Component.text("Type: ", NamedTextColor.GRAY)
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-status")
+                    .append(be.dualsfwshield.deathswap.util.Lang.colorize(statusText)));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-type")
                     .append(Component.text(config.gameType.name(), NamedTextColor.AQUA)));
-            lore.add(Component.text("Joueurs: ", NamedTextColor.GRAY)
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-players")
                     .append(Component.text(config.minPlayers + "-" + config.maxPlayers, NamedTextColor.WHITE)));
 
             if (game != null) {
-                lore.add(Component.text("Connectés: ", NamedTextColor.GRAY)
+                lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-online")
                         .append(Component.text(String.valueOf(game.getAllPlayers().size()), NamedTextColor.WHITE)));
             }
 
             lore.add(Component.empty());
-            lore.add(Component.text("Lobby: ", NamedTextColor.DARK_GRAY)
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-lobby")
                     .append(Component.text(config.lobbyWorld, NamedTextColor.GRAY)));
-            lore.add(Component.text("Game: ", NamedTextColor.DARK_GRAY)
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-game")
                     .append(Component.text(config.gameWorld, NamedTextColor.GRAY)));
             lore.add(Component.empty());
-            lore.add(Component.text("Clic G: ", NamedTextColor.GREEN)
-                    .append(Component.text("Éditer", NamedTextColor.GRAY)));
-            lore.add(Component.text("Shift-Clic G: ", NamedTextColor.AQUA)
-                    .append(Component.text("TP Lobby", NamedTextColor.GRAY)));
-            lore.add(Component.text("Clic D: ", NamedTextColor.RED)
-                    .append(Component.text("Supprimer", NamedTextColor.GRAY)));
-            lore.add(Component.text("Clic D: ", NamedTextColor.RED)
-                    .append(Component.text("Supprimer", NamedTextColor.GRAY)));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-click-left")
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-edit").color(NamedTextColor.GRAY)));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-shift-left")
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-tp-lobby").color(NamedTextColor.GRAY)));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-click-right")
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-item-delete").color(NamedTextColor.GRAY)));
 
             meta.lore(lore);
             item.setItemMeta(meta);
@@ -120,18 +119,18 @@ public class ArenaListGUI implements Listener {
         // Create new arena button
         ItemStack create = new ItemStack(Material.EMERALD);
         ItemMeta createMeta = create.getItemMeta();
-        createMeta.displayName(Component.text("✚ Créer une arène", NamedTextColor.GREEN, TextDecoration.BOLD)
+        createMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-create-name")
                 .decoration(TextDecoration.ITALIC, false));
         createMeta.lore(List.of(
-                Component.text("Crée une nouvelle arène", NamedTextColor.GRAY),
-                Component.text("avec des paramètres par défaut.", NamedTextColor.GRAY)));
+                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-create-lore-1").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-create-lore-2").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
         create.setItemMeta(createMeta);
         inv.setItem(lastRow + 4, create);
 
         // Close button
         ItemStack close = new ItemStack(Material.BARRIER);
         ItemMeta closeMeta = close.getItemMeta();
-        closeMeta.displayName(Component.text("Fermer", NamedTextColor.RED)
+        closeMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-close")
                 .decoration(TextDecoration.ITALIC, false));
         close.setItemMeta(closeMeta);
         inv.setItem(lastRow + 8, close);
@@ -139,7 +138,7 @@ public class ArenaListGUI implements Listener {
         // Arena count info
         ItemStack info = new ItemStack(Material.BOOK);
         ItemMeta infoMeta = info.getItemMeta();
-        infoMeta.displayName(Component.text("ℹ " + allConfigs.size() + " arène(s)", NamedTextColor.AQUA)
+        infoMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-info-name", "%count%", String.valueOf(allConfigs.size()))
                 .decoration(TextDecoration.ITALIC, false));
         info.setItemMeta(infoMeta);
         inv.setItem(lastRow, info);
@@ -151,7 +150,11 @@ public class ArenaListGUI implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player))
             return;
-        if (!TITLE.equals(event.getView().title()))
+        // Check title using deserialization or just skip stringent check if title differs per lang
+        // Better: check if holder is this class (if we had set holder) or just rely on inventory structure/items
+        // For now, let's relax the title check or check against the localized title.
+        Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-list-title");
+        if (!expectedTitle.equals(event.getView().title()))
             return;
 
         event.setCancelled(true);
@@ -182,7 +185,7 @@ public class ArenaListGUI implements Listener {
             plugin.getConfigManager().createArena(name);
             plugin.getArenaManager().reload();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-            player.sendMessage(Component.text("✔ Arène '" + name + "' créée !", NamedTextColor.GREEN));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "gui-list-create-success", "%arena%", name);
             plugin.getSettingsGUI().open(player, name);
             return;
         }
@@ -198,7 +201,7 @@ public class ArenaListGUI implements Listener {
                 if (plugin.getArenaDetailsGUI() != null) {
                     plugin.getArenaDetailsGUI().open(player, arenaId);
                 } else {
-                    player.sendMessage(Component.text("Menu détails indisponible.", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-list-details-unavailable");
                 }
             } else if (event.getClick() == ClickType.SHIFT_LEFT) {
                 // TP Lobby
@@ -207,9 +210,9 @@ public class ArenaListGUI implements Listener {
                         : Bukkit.getWorld(plugin.getConfigManager().getArenaConfig(arenaId).lobbyWorld);
                 if (world != null) {
                     player.teleport(world.getSpawnLocation());
-                    player.sendMessage(Component.text("Téléportation au lobby de " + arenaId, NamedTextColor.GREEN));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-list-tp-lobby-success", "%arena%", arenaId);
                 } else {
-                    player.sendMessage(Component.text("Monde lobby introuvable.", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-list-tp-lobby-error");
                 }
             } else if (event.getClick() == ClickType.RIGHT) {
                 // Delete → open ConfirmationGUI
@@ -224,10 +227,9 @@ public class ArenaListGUI implements Listener {
                             boolean success = plugin.getConfigManager().deleteArena(finalId);
                             if (success) {
                                 plugin.getArenaManager().reload();
-                                player.sendMessage(Component.text("✔ Arène '" + finalId + "' supprimée.",
-                                        NamedTextColor.GREEN));
+                                be.dualsfwshield.deathswap.util.Lang.send(player, "cmd-admin-delete-success", "%arena%", finalId);
                             } else {
-                                player.sendMessage(Component.text("Erreur: arène introuvable.", NamedTextColor.RED));
+                                be.dualsfwshield.deathswap.util.Lang.send(player, "gui-list-delete-error");
                             }
                             open(player); // Re-open list
                         },

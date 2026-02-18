@@ -87,7 +87,10 @@ public class BlockShuffleInstance extends GameInstance {
             new ShuffleTarget(Material.ENCHANTING_TABLE, 3, AssignmentType.CRAFT, "Table d'enchantement"),
             new ShuffleTarget(Material.GOLDEN_APPLE, 3, AssignmentType.CRAFT, "Pomme dorée"),
             new ShuffleTarget(Material.PISTON, 3, AssignmentType.CRAFT, "Piston"),
+            new ShuffleTarget(Material.PISTON, 3, AssignmentType.CRAFT, "Piston"),
             new ShuffleTarget(Material.CAKE, 3, AssignmentType.CRAFT, "Gâteau"));
+
+    private final List<ShuffleTarget> targets = new ArrayList<>();
 
     private int currentRound = 0;
     private ShuffleTarget currentTarget;
@@ -98,6 +101,33 @@ public class BlockShuffleInstance extends GameInstance {
 
     public BlockShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
+        loadTargets();
+    }
+
+    private void loadTargets() {
+        targets.clear();
+        ConfigManager.BlockShuffleConfig bsConfig = getPlugin().getConfigManager().getBlockShuffleConfig();
+        if (bsConfig != null) {
+            List<String> blockList = bsConfig.getConfig().getStringList("blocks");
+            if (blockList != null && !blockList.isEmpty()) {
+                for (String matName : blockList) {
+                    try {
+                        Material mat = Material.valueOf(matName.toUpperCase());
+                        // Default to Difficulty 1, STAND, and formatted name
+                        String name = matName.toLowerCase().replace("_", " ");
+                        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                        targets.add(new ShuffleTarget(mat, 1, AssignmentType.STAND, name));
+                    } catch (IllegalArgumentException e) {
+                        getPlugin().getLogger().warning("Invalid material in blockshuffle.yml: " + matName);
+                    }
+                }
+            }
+        }
+        
+        // Fallback if config empty
+        if (targets.isEmpty()) {
+            targets.addAll(TARGETS);
+        }
     }
 
     @Override
@@ -132,12 +162,22 @@ public class BlockShuffleInstance extends GameInstance {
             difficulty = 3;
 
         // Pick random target from difficulty tier
-        List<ShuffleTarget> pool = TARGETS.stream()
+        // Pick random target from difficulty tier
+        // If we loaded from config (simple list), everything is difficulty 1.
+        // So validation: check if we have targets for this difficulty. 
+        // If not, use all available targets.
+        List<ShuffleTarget> pool = targets.stream()
                 .filter(t -> t.difficulty() == difficulty)
                 .toList();
 
         if (pool.isEmpty()) {
-            pool = TARGETS; // fallback
+            pool = new ArrayList<>(targets); // fallback to all
+        }
+
+        if (pool.isEmpty()) {
+            // Should not happen if fallback used, unless targets is empty
+            if (targets.isEmpty()) targets.addAll(TARGETS);
+            pool = targets; 
         }
         currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
 

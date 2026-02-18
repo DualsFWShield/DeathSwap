@@ -1,0 +1,24 @@
+name: "Block Shuffle"
+description: "Stand on specific blocks to score points!"
+authors: ["DualsFWShield"]
+version: "1.0"
+
+# Game Settings
+swap-time: 300 # 5 minutes default
+health: 20.0
+pvp: false
+
+# Mode Specific
+blocks:
+  - STONE
+  - DIRT
+  - GRASS_BLOCK
+  - OAK_LOG
+  - SAND
+  - GRAVEL
+  - COBBLESTONE
+  - CRAFTING_TABLE
+  - FURNACE
+  - CHEST
+  - WATER
+  - LAVA

@@ -87,15 +87,15 @@ public class GameInstance {
     public void joinLobby(Player player) {
         // Check if game is starting or full
         if (state == GameState.STARTING) {
-            sendMessage(player, "&cUne partie est en cours de lancement...");
+            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-start-countdown"));
             return;
         }
         if (state == GameState.RUNNING) {
-            sendMessage(player, "&cUne partie est déjà en cours !");
+            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-started"));
             return;
         }
         if (lobbyPlayers.size() >= config.maxPlayers) {
-            sendMessage(player, "&cL'arène est pleine !");
+            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("game-join-full"));
             return;
         }
 
@@ -114,12 +114,11 @@ public class GameInstance {
         if (lobbyWorld != null) {
             mvtp(player, config.lobbyWorld, lobbyWorld.getSpawnLocation());
         } else {
-            sendMessage(player, "&cErreur: Le monde lobby '" + config.lobbyWorld + "' est introuvable !");
+            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("error-lobby-world-not-found", "%world%", config.lobbyWorld));
         }
 
         setupLobbyPlayer(player);
-        broadcastLobby("&e" + player.getName() + " &7a rejoint l'arène ! &8(" + lobbyPlayers.size() + "/"
-                + config.maxPlayers + ")");
+        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-join", "%player%", player.getName(), "%count%", String.valueOf(lobbyPlayers.size()), "%max%", String.valueOf(config.maxPlayers)));
     }
 
     /**
@@ -153,8 +152,7 @@ public class GameInstance {
         // Slot 4: Not Ready
         ItemStack notReady = new ItemStack(Material.RED_CONCRETE);
         ItemMeta notReadyMeta = notReady.getItemMeta();
-        notReadyMeta.displayName(Component.text("Pas Prêt ", NamedTextColor.RED)
-                .append(Component.text("(Clic Droit)", NamedTextColor.GRAY))
+        notReadyMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("item-not-ready")
                 .decoration(TextDecoration.ITALIC, false));
         notReady.setItemMeta(notReadyMeta);
         player.getInventory().setItem(4, notReady);
@@ -162,8 +160,7 @@ public class GameInstance {
         // Slot 8: Return to Hub
         ItemStack hubReturn = new ItemStack(Material.RED_BED);
         ItemMeta hubMeta = hubReturn.getItemMeta();
-        hubMeta.displayName(Component.text("Retour au Hub ", NamedTextColor.GOLD)
-                .append(Component.text("(Clic Droit)", NamedTextColor.GRAY))
+        hubMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("item-hub-return")
                 .decoration(TextDecoration.ITALIC, false));
         hubReturn.setItemMeta(hubMeta);
         player.getInventory().setItem(8, hubReturn);
@@ -178,20 +175,21 @@ public class GameInstance {
 
         // Prevent unready during countdown if configured
         if (state == GameState.STARTING && config.preventCancelAfterCountdown) {
-            sendMessage(player, "&cLe compte à rebours est lancé, impossible d'annuler !");
+            sendMessage(player, be.dualsfwshield.deathswap.util.Lang.get("lobby-already-starting"));
             return;
         }
 
         if (readyPlayers.contains(player)) {
             // Unready
             readyPlayers.remove(player);
-            broadcastLobby("&e" + player.getName() + " &cn'est plus prêt.");
+            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-unready", "%player%", player.getName()));
 
             // Update item to Not Ready
             ItemStack notReady = new ItemStack(Material.RED_CONCRETE);
             ItemMeta meta = notReady.getItemMeta();
-            meta.displayName(Component.text("Pas Prêt ", NamedTextColor.RED)
-                    .append(Component.text("(Clic Droit)", NamedTextColor.GRAY))
+            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("emoji-not-ready")
+                    .color(NamedTextColor.RED)
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-right").color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             notReady.setItemMeta(meta);
             player.getInventory().setItem(4, notReady);
@@ -206,7 +204,7 @@ public class GameInstance {
                 // So unready during countdown has no effect unless we add code here.
                 // Let's force cancel if we drop below min players and !startIfMinPlayersMet
                 if (readyPlayers.size() < config.minPlayers) {
-                    broadcastLobby("&cAnnulation du lancement : Plus assez de joueurs prêts.");
+                    broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-cancel-not-enough"));
                     state = GameState.WAITING;
                     // Note: The countdown task checks state != STARTING and will cancel itself.
                 }
@@ -215,14 +213,15 @@ public class GameInstance {
         } else {
             // Ready
             readyPlayers.add(player);
-            broadcastLobby("&e" + player.getName() + " &aest prêt !");
+            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-ready", "%player%", player.getName()));
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
             // Update item to Ready
             ItemStack ready = new ItemStack(Material.LIME_CONCRETE);
             ItemMeta meta = ready.getItemMeta();
-            meta.displayName(Component.text("PRÊT ! ", NamedTextColor.GREEN)
-                    .append(Component.text("(Clic pour annuler)", NamedTextColor.GRAY))
+            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("emoji-ready")
+                    .color(NamedTextColor.GREEN)
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-cancel").color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             ready.setItemMeta(meta);
             player.getInventory().setItem(4, ready);
@@ -316,7 +315,7 @@ public class GameInstance {
         if (readyPlayers.size() != lobbyPlayers.size())
             return;
 
-        broadcastLobby("&aTout le monde est prêt ! Lancement imminent...");
+        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("lobby-all-ready"));
         Bukkit.getScheduler().runTaskLater(plugin, () -> startGame(false), 60L); // 3 seconds
     }
 
@@ -340,7 +339,7 @@ public class GameInstance {
                 && !config.seeds.isEmpty() && lobbyPlayers.size() >= 2) {
             // Start a vote, then continue with the winner
             plugin.getVoteManager().startVote(this, config.seeds, lobbyPlayers, (seed) -> {
-                broadcastLobby("&a🗳 Résultat du vote : &l" + seed.name());
+                broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("vote-result", "%seed%", seed.name()));
                 continueStartWithSeed(seed);
             });
         } else {
@@ -351,7 +350,7 @@ public class GameInstance {
             } else {
                 seed = config.seeds.get(ThreadLocalRandom.current().nextInt(config.seeds.size()));
             }
-            broadcastLobby("&aStructure choisie : &l" + seed.name());
+            broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("vote-random", "%seed%", seed.name()));
             continueStartWithSeed(seed);
         }
     }
@@ -388,7 +387,7 @@ public class GameInstance {
      */
     private void startCountdown() {
         final int waitTime = config.loadTime;
-        broadcastLobby("&aGénération du terrain... Attente de " + waitTime + " secondes.");
+        broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-generating", "%time%", String.valueOf(waitTime)));
 
         new BukkitRunnable() {
             int remaining = waitTime;
@@ -401,7 +400,7 @@ public class GameInstance {
                 }
 
                 if (remaining <= 5 && remaining > 0) {
-                    broadcastLobby("&eTéléportation dans " + remaining + "...");
+                    broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-teleporting", "%time%", String.valueOf(remaining)));
                     if (plugin.getSoundManager() != null) {
                         for (Player p : lobbyPlayers) {
                             plugin.getSoundManager().playSound("countdown-tick", p);
@@ -441,7 +440,8 @@ public class GameInstance {
             currentSwapInterval = config.getNextSwapInterval();
             if (config.uiMode == UIMode.RICH) {
                 bossBar = BossBar.bossBar(
-                        Component.text("Prochain Swap", NamedTextColor.GOLD),
+                        be.dualsfwshield.deathswap.util.Lang.getComponent("bossbar-next-swap")
+                                .color(NamedTextColor.GOLD),
                         1.0f,
                         BossBar.Color.YELLOW,
                         BossBar.Overlay.NOTCHED_10);
@@ -452,78 +452,10 @@ public class GameInstance {
             // Add buffer for spread/loading logic
             gracePeriodEndTime = System.currentTimeMillis() + protectionMillis + 15000L;
 
-            // Teleport players
+            // Teleport players (handles spreading internal)
             teleportPlayersToGame();
 
-            // Delayed: spread players and start game loop
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                spreadPlayers();
-
-                // Apply spawn protection
-                // Apply spawn protection
-                // (Already applied in teleportPlayersToGame, but refreshing here after spread
-                // is good practice)
-                for (Player p : alivePlayers) {
-                    // Re-apply to ensure full duration from this point
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, config.spawnProtection * 20, 255,
-                            false, false));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, config.spawnProtection * 20, 0,
-                            false, false));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, config.spawnProtection * 20, 0,
-                            false, false));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, config.spawnProtection * 20, 255,
-                            false, false));
-                }
-
-                // Verify player count
-                // If startIfMinPlayersMet is true, we allow starting if >= minPlayers, even if
-                // someone left
-                if (!testMode) {
-                    if (alivePlayers.size() < config.minPlayers) {
-                        // Default behavior: Not enough players
-                        plugin.getLogger().warning(
-                                "Not enough players to start (" + alivePlayers.size() + "/" + config.minPlayers + ")");
-                        broadcastLobby("&cPas assez de joueurs (" + alivePlayers.size() + "/" + config.minPlayers
-                                + "). Annulation.");
-                        state = GameState.WAITING;
-                        cleanup();
-                        return;
-                    }
-                }
-
-                // Start!
-                state = GameState.RUNNING;
-                globalTimer = config.maxGameTime;
-                swapTimer = currentSwapInterval;
-                gameStartEpoch = System.currentTimeMillis();
-
-                // Record games played for stats
-                if (plugin.getConfigManager().isStatsEnabled() && plugin.getStatsManager() != null) {
-                    for (Player p : alivePlayers) {
-                        plugin.getStatsManager().addGamePlayed(p.getUniqueId(), p.getName());
-                    }
-                }
-
-                broadcastGame("&a&lLA PARTIE COMMENCE !");
-
-                if (plugin.getSoundManager() != null) {
-                    plugin.getSoundManager().playSoundAll("game-start", gamePlayers);
-                }
-
-                if (config.gameType == GameType.DEATHSWAP) {
-                    if (config.pvpEnabled) {
-                        broadcastGame("&ePvP ACTIVÉ ! &7(Invulnérabilité " + config.spawnProtection + "s)");
-                    } else {
-                        broadcastGame(
-                                "&ePvP DÉSACTIVÉ (Mobs OK) ! &7(Invulnérabilité " + config.spawnProtection + "s)");
-                    }
-                    if (!config.netherEnabled || !config.endEnabled) {
-                        broadcastGame("&cNether et End désactivés.");
-                    }
-                }
-
-                startGameLoop();
-            }, 20L);
+            // No longer needed to call spreadPlayers delayed, handled in teleportPlayersToGame
         }, 5L);
     }
 
@@ -575,55 +507,170 @@ public class GameInstance {
             return;
         }
 
-        for (Player player : new HashSet<>(lobbyPlayers)) {
-            if (!readyPlayers.contains(player) && !testMode)
-                continue;
+        // Initialize teleportation tracker
+        final int totalPlayers = lobbyPlayers.size();
+        final java.util.concurrent.atomic.AtomicInteger teleportedCount = new java.util.concurrent.atomic.AtomicInteger(0);
+        
+        // We will clear lobbyPlayers and readyPlayers AFTER everyone is teleported or process individually
+        Set<Player> playersToTeleport = new HashSet<>(lobbyPlayers);
+        
+        // Clear lobby sets now to prevent re-triggering? 
+        // Better to clear them at the end or use a temp set.
+        // The original code iterated `new HashSet<>(lobbyPlayers)`.
+        
+        lobbyPlayers.clear();
+        readyPlayers.clear();
+
+        for (Player player : playersToTeleport) {
+            if (!this.testMode && !playersToTeleport.contains(player)) continue; // Safety
 
             player.getInventory().clear();
             player.setHealth(20);
             player.setFoodLevel(20);
             player.setSaturation(20);
 
-            // TP to game world via Multiverse (high up, will be spread later)
-            mvtp(player, config.gameWorld, new Location(gameWorld, 0, 200, 0));
-
             gamePlayers.add(player);
             alivePlayers.add(player);
-
-            // Set survival after TP
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                player.setGameMode(GameMode.SURVIVAL);
-                if (config.uiMode == UIMode.RICH && bossBar != null) {
-                    player.showBossBar(bossBar);
-                }
-            }, 2L);
+            
+            // Async RTP
+            teleportRandomlyAsync(player, gameWorld).thenAccept(success -> {
+                 if (success) {
+                     Bukkit.getScheduler().runTask(plugin, () -> {
+                         player.setGameMode(GameMode.SURVIVAL);
+                         if (config.uiMode == UIMode.RICH && bossBar != null) {
+                             player.showBossBar(bossBar);
+                         }
+                         
+                         // Apply spawn protection immediately upon arrival
+                         int prot = config.spawnProtection;
+                         player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, prot * 20, 255, false, false));
+                         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, prot * 20, 0, false, false));
+                         player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, prot * 20, 0, false, false));
+                         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, prot * 20, 255, false, false));
+                         
+                         if (teleportedCount.incrementAndGet() == totalPlayers) {
+                             // All teleported - trigger game start logic that was previously in spreadPlayers or delayed
+                             // But wait, the original logic had a delayed task calling spreadPlayers() then doing game start.
+                             // We should probably trigger that "post-teleport" logic here.
+                             onAllPlayersTeleported();
+                         }
+                     });
+                 } else {
+                     // Retry or fail?
+                     plugin.getLogger().warning("Failed to RTP player " + player.getName());
+                 }
+            });
+        }
+    }
+    
+    private void onAllPlayersTeleported() {
+         // Verify player count
+        if (!testMode) {
+            if (alivePlayers.size() < config.minPlayers) {
+                plugin.getLogger().warning("Not enough players to start (" + alivePlayers.size() + "/" + config.minPlayers + ")");
+                broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-not-enough-players", "%count%", String.valueOf(alivePlayers.size()), "%min%", String.valueOf(config.minPlayers)));
+                state = GameState.WAITING;
+                cleanup();
+                return;
+            }
         }
 
-        lobbyPlayers.clear();
-        readyPlayers.clear();
+        // Start!
+        state = GameState.RUNNING;
+        globalTimer = config.maxGameTime;
+        swapTimer = currentSwapInterval;
+        gameStartEpoch = System.currentTimeMillis();
+
+        // Record games played for stats
+        if (plugin.getConfigManager().isStatsEnabled() && plugin.getStatsManager() != null) {
+            for (Player p : alivePlayers) {
+                plugin.getStatsManager().addGamePlayed(p.getUniqueId(), p.getName());
+            }
+        }
+
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-started"));
+
+        if (plugin.getSoundManager() != null) {
+            plugin.getSoundManager().playSoundAll("game-start", gamePlayers);
+        }
+
+        if (config.gameType == GameType.DEATHSWAP) {
+            if (config.pvpEnabled) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-on", "%time%", String.valueOf(config.spawnProtection)));
+            } else {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-off", "%time%", String.valueOf(config.spawnProtection)));
+            }
+            if (!config.netherEnabled || !config.endEnabled) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-nether-end-disabled"));
+            }
+        }
+
+        startGameLoop();
     }
 
     /**
-     * Spread players using spreadplayers command.
+     * Async random teleport logic.
      */
-    private void spreadPlayers() {
-        if (alivePlayers.isEmpty())
-            return;
-
-        StringBuilder names = new StringBuilder();
-        for (Player p : alivePlayers) {
-            names.append(" \"").append(p.getName()).append("\"");
-        }
-
-        try {
-            // Run spreadplayers directly from console without execute at
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                    "spreadplayers 0 0 10 100 false" + names.toString());
-        } catch (Exception e) {
-            plugin.getLogger().severe("Failed to spread players: " + e.getMessage());
-            e.printStackTrace();
-        }
+    private java.util.concurrent.CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world) {
+        java.util.concurrent.CompletableFuture<Boolean> future = new java.util.concurrent.CompletableFuture<>();
+        
+        findSafeLocationAsync(world, 5000).thenAccept(loc -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (loc != null) {
+                    player.teleport(loc);
+                    future.complete(true);
+                } else {
+                    future.complete(false);
+                }
+            });
+        });
+        
+        return future;
     }
+    
+    private java.util.concurrent.CompletableFuture<Location> findSafeLocationAsync(World world, int radius) {
+        java.util.concurrent.CompletableFuture<Location> future = new java.util.concurrent.CompletableFuture<>();
+        findSafeLocationRecursive(world, radius, 10, future);
+        return future;
+    }
+
+    private void findSafeLocationRecursive(World world, int radius, int attempts, java.util.concurrent.CompletableFuture<Location> future) {
+        if (attempts <= 0) {
+            plugin.getLogger().warning("Could not find safe RTP location after retries.");
+            future.complete(world.getSpawnLocation()); // Fallback
+            return;
+        }
+
+        int x = ThreadLocalRandom.current().nextInt(-radius, radius);
+        int z = ThreadLocalRandom.current().nextInt(-radius, radius);
+        
+        // Load chunk async
+        world.getChunkAtAsync(x >> 4, z >> 4).thenAccept(chunk -> {
+            int y = world.getHighestBlockYAt(x, z);
+            Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
+            
+            Material block = loc.getBlock().getRelative(org.bukkit.block.BlockFace.DOWN).getType();
+            if (isSafeBlock(block)) {
+                future.complete(loc);
+            } else {
+                // Retry
+                findSafeLocationRecursive(world, radius, attempts - 1, future);
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            future.complete(world.getSpawnLocation());
+            return null;
+        });
+    }
+
+    private boolean isSafeBlock(Material mat) {
+        if (mat == Material.LAVA || mat == Material.WATER || mat == Material.CACTUS || mat == Material.MAGMA_BLOCK) return false;
+        if (mat.isAir()) return false;
+        // Avoid leaves/trees for now?
+        return mat.isSolid();
+    }
+    
+    // Removed spreadPlayers() as it is replaced by RTP logic
 
     // =========================================
     // GAME LOOP
@@ -672,7 +719,7 @@ public class GameInstance {
 
                 // Global time check
                 if (globalTimer <= 0) {
-                    broadcastGame("&cTemps écoulé ! Match Nul !");
+                    broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-timeout"));
                     stopGame();
                 }
             }
@@ -690,7 +737,8 @@ public class GameInstance {
         int seconds = swapTimer % 60;
         String timeText = String.format("%d:%02d", minutes, seconds);
 
-        bossBar.name(Component.text("Prochain Swap : ", NamedTextColor.GOLD)
+        bossBar.name(be.dualsfwshield.deathswap.util.Lang.getComponent("bossbar-next-swap")
+                .color(NamedTextColor.GOLD)
                 .append(Component.text(timeText, NamedTextColor.YELLOW)));
 
         float progress = Math.max(0, Math.min(1, (float) swapTimer / currentSwapInterval));
@@ -709,8 +757,8 @@ public class GameInstance {
     private void updateActionBar() {
         for (Player p : alivePlayers) {
             if (swapTimer <= 10) {
-                p.sendActionBar(Component.text("⚠ SWAP DANS " + swapTimer + " SECONDES ⚠",
-                        NamedTextColor.RED, TextDecoration.BOLD));
+                p.sendActionBar(be.dualsfwshield.deathswap.util.Lang.getComponent("actionbar-swap").replaceText(b -> b.matchLiteral("%time%").replacement(String.valueOf(swapTimer)))
+                        .color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true));
                 if (swapTimer <= 5) {
                     if (plugin.getSoundManager() != null) {
                         plugin.getSoundManager().playSound("countdown-tick", p);
@@ -719,7 +767,8 @@ public class GameInstance {
                     }
                 }
             } else {
-                p.sendActionBar(Component.text("Survivants: ", NamedTextColor.GRAY)
+                p.sendActionBar(be.dualsfwshield.deathswap.util.Lang.getComponent("actionbar-survivors")
+                        .color(NamedTextColor.GRAY)
                         .append(Component.text(String.valueOf(alivePlayers.size()), NamedTextColor.WHITE)));
             }
         }
@@ -733,7 +782,7 @@ public class GameInstance {
      * Perform the swap: circular rotation of all alive players' positions.
      */
     public void performSwap() {
-        broadcastGame("&6&lSWAP ! Échange des positions...");
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("swap-blindness"));
 
         List<Player> survivors = new ArrayList<>(alivePlayers);
         int count = survivors.size();
@@ -768,8 +817,10 @@ public class GameInstance {
 
             current.teleport(targetLoc);
             current.showTitle(Title.title(
-                    Component.text("SWAP !", NamedTextColor.GOLD, TextDecoration.BOLD),
-                    Component.text("Tu as pris la place de " + swappedWith.getName(), NamedTextColor.YELLOW),
+                    be.dualsfwshield.deathswap.util.Lang.getComponent("title-swap")
+                            .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
+                    be.dualsfwshield.deathswap.util.Lang.getComponent("subtitle-swap").replaceText(b -> b.matchLiteral("%player%").replacement(swappedWith.getName()))
+                            .color(NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
         }
     }
@@ -805,7 +856,7 @@ public class GameInstance {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             player.setGameMode(GameMode.SPECTATOR);
-            broadcastGame("&c" + player.getName() + " est mort !");
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-death", "%player%", player.getName()));
 
             if (plugin.getSoundManager() != null) {
                 plugin.getSoundManager().playSoundAll("death", gamePlayers);
@@ -829,8 +880,8 @@ public class GameInstance {
 
             ItemStack compass = new ItemStack(Material.COMPASS);
             ItemMeta meta = compass.getItemMeta();
-            meta.displayName(Component.text("Menu Spectateur ", NamedTextColor.YELLOW)
-                    .append(Component.text("(Clic Droit)", NamedTextColor.GRAY))
+            meta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("spectator-item-teleport")
+                    .append(be.dualsfwshield.deathswap.util.Lang.getComponent("item-click-right").color(NamedTextColor.GRAY))
                     .decoration(TextDecoration.ITALIC, false));
             compass.setItemMeta(meta);
             player.getInventory().setItem(0, compass);
@@ -850,10 +901,10 @@ public class GameInstance {
         player.sendMessage(Component.text("Cliquez sur un joueur pour vous téléporter :", NamedTextColor.GRAY));
 
         for (Player alive : alivePlayers) {
-            Component tpButton = Component.text("[TP vers " + alive.getName() + "]", NamedTextColor.GREEN)
+            Component tpButton = Component.text("[TP -> " + alive.getName() + "]", NamedTextColor.GREEN)
                     .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/ds tp " + alive.getName()))
                     .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
-                            Component.text("Téléportation vers " + alive.getName(), NamedTextColor.YELLOW)));
+                            be.dualsfwshield.deathswap.util.Lang.getComponent("spectator-tp-hover", "%player%", alive.getName())));
             player.sendMessage(tpButton);
         }
 
@@ -879,14 +930,16 @@ public class GameInstance {
         if (alivePlayers.size() <= 1) {
             state = GameState.ENDED;
 
-            broadcastGame("&6&lPARTIE TERMINÉE !");
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-ended"));
 
             if (alivePlayers.size() == 1) {
                 Player winner = alivePlayers.iterator().next();
-                broadcastGame("&a&lVICTOIRE DE " + winner.getName() + " !");
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-winner", "%winner%", winner.getName()));
                 winner.showTitle(Title.title(
-                        Component.text("VICTOIRE", NamedTextColor.GOLD, TextDecoration.BOLD),
-                        Component.text("Félicitations !", NamedTextColor.YELLOW),
+                        be.dualsfwshield.deathswap.util.Lang.getComponent("title-victory")
+                                .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
+                        be.dualsfwshield.deathswap.util.Lang.getComponent("subtitle-victory")
+                                .color(NamedTextColor.YELLOW),
                         Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(5), Duration.ofMillis(500))));
 
                 if (plugin.getSoundManager() != null) {
@@ -901,7 +954,7 @@ public class GameInstance {
                     plugin.getStatsManager().addSurvivalTime(winner.getUniqueId(), survivalSeconds);
                 }
             } else {
-                broadcastGame("&7Aucun survivant.");
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-draw"));
             }
 
             Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, 100L); // 5 seconds
@@ -1091,7 +1144,7 @@ public class GameInstance {
     protected void updateCleanUI() {
         // Critical swap warnings
         if (swapTimer == 60 || swapTimer == 30 || swapTimer == 10 || (swapTimer <= 5 && swapTimer > 0)) {
-            broadcastGame("&c⚠ SWAP DANS " + swapTimer + " SECONDES ⚠");
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("swap-warning", "%time%", String.valueOf(swapTimer)));
 
             // Play sound even in CLEAN mode (user only asked for UI cleanup)
             if (swapTimer <= 5) {
@@ -1100,5 +1153,120 @@ public class GameInstance {
                 }
             }
         }
+    }
+
+    // =========================================
+    // ASYNC RTP LOGIC
+    // =========================================
+
+    private void onAllPlayersTeleported() {
+         // Verify player count
+        if (!testMode) {
+            if (alivePlayers.size() < config.minPlayers) {
+                plugin.getLogger().warning("Not enough players to start (" + alivePlayers.size() + "/" + config.minPlayers + ")");
+                broadcastLobby(be.dualsfwshield.deathswap.util.Lang.get("game-not-enough-players", "%count%", String.valueOf(alivePlayers.size()), "%min%", String.valueOf(config.minPlayers)));
+                state = GameState.WAITING;
+                cleanup();
+                return;
+            }
+        }
+
+        // Start!
+        state = GameState.RUNNING;
+        globalTimer = config.maxGameTime;
+        swapTimer = currentSwapInterval;
+        gameStartEpoch = System.currentTimeMillis();
+
+        // Record games played for stats
+        if (plugin.getConfigManager().isStatsEnabled() && plugin.getStatsManager() != null) {
+            for (Player p : alivePlayers) {
+                plugin.getStatsManager().addGamePlayed(p.getUniqueId(), p.getName());
+            }
+        }
+
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-started"));
+
+        if (plugin.getSoundManager() != null) {
+            plugin.getSoundManager().playSoundAll("game-start", gamePlayers);
+        }
+
+        if (config.gameType == GameType.DEATHSWAP) {
+            if (config.pvpEnabled) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-on", "%time%", String.valueOf(config.spawnProtection)));
+            } else {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-pvp-off", "%time%", String.valueOf(config.spawnProtection)));
+            }
+            if (!config.netherEnabled || !config.endEnabled) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-nether-end-disabled"));
+            }
+        }
+
+        startGameLoop();
+    }
+
+    /**
+     * Async random teleport logic.
+     */
+    private java.util.concurrent.CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world) {
+        java.util.concurrent.CompletableFuture<Boolean> future = new java.util.concurrent.CompletableFuture<>();
+        
+        findSafeLocationAsync(world, 5000).thenAccept(loc -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (loc != null) {
+                    player.teleport(loc);
+                    future.complete(true);
+                } else {
+                    future.complete(false);
+                }
+            });
+        });
+        
+        return future;
+    }
+    
+    private java.util.concurrent.CompletableFuture<Location> findSafeLocationAsync(World world, int radius) {
+        java.util.concurrent.CompletableFuture<Location> future = new java.util.concurrent.CompletableFuture<>();
+        findSafeLocationRecursive(world, radius, 10, future);
+        return future;
+    }
+
+    private void findSafeLocationRecursive(World world, int radius, int attempts, java.util.concurrent.CompletableFuture<Location> future) {
+        if (attempts <= 0) {
+            plugin.getLogger().warning("Could not find safe RTP location after retries.");
+            future.complete(world.getSpawnLocation()); // Fallback
+            return;
+        }
+
+        int x = ThreadLocalRandom.current().nextInt(-radius, radius);
+        int z = ThreadLocalRandom.current().nextInt(-radius, radius);
+        
+        // Optimistic async chunk load + check
+        try {
+            world.getChunkAtAsync(x >> 4, z >> 4).thenAccept(chunk -> {
+                int y = world.getHighestBlockYAt(x, z);
+                Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
+                
+                Material block = loc.getBlock().getRelative(org.bukkit.block.BlockFace.DOWN).getType();
+                if (isSafeBlock(block)) {
+                    future.complete(loc);
+                } else {
+                    // Retry
+                    findSafeLocationRecursive(world, radius, attempts - 1, future);
+                }
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                future.complete(world.getSpawnLocation());
+                return null;
+            });
+        } catch (Exception e) {
+             // Fallback for non-Paper
+             future.complete(world.getSpawnLocation());
+        }
+    }
+
+    private boolean isSafeBlock(Material mat) {
+        if (mat == Material.LAVA || mat == Material.WATER || mat == Material.CACTUS || mat == Material.MAGMA_BLOCK) return false;
+        if (mat.isAir()) return false;
+        return mat.isSolid();
     }
 }

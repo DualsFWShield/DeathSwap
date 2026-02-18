@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 public class PlayerListGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final String TITLE_PREFIX = "Players: ";
+    // Removed static TITLE_PREFIX, using key instead
 
     public PlayerListGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -29,7 +29,8 @@ public class PlayerListGUI implements Listener {
         if (arena == null)
             return;
 
-        Inventory inv = Bukkit.createInventory(null, 54, Component.text(TITLE_PREFIX + arenaId));
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-player-list-title");
+        Inventory inv = Bukkit.createInventory(null, 54, Component.text(prefix + arenaId));
 
         int slot = 0;
         for (Player p : arena.getAllPlayers()) {
@@ -39,16 +40,16 @@ public class PlayerListGUI implements Listener {
             meta.displayName(Component.text(p.getName(), NamedTextColor.AQUA, TextDecoration.BOLD));
             // Lore: Health, etc.
             meta.lore(java.util.List.of(
-                    Component.text("Vie: " + (int) p.getHealth() + " HP", NamedTextColor.RED),
-                    Component.text("Nourriture: " + p.getFoodLevel(), NamedTextColor.GOLD),
+                    be.dualsfwshield.deathswap.util.Lang.getComponent("gui-player-list-health", "%health%", String.valueOf((int) p.getHealth())).color(NamedTextColor.RED),
+                    be.dualsfwshield.deathswap.util.Lang.getComponent("gui-player-list-food", "%food%", String.valueOf(p.getFoodLevel())).color(NamedTextColor.GOLD),
                     Component.empty(),
-                    Component.text("Clic G: Actions Joueur", NamedTextColor.YELLOW)));
+                    be.dualsfwshield.deathswap.util.Lang.getComponent("gui-player-list-action-hint").color(NamedTextColor.YELLOW)));
             head.setItemMeta(meta);
             inv.setItem(slot++, head);
         }
 
         // Back button
-        ItemStack back = AdminGUI.createItem(Material.ARROW, "&eRetour");
+        ItemStack back = AdminGUI.createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-player-list-back"));
         inv.setItem(53, back);
 
         admin.openInventory(inv);
@@ -58,7 +59,8 @@ public class PlayerListGUI implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player admin))
             return;
-        if (!event.getView().getTitle().startsWith(TITLE_PREFIX))
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-player-list-title");
+        if (!event.getView().getTitle().startsWith(prefix))
             return;
 
         event.setCancelled(true);
@@ -66,7 +68,7 @@ public class PlayerListGUI implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR)
             return;
 
-        String arenaId = event.getView().getTitle().substring(TITLE_PREFIX.length());
+        String arenaId = event.getView().getTitle().substring(prefix.length());
 
         if (clicked.getType() == Material.ARROW && event.getSlot() == 53) {
             plugin.getArenaDetailsGUI().open(admin, arenaId);
@@ -84,7 +86,7 @@ public class PlayerListGUI implements Listener {
                 // Open PlayerActionGUI (To implement)
                 plugin.getPlayerActionGUI().open(admin, arenaId, target);
             } else {
-                admin.sendMessage(Component.text("Joueur hors ligne.", NamedTextColor.RED));
+                be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-list-offline");
             }
         }
     }

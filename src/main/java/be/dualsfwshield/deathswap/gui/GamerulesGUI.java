@@ -24,7 +24,7 @@ import java.util.Map;
 public class GamerulesGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private final String GUI_TITLE = "Gamerules - ";
+    // Removed static GUI_TITLE, using key instead
 
     public GamerulesGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -33,11 +33,12 @@ public class GamerulesGUI implements Listener {
     public void open(Player player, String arenaName) {
         ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaName);
         if (config == null) {
-            player.sendMessage(Component.text("Arena introuvable.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "gui-gamerules-error-arena");
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text(GUI_TITLE + arenaName));
+        String title = be.dualsfwshield.deathswap.util.Lang.get("gui-gamerules-title", "%arena%", arenaName);
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text(title));
 
         // Define boolean rules to manage
         List<String> rules = Arrays.asList(
@@ -59,12 +60,13 @@ public class GamerulesGUI implements Listener {
             ItemStack item = new ItemStack(enabled ? Material.LIME_DYE : Material.GRAY_DYE);
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(rule, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+            meta.displayName(Component.text(rule, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Valeur actuelle: ", NamedTextColor.GRAY)
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-current", "%value%", "")
                     .append(Component.text(enabled ? "ON" : "OFF",
                             enabled ? NamedTextColor.GREEN : NamedTextColor.RED)));
             lore.add(Component.empty());
-            lore.add(Component.text("clic pour basculer", NamedTextColor.YELLOW));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-click-toggle").color(NamedTextColor.YELLOW));
             meta.lore(lore);
             item.setItemMeta(meta);
 
@@ -74,7 +76,7 @@ public class GamerulesGUI implements Listener {
         // Back button
         ItemStack back = new ItemStack(Material.ARROW);
         ItemMeta backMeta = back.getItemMeta();
-        backMeta.displayName(Component.text("Retour", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        backMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-back").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         back.setItemMeta(backMeta);
         inv.setItem(22, back); // Bottom middle
 
@@ -104,7 +106,20 @@ public class GamerulesGUI implements Listener {
         // SettingsGUI used `event.getView().getTitle()` (Legacy).
         // I will use `event.getView().getTitle().startsWith("Gamerules - ")`.
 
-        if (!event.getView().getTitle().startsWith(GUI_TITLE))
+        // Check regex or format, since we used localized title
+        String rawTitle = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(event.getView().title());
+        // Assume format "Gamerules - [ArenaName]" -> look for " - " or split?
+        // Or if we know the prefix from lang...
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-gamerules-title", "%arena%", "");
+        // Only valid if "%arena%" was at the end...
+        // Let's assume standard format: prefix + arenaName
+        // But what if prefix contains regex chars?
+        // Let's try to strip parameters.
+        
+        // Simpler: use the title string from lang, replace %arena% with empty string to get prefix part?
+        // "Gamerules - %arena%" -> "Gamerules - "
+        String prefixPart = be.dualsfwshield.deathswap.util.Lang.get("gui-gamerules-title").replace("%arena%", "");
+        if (!rawTitle.startsWith(prefixPart))
             return;
 
         event.setCancelled(true);
@@ -113,8 +128,7 @@ public class GamerulesGUI implements Listener {
             return;
 
         Player player = (Player) event.getWhoClicked();
-        String title = event.getView().getTitle();
-        String arenaName = title.substring(GUI_TITLE.length());
+        String arenaName = rawTitle.substring(prefixPart.length());
 
         ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaName);
         if (config == null)

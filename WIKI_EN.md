@@ -1,7 +1,13 @@
 # 📖 DeathSwap — Complete Wiki
 
+> **[Wiki Français](WIKI.md)**
+>
 > Comprehensive technical and user guide for the DeathSwap plugin.
 > Last updated: February 2026
+>
+> ⚠️ **Current Limitations:**
+> - In-game messages are available in **French** only.
+> - **BlockShuffle** targets and **DeathShuffle** causes are hardcoded (not configurable at the moment).
 
 ---
 
@@ -129,6 +135,111 @@ After the first launch:
 - Players must find and **stand on** that block
 - Timer per round based on block rarity
 - Last player is eliminated each round
+
+### Simplified Architecture
+
+```mermaid
+graph TD
+    Plugin[DeathSwapPlugin] --> CM[ConfigManager]
+    Plugin --> AM[ArenaManager]
+    Plugin --> CMD[DeathSwapCommand]
+    Plugin --> L[Listeners]
+    
+    AM --> GI[GameInstance]
+    GI --> BSI[BlockShuffleInstance]
+    GI --> DSI[DeathShuffleInstance]
+    
+    GI --> VM[VoteManager]
+    GI --> CHM[ChallengeManager]
+    GI --> SM[SoundManager]
+    
+    CMD --> AM
+    CMD --> GUIs
+    
+    L --> AM
+    L --> GI
+```
+
+### Full Class Diagram
+
+```mermaid
+classDiagram
+    class DeathSwapPlugin {
+        +onEnable()
+        +onDisable()
+        +getArenaManager()
+        +getConfigManager()
+    }
+    
+    class ConfigManager {
+        +load()
+        +saveArena()
+        +getArenaConfig()
+    }
+    
+    class ArenaManager {
+        -Map~String, GameInstance~ arenas
+        +initArenas()
+        +getArena(id)
+        +getPlayerArena(player)
+    }
+    
+    class GameInstance {
+        -GameState state
+        -Set~Player~ players
+        +joinLobby()
+        +startGame()
+        +stopGame()
+        +performSwap()
+    }
+    
+    class BlockShuffleInstance {
+        +startNextRound()
+        +onPlayerStandOnBlock()
+    }
+    
+    class DeathShuffleInstance {
+        +startNextRound()
+        +onPlayerDeath()
+    }
+    
+    class Listeners {
+        <<Interface>>
+        +GameListener
+        +LobbyListener
+        +BlockShuffleListener
+        +DeathShuffleListener
+    }
+    
+    class Managers {
+        <<Interface>>
+        +VoteManager
+        +ChallengeManager
+        +SoundManager
+        +StatsManager
+    }
+    
+    class GUIs {
+        <<Interface>>
+        +SettingsGUI
+        +ArenaListGUI
+        +HelpGUI
+    }
+
+    DeathSwapPlugin --> ConfigManager
+    DeathSwapPlugin --> ArenaManager
+    DeathSwapPlugin --> Managers
+    DeathSwapPlugin --> GUIs
+    
+    ArenaManager --> GameInstance
+    GameInstance <|-- BlockShuffleInstance
+    GameInstance <|-- DeathShuffleInstance
+    
+    GameInstance --> Managers
+    
+    Listeners --> ArenaManager
+    Listeners --> GameInstance
+```
 
 ---
 

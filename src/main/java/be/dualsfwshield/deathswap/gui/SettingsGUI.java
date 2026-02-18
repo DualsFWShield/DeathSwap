@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 public class SettingsGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final Component TITLE = Component.text("⚙ Admin Config", NamedTextColor.GOLD, TextDecoration.BOLD);
+    // Removed static TITLE, using key instead
 
     public SettingsGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -44,11 +44,12 @@ public class SettingsGUI implements Listener {
     public void open(Player player, String arenaId) {
         ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
         if (config == null) {
-            player.sendMessage(Component.text("Arena not found: " + arenaId, NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "gui-settings-error-arena-not-found", "%arena%", arenaId);
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
+        Component title = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-settings-title");
+        Inventory inv = Bukkit.createInventory(null, 54, title);
 
         GameInstance game = plugin.getArenaManager().getArena(arenaId);
         boolean isActive = game != null
@@ -57,142 +58,143 @@ public class SettingsGUI implements Listener {
         // Row 1 (0-8): Core Settings
         inv.setItem(0,
                 createItem(Material.matchMaterial("PAINTING") != null ? Material.PAINTING : Material.ITEM_FRAME,
-                        "&6Game Type",
-                        "&7Actuel: &e" + config.gameType.name(),
+                        be.dualsfwshield.deathswap.util.Lang.get("gui-settings-gametype-name"),
+                        be.dualsfwshield.deathswap.util.Lang.get("gui-settings-gametype-current", "%type%", config.gameType.name()),
                         "",
-                        "&aCliquez pour changer"));
+                        be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-change")));
 
-        inv.setItem(2, createItem(Material.COMPASS, "&6Lobby World",
-                "&7Actuel: &e" + config.lobbyWorld,
+        inv.setItem(2, createItem(Material.COMPASS, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-lobby-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-lobby-current", "%world%", config.lobbyWorld),
                 "",
-                "&aClic G: &7Changer (Chat)"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-chat")));
 
-        inv.setItem(4, createItem(Material.GRASS_BLOCK, "&6Game World",
-                "&7Actuel: &e" + config.gameWorld,
+        inv.setItem(4, createItem(Material.GRASS_BLOCK, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-game-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-game-current", "%world%", config.gameWorld),
                 "",
-                "&aClic G: &7Changer (Chat)"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-chat")));
 
-        inv.setItem(6, createItem(Material.COMMAND_BLOCK, "&6Gamerules",
-                "&7Configurer les règles de jeu",
-                "&7(" + config.gamerules.size() + " règles définies)",
+        inv.setItem(6, createItem(Material.COMMAND_BLOCK, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-gamerules-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-gamerules-lore-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-gamerules-lore-2", "%count%", String.valueOf(config.gamerules.size())),
                 "",
-                "&aCliquez pour ouvrir"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-open")));
 
-        inv.setItem(8, createItem(Material.ITEM_FRAME, "&6Mode UI",
-                "&7Actuel: &e" + config.uiMode.name(),
+        inv.setItem(8, createItem(Material.ITEM_FRAME, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-uimode-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-uimode-current", "%mode%", config.uiMode.name()),
                 "",
-                "&eRICH: &7BossBar + Actionbar",
-                "&eCLEAN: &7Chat uniquement",
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-uimode-rich"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-uimode-clean"),
                 "",
-                "&aCliquez pour changer"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-change")));
 
         // Row 2 (9-17): Timers & Limits
-        inv.setItem(10, createItem(Material.CLOCK, "&6Swap Timer",
-                "&7Mode: &e" + config.swapMode.name(),
+        inv.setItem(10, createItem(Material.CLOCK, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-timer-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-timer-mode", "%mode%", config.swapMode.name()),
                 config.swapMode.name().equals("FIXED")
-                        ? "&7Intervalle: &e" + formatTime(config.swapInterval)
-                        : "&7Min: &e" + formatTime(config.swapMin) + " &7Max: &e" + formatTime(config.swapMax),
+                        ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-timer-interval", "%time%", formatTime(config.swapInterval))
+                        : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-timer-minmax", "%min%", formatTime(config.swapMin), "%max%", formatTime(config.swapMax)),
                 "",
-                "&aCliquez pour configurer"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-config")));
 
-        inv.setItem(12, createItem(Material.RECOVERY_COMPASS, "&6Durée Max Partie",
-                "&7Actuel: &e" + formatTime(config.maxGameTime),
+        inv.setItem(12, createItem(Material.RECOVERY_COMPASS, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-maxgame-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-maxgame-current", "%time%", formatTime(config.maxGameTime)),
                 "",
-                "&aClic G: &7+1 min",
-                "&cClic D: &7-1 min"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-add-min"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-sub-min")));
 
-        inv.setItem(14, createItem(Material.HOPPER, "&6Temps de Génération",
-                "&7Actuel: &e" + config.loadTime + "s",
+        inv.setItem(14, createItem(Material.HOPPER, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-loadtime-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-loadtime-current", "%time%", String.valueOf(config.loadTime)),
                 "",
-                "&aClic G: &7+10s",
-                "&cClic D: &7-10s"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-add-10s"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-sub-10s")));
 
         inv.setItem(16, createItem(
                 config.pvpEnabled ? Material.DIAMOND_SWORD : Material.SHIELD,
-                "&6PvP",
-                config.pvpEnabled ? "&aPvP Activé" : "&ePvP Désactivé",
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-pvp-name"),
+                config.pvpEnabled ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-pvp-enabled") : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-pvp-disabled"),
                 "",
-                "&7Cliquez pour basculer"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-toggle")));
 
         // Row 3 (18-26): Players & Limits
-        inv.setItem(20, createItem(Material.PLAYER_HEAD, "&6Joueurs Min",
-                "&7Actuel: &e" + config.minPlayers,
+        inv.setItem(20, createItem(Material.PLAYER_HEAD, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-minplayers-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-minplayers-current", "%count%", String.valueOf(config.minPlayers)),
                 "",
-                "&aClic G: &7+1",
-                "&cClic D: &7-1"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-add-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-sub-1")));
 
-        inv.setItem(22, createItem(Material.PLAYER_HEAD, "&6Joueurs Max",
-                "&7Actuel: &e" + config.maxPlayers,
+        inv.setItem(22, createItem(Material.PLAYER_HEAD, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-maxplayers-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-maxplayers-current", "%count%", String.valueOf(config.maxPlayers)),
                 "",
-                "&aClic G: &7+1",
-                "&cClic D: &7-1"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-add-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-sub-1")));
 
-        inv.setItem(24, createItem(Material.GOLDEN_APPLE, "&6Protection Spawn",
-                "&7Actuel: &e" + config.spawnProtection + "s",
+        inv.setItem(24, createItem(Material.GOLDEN_APPLE, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-spawnprot-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-spawnprot-current", "%time%", String.valueOf(config.spawnProtection)),
                 "",
-                "&aClic G: &7+5s",
-                "&cClic D: &7-5s"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-add-5s"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-sub-5s")));
 
         // Row 4 (27-35): Dimensions & Misc
         inv.setItem(28, createItem(
                 config.netherEnabled ? Material.NETHERRACK : Material.BARRIER,
-                "&6Nether",
-                config.netherEnabled ? "&aActivé" : "&cDésactivé",
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-nether-name"),
+                config.netherEnabled ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-nether-enabled") : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-nether-disabled"),
                 "",
-                "&7Cliquez pour basculer"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-toggle")));
 
         inv.setItem(30, createItem(
                 config.endEnabled ? Material.END_STONE : Material.BARRIER,
-                "&6End",
-                config.endEnabled ? "&aActivé" : "&cDésactivé",
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-end-name"),
+                config.endEnabled ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-end-enabled") : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-end-disabled"),
                 "",
-                "&7Cliquez pour basculer"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-click-toggle")));
 
-        inv.setItem(32, createItem(Material.WHEAT_SEEDS, "&6Seeds",
-                "&7Total: &e" + config.seeds.size() + " seeds",
+        inv.setItem(32, createItem(Material.WHEAT_SEEDS, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-seeds-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-seeds-total", "%count%", String.valueOf(config.seeds.size())),
                 "",
-                "\u00a77Les seeds sont configurables",
-                "\u00a77dans arenas/" + arenaId + ".yml"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-seeds-lore-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-seeds-lore-2", "%arena%", arenaId)));
 
         // Row 5 (36-44): Commands & Resilience
         String tpCmdPreview = config.teleportCommand != null && !config.teleportCommand.isEmpty()
                 ? (config.teleportCommand.length() > 30 ? config.teleportCommand.substring(0, 27) + "..."
                         : config.teleportCommand)
-                : "&7Défaut (Global)";
+                : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-tp-default");
 
-        inv.setItem(37, createItem(Material.ENDER_PEARL, "&6Commande Teleport",
-                "&7Actuel: &e" + tpCmdPreview,
+        inv.setItem(37, createItem(Material.ENDER_PEARL, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-tp-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-tp-current", "%cmd%", tpCmdPreview),
                 "",
-                "&aClic G: &7Définir (Chat)",
-                "&cClic D: &7Reset (Global)"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-tp-click-set"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-tp-click-reset")));
 
         String resetCmd = (config.worldResetCommands != null && !config.worldResetCommands.isEmpty())
-                ? "&eActivé (" + config.worldResetCommands.size() + " cmds)"
-                : "&7Désactivé (None)";
+                ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-active", "%count%", String.valueOf(config.worldResetCommands.size()))
+                : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-inactive");
 
-        inv.setItem(39, createItem(Material.TNT, "&6Commande Reset",
-                "&7Actuel: &e" + resetCmd,
+        inv.setItem(39, createItem(Material.TNT, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-name"),
+                config.worldResetCommands != null && !config.worldResetCommands.isEmpty() ? be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-active", "%count%", String.valueOf(config.worldResetCommands.size()))
+                    : be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-inactive"),
                 "",
-                "&aClic G: &7Cycle (None -> CWR -> MV)",
-                "&cClic D: &7Custom (Chat)"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-click-cycle"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-reset-click-custom")));
 
-        inv.setItem(41, createItem(Material.TOTEM_OF_UNDYING, "&6Resilience",
-                "&7Start si Min Players: &e" + config.startIfMinPlayersMet,
-                "&7Bloquer Cancel Unready: &e" + config.preventCancelAfterCountdown,
+        inv.setItem(41, createItem(Material.TOTEM_OF_UNDYING, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-resilience-name"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-resilience-start", "%bool%", String.valueOf(config.startIfMinPlayersMet)),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-resilience-cancel", "%bool%", String.valueOf(config.preventCancelAfterCountdown)),
                 "",
-                "&aCliquez pour basculer (ON/OFF)"));
+                be.dualsfwshield.deathswap.util.Lang.get("gui-settings-resilience-click")));
 
         // Row 6 (45-53): Footer
-        inv.setItem(45, createItem(Material.NAME_TAG, "&eArène: &6" + arenaId));
+        inv.setItem(45, createItem(Material.NAME_TAG, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-arena-info", "%arena%", arenaId)));
 
         if (isActive) {
-            inv.setItem(49, createItem(Material.BARRIER, "&cArrêter l'Arène",
-                    "&7Force Stop la partie en cours.",
+            inv.setItem(49, createItem(Material.BARRIER, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-stop-name"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-settings-stop-lore"),
                     "",
-                    "&Click G pour arrêter !"));
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-settings-stop-click")));
         }
 
-        inv.setItem(53, createItem(Material.ARROW, "&eRetour", "&7Vers le menu de l'arène"));
+        inv.setItem(53, createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-back-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-settings-back-lore")));
 
         // Fill empty slots with glass panes
         ItemStack filler = createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
@@ -211,7 +213,8 @@ public class SettingsGUI implements Listener {
             return;
         if (event.getView().title() == null)
             return;
-        if (!event.getView().title().equals(TITLE))
+        Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-settings-title");
+        if (!expectedTitle.equals(event.getView().title()))
             return;
 
         event.setCancelled(true);
@@ -237,7 +240,7 @@ public class SettingsGUI implements Listener {
                 open(player, arenaId);
             }
             case 2 -> { // Lobby World
-                plugin.getChatInputListener().requestInput(player, "Entrez le nom du monde Lobby (ou 'cancel'):",
+                plugin.getChatInputListener().requestInput(player, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-input-lobby"),
                         (input) -> {
                             config.lobbyWorld = input;
                             plugin.getConfigManager().saveArena(config);
@@ -245,7 +248,7 @@ public class SettingsGUI implements Listener {
                         });
             }
             case 4 -> { // Game World
-                plugin.getChatInputListener().requestInput(player, "Entrez le nom du monde de Jeu (ou 'cancel'):",
+                plugin.getChatInputListener().requestInput(player, be.dualsfwshield.deathswap.util.Lang.get("gui-settings-input-game"),
                         (input) -> {
                             config.gameWorld = input;
                             plugin.getConfigManager().saveArena(config);
@@ -313,7 +316,7 @@ public class SettingsGUI implements Listener {
             case 37 -> { // Teleport Cmd
                 if (isLeftClick) {
                     plugin.getChatInputListener().requestInput(player,
-                            "Entrez la commande de TP (Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%):",
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-settings-input-tp", "%placeholders%", "%player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%"),
                             (input) -> {
                                 config.teleportCommand = input;
                                 plugin.getConfigManager().saveArena(config);
@@ -349,21 +352,20 @@ public class SettingsGUI implements Listener {
                     if (nextType == 1) { // CWR
                         config.worldResetCommands.add("cwr edit %world% setSeed %seed%");
                         config.worldResetCommands.add("cwr reset %world%");
-                        player.sendMessage(Component.text("Reset défini sur CyberWorldReset.", NamedTextColor.GREEN));
+                        be.dualsfwshield.deathswap.util.Lang.send(player, "gui-settings-reset-set-cwr");
                     } else if (nextType == 2) { // MV
                         config.worldResetCommands.add("mv regen %world% -s %seed%");
                         config.worldResetCommands.add("mv confirm"); // just in case
-                        player.sendMessage(
-                                Component.text("Reset défini sur Multiverse (Regen).", NamedTextColor.GREEN));
+                        be.dualsfwshield.deathswap.util.Lang.send(player, "gui-settings-reset-set-mv");
                     } else { // None
-                        player.sendMessage(Component.text("Reset désactivé (None).", NamedTextColor.YELLOW));
+                        be.dualsfwshield.deathswap.util.Lang.send(player, "gui-settings-reset-set-none");
                     }
                     plugin.getConfigManager().saveArena(config);
                     open(player, arenaId);
                 } else if (isRightClick) {
                     // Custom Input
                     plugin.getChatInputListener().requestInput(player,
-                            "Entrez les commandes de reset séparées par ';' (Placeholders: %world%, %seed%):",
+                            be.dualsfwshield.deathswap.util.Lang.get("gui-settings-input-reset", "%world%", "%world%", "%seed%", "%seed%"),
                             (input) -> {
                                 config.worldResetCommands = new ArrayList<>();
                                 if (!input.equalsIgnoreCase("none") && !input.isEmpty()) {
@@ -388,7 +390,7 @@ public class SettingsGUI implements Listener {
                 GameInstance game = plugin.getArenaManager().getArena(arenaId);
                 if (game != null) {
                     game.stopGame();
-                    player.sendMessage(Component.text("Arène arrêtée.", NamedTextColor.RED));
+                    be.dualsfwshield.deathswap.util.Lang.send(player, "gui-settings-stop-success");
                     open(player, arenaId);
                 }
             }

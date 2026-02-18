@@ -1,0 +1,31 @@
+name: "Death Shuffle"
+description: "Swap positions and try to kill your opponent!"
+authors: ["DualsFWShield"]
+version: "1.0"
+
+# Game Settings
+swap-time-min: 30
+swap-time-max: 120
+health: 20.0
+pvp: true
+
+# Mode Specific
+kill-on-swap: false # If true, players might take damage or die on swap if in bad spot
+
+causes:
+  - DROWNING
+  - FALL
+  - FIRE
+  - CONTACT
+  - STARVATION
+  - SUFFOCATION
+  - LAVA
+  - EXPLOSION
+  - PROJECTILE
+  - MAGIC
+  - HOT_FLOOR
+  - FREEZE
+  - LIGHTNING
+  - FLY_INTO_WALL
+  - FALLING_BLOCK
+  - VOID

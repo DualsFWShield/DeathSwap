@@ -43,9 +43,38 @@ public class DeathShuffleInstance extends GameInstance {
     private final Set<UUID> completedRound = new HashSet<>();
     // Track players pending respawn (died the right way)
     private final Map<UUID, Boolean> pendingRespawn = new HashMap<>();
+    
+    // Allowed causes from config
+    private final Set<DeathCause> allowedCauses = new HashSet<>();
 
     public DeathShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
+        loadAllowedCauses();
+    }
+
+    private void loadAllowedCauses() {
+        allowedCauses.clear();
+        ConfigManager.DeathShuffleConfig dsConfig = getPlugin().getConfigManager().getDeathShuffleConfig();
+        if (dsConfig != null) {
+            List<String> causesList = dsConfig.getConfig().getStringList("causes");
+            if (causesList != null && !causesList.isEmpty()) {
+                for (String causeName : causesList) {
+                    try {
+                        DeathCause dc = DeathCause.valueOf(causeName.toUpperCase());
+                        allowedCauses.add(dc);
+                    } catch (IllegalArgumentException e) {
+                        getPlugin().getLogger().warning("Invalid cause in deathshuffle.yml: " + causeName);
+                    }
+                }
+            }
+        }
+        
+        // Fallback
+        if (allowedCauses.isEmpty()) {
+            for (DeathCause dc : DeathCause.values()) {
+                allowedCauses.add(dc);
+            }
+        }
     }
 
     @Override
@@ -83,10 +112,15 @@ public class DeathShuffleInstance extends GameInstance {
             difficulty = 3; // Rounds 7+: Hard
 
         // Pick random death cause from difficulty tier
-        DeathCause[] causes = DeathCause.getByDifficulty(difficulty);
+        // Pick random death cause from difficulty tier
+        // Filter by allowed causes
+        DeathCause[] causes = java.util.Arrays.stream(DeathCause.getByDifficulty(difficulty))
+                .filter(allowedCauses::contains)
+                .toArray(DeathCause[]::new);
+                
         if (causes.length == 0) {
-            // Fallback to all causes
-            causes = DeathCause.values();
+            // Fallback to all allowed causes
+            causes = allowedCauses.toArray(new DeathCause[0]);
         }
         currentDeathCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
 

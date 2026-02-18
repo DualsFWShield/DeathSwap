@@ -1,6 +1,10 @@
 # 🎮 DeathSwap Plugin
 
+> **[English Version](README_EN.md)**
+>
 > **Un plugin Minecraft professionnel** pour Paper 1.21+ avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
+>
+> ⚠️ **Note :** Les messages en jeu sont actuellement en **Français** uniquement.
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
 [![Paper 1.21](https://img.shields.io/badge/Paper-1.21+-blue)](https://papermc.io)
@@ -425,6 +429,115 @@ src/main/java/be/dualsfwshield/deathswap/
 ## 📄 Documentation Complète
 
 📖 Voir [WIKI.md](WIKI.md) pour la documentation technique complète.
+
+---
+
+## 🏗️ Architecture du Projet
+
+### Architecture Simplifiée
+
+```mermaid
+graph TD
+    Plugin[DeathSwapPlugin] --> CM[ConfigManager]
+    Plugin --> AM[ArenaManager]
+    Plugin --> CMD[DeathSwapCommand]
+    Plugin --> L[Listeners]
+    
+    AM --> GI[GameInstance]
+    GI --> BSI[BlockShuffleInstance]
+    GI --> DSI[DeathShuffleInstance]
+    
+    GI --> VM[VoteManager]
+    GI --> CHM[ChallengeManager]
+    GI --> SM[SoundManager]
+    
+    CMD --> AM
+    CMD --> GUIs
+    
+    L --> AM
+    L --> GI
+```
+
+### Diagramme de Classes Complet
+
+```mermaid
+classDiagram
+    class DeathSwapPlugin {
+        +onEnable()
+        +onDisable()
+        +getArenaManager()
+        +getConfigManager()
+    }
+    
+    class ConfigManager {
+        +load()
+        +saveArena()
+        +getArenaConfig()
+    }
+    
+    class ArenaManager {
+        -Map~String, GameInstance~ arenas
+        +initArenas()
+        +getArena(id)
+        +getPlayerArena(player)
+    }
+    
+    class GameInstance {
+        -GameState state
+        -Set~Player~ players
+        +joinLobby()
+        +startGame()
+        +stopGame()
+        +performSwap()
+    }
+    
+    class BlockShuffleInstance {
+        +startNextRound()
+        +onPlayerStandOnBlock()
+    }
+    
+    class DeathShuffleInstance {
+        +startNextRound()
+        +onPlayerDeath()
+    }
+    
+    class Listeners {
+        <<Interface>>
+        +GameListener
+        +LobbyListener
+        +BlockShuffleListener
+        +DeathShuffleListener
+    }
+    
+    class Managers {
+        <<Interface>>
+        +VoteManager
+        +ChallengeManager
+        +SoundManager
+        +StatsManager
+    }
+    
+    class GUIs {
+        <<Interface>>
+        +SettingsGUI
+        +ArenaListGUI
+        +HelpGUI
+    }
+
+    DeathSwapPlugin --> ConfigManager
+    DeathSwapPlugin --> ArenaManager
+    DeathSwapPlugin --> Managers
+    DeathSwapPlugin --> GUIs
+    
+    ArenaManager --> GameInstance
+    GameInstance <|-- BlockShuffleInstance
+    GameInstance <|-- DeathShuffleInstance
+    
+    GameInstance --> Managers
+    
+    Listeners --> ArenaManager
+    Listeners --> GameInstance
+```
 
 ---
 

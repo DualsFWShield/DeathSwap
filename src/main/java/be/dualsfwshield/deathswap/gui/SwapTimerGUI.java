@@ -32,7 +32,7 @@ import static be.dualsfwshield.deathswap.gui.SettingsGUI.formatTime;
 public class SwapTimerGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final Component TITLE = Component.text("⏱ Swap Timer", NamedTextColor.GOLD, TextDecoration.BOLD);
+    // Removed static TITLE, using key instead
 
     // Preset values in minutes
     private static final int[] PRESETS = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -49,7 +49,8 @@ public class SwapTimerGUI implements Listener {
         if (config == null)
             return;
 
-        Inventory inv = Bukkit.createInventory(null, 27, TITLE);
+        Component title = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-timer-title");
+        Inventory inv = Bukkit.createInventory(null, 27, title);
 
         // Row 1: Preset buttons (slots 0-9) — 1 to 10 minutes
         Material[] clockMaterials = {
@@ -66,19 +67,19 @@ public class SwapTimerGUI implements Listener {
 
             ItemStack item = new ItemStack(clockMaterials[i], Math.min(minutes, 64));
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(colorize(isSelected ? "&a&l" + minutes + " min ✓" : "&e" + minutes + " min")
+            meta.displayName(colorize(isSelected ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-selected", "%minutes%", String.valueOf(minutes)) : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-preset-unselected", "%minutes%", String.valueOf(minutes)))
                     .decoration(TextDecoration.ITALIC, false));
 
             List<Component> lore = new ArrayList<>();
-            lore.add(colorize("&7= " + seconds + " secondes"));
+            lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-seconds", "%seconds%", String.valueOf(seconds))));
             if (isSelected) {
                 lore.add(Component.empty());
-                lore.add(colorize("&a► Sélectionné"));
+                lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-selected")));
                 meta.addEnchant(Enchantment.UNBREAKING, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             } else {
                 lore.add(Component.empty());
-                lore.add(colorize("&7Cliquez pour sélectionner"));
+                lore.add(colorize(be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-select")));
             }
             meta.lore(lore);
             item.setItemMeta(meta);
@@ -89,11 +90,11 @@ public class SwapTimerGUI implements Listener {
         // Slot 12: Fixed mode
         boolean isFixed = config.swapMode == SwapMode.FIXED;
         ItemStack fixedItem = createItem(Material.IRON_BLOCK,
-                isFixed ? "&a&lMode Fixe ✓" : "&7Mode Fixe",
-                "&7Intervalle constant entre",
-                "&7chaque swap.",
+                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-name-inactive"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-lore-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-timer-fixed-lore-2"),
                 "",
-                isFixed ? "&a► Actif" : "&7Cliquez pour activer");
+                isFixed ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
         if (isFixed) {
             ItemMeta fixedMeta = fixedItem.getItemMeta();
             fixedMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
@@ -105,11 +106,11 @@ public class SwapTimerGUI implements Listener {
         // Slot 14: Random mode
         boolean isRandom = config.swapMode == SwapMode.RANDOM;
         ItemStack randomItem = createItem(Material.GOLD_BLOCK,
-                isRandom ? "&a&lMode Random ✓" : "&7Mode Random",
-                "&7Intervalle aléatoire entre",
-                "&7un minimum et un maximum.",
+                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-name-inactive"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-lore-1"),
+                be.dualsfwshield.deathswap.util.Lang.get("gui-timer-random-lore-2"),
                 "",
-                isRandom ? "&a► Actif" : "&7Cliquez pour activer");
+                isRandom ? be.dualsfwshield.deathswap.util.Lang.get("gui-timer-active") : be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-activate"));
         if (isRandom) {
             ItemMeta randomMeta = randomItem.getItemMeta();
             randomMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
@@ -120,24 +121,24 @@ public class SwapTimerGUI implements Listener {
 
         // Row 3: Random min/max controls (only visible/active if RANDOM mode)
         if (isRandom) {
-            inv.setItem(21, createItem(Material.RED_CONCRETE, "&cMinimum",
-                    "&7Actuel: &e" + formatTime(config.swapMin),
+            inv.setItem(21, createItem(Material.RED_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-min-name"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%", formatTime(config.swapMin)),
                     "",
-                    "&aClic G: &7+30s",
-                    "&cClic D: &7-30s"));
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
 
-            inv.setItem(23, createItem(Material.GREEN_CONCRETE, "&aMaximum",
-                    "&7Actuel: &e" + formatTime(config.swapMax),
+            inv.setItem(23, createItem(Material.GREEN_CONCRETE, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-max-name"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-current", "%time%", formatTime(config.swapMax)),
                     "",
-                    "&aClic G: &7+30s",
-                    "&cClic D: &7-30s"));
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-add-30s"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-timer-click-sub-30s")));
         }
 
         // Slot 18: Arena ID tag (hidden data)
-        inv.setItem(18, createItem(Material.NAME_TAG, "&eArène: &6" + arenaId));
+        inv.setItem(18, createItem(Material.NAME_TAG, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-arena", "%arena%", arenaId)));
 
         // Slot 26: Back to main settings
-        inv.setItem(26, createItem(Material.ARROW, "&7← Retour"));
+        inv.setItem(26, createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-timer-back")));
 
         // Fill empty slots
         ItemStack filler = createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
@@ -156,7 +157,8 @@ public class SwapTimerGUI implements Listener {
             return;
         if (event.getView().title() == null)
             return;
-        if (!event.getView().title().equals(TITLE))
+        Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-timer-title");
+        if (!expectedTitle.equals(event.getView().title()))
             return;
 
         event.setCancelled(true);
@@ -225,10 +227,18 @@ public class SwapTimerGUI implements Listener {
         if (nameTag == null || !nameTag.hasItemMeta())
             return "default";
 
+            return "default";
+
         Component display = nameTag.getItemMeta().displayName();
         if (display == null)
             return "default";
-
+        
+        // Use parsing of key if possible, but regex based extraction on "Arena: <id>"
+        // Since we use keys, regex might be tricky if key format changes.
+        // Best practice: Store ID in persistent data container (PDC), but we want to avoid complex changes?
+        // Let's stick to parsing the localized string if it maintains structure "Arena: ID"
+        // Or better: Use regex that looks for ": "
+        
         String plain = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
                 .plainText().serialize(display);
         if (plain.contains(": ")) {

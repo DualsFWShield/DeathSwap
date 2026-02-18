@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ArenaDetailsGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final String TITLE_PREFIX = "Admin: ";
+    // Removed static TITLE_PREFIX, using key instead
 
     public ArenaDetailsGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -33,11 +33,12 @@ public class ArenaDetailsGUI implements Listener {
         be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
 
         if (config == null) {
-            player.sendMessage(Component.text("Cette arène n'existe plus.", NamedTextColor.RED));
+            be.dualsfwshield.deathswap.util.Lang.send(player, "gui-details-error-not-found");
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text(TITLE_PREFIX + arenaId));
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-details-title-prefix");
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text(prefix + arenaId));
 
         GameState state = (arena != null) ? arena.getState() : GameState.DISABLED;
         if (arena == null) {
@@ -56,42 +57,44 @@ public class ArenaDetailsGUI implements Listener {
             case ENDED -> Material.RED_CONCRETE;
             case DISABLED -> Material.BARRIER;
         };
-        String stateName = (arena == null) ? "UNLOADED" : state.name();
-        inv.setItem(10, AdminGUI.createItem(stateMat, "&eStatut: " + stateName));
+            case DISABLED -> Material.BARRIER;
+        };
+        String stateName = (arena == null) ? be.dualsfwshield.deathswap.util.Lang.get("gui-details-unloaded") : state.name();
+        inv.setItem(10, AdminGUI.createItem(stateMat, be.dualsfwshield.deathswap.util.Lang.get("gui-details-status", "%status%", stateName)));
 
         // Slot 12: Start / Stop
         if (state == GameState.RUNNING || state == GameState.STARTING) {
              // Stop button
-             inv.setItem(12, AdminGUI.createItem(Material.BARRIER, "&cArrêter la partie/compte à rebours", 
-                 "&7Force l'arrêt immédiat.", "&aClic G: &cSTOP"));
+             inv.setItem(12, AdminGUI.createItem(Material.BARRIER, be.dualsfwshield.deathswap.util.Lang.get("gui-details-stop-name"), 
+                 be.dualsfwshield.deathswap.util.Lang.get("gui-details-stop-lore-1"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-stop-click")));
         } else {
              // Start button
-             inv.setItem(12, AdminGUI.createItem(Material.EMERALD, "&aDémarrer l'arène", 
-                 "&7Lancer la partie.", 
-                 "&aClic G: &7Démarrer (Normal)", 
-                 "&eShift-Clic G: &7Forcer le démarrage",
-                 "&cclic D: &7Debug Start"));
+             inv.setItem(12, AdminGUI.createItem(Material.EMERALD, be.dualsfwshield.deathswap.util.Lang.get("gui-details-start-name"), 
+                 be.dualsfwshield.deathswap.util.Lang.get("gui-details-start-lore-1"), 
+                 be.dualsfwshield.deathswap.util.Lang.get("gui-details-start-click-normal"), 
+                 be.dualsfwshield.deathswap.util.Lang.get("gui-details-start-click-force"),
+                 be.dualsfwshield.deathswap.util.Lang.get("gui-details-start-click-debug")));
         }
 
         // Slot 14: Swap Immediate (Variables) / Regenerate (Waiting)
         if (state == GameState.RUNNING) {
-            inv.setItem(14, AdminGUI.createItem(Material.ENDER_PEARL, "&bForce Swap", 
-                "&7Déclencher un swap immédiat.", "&aClic G: &7Swap !"));
+            inv.setItem(14, AdminGUI.createItem(Material.ENDER_PEARL, be.dualsfwshield.deathswap.util.Lang.get("gui-details-swap-force-name"), 
+                be.dualsfwshield.deathswap.util.Lang.get("gui-details-swap-force-lore"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-swap-force-click")));
         } else if (state == GameState.WAITING || state == GameState.DISABLED) {
-             inv.setItem(14, AdminGUI.createItem(Material.TNT, "&cRégénérer Monde",
-                    "&7Supprimer et recréer le monde de jeu", "&7IRRÉVERSIBLE!"));
+             inv.setItem(14, AdminGUI.createItem(Material.TNT, be.dualsfwshield.deathswap.util.Lang.get("gui-details-regen-name"),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-details-regen-lore-1"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-regen-lore-2")));
         } else {
-             inv.setItem(14, AdminGUI.createItem(Material.GRAY_DYE, "&7Gérer Swap", "&7Seulement en jeu."));
+             inv.setItem(14, AdminGUI.createItem(Material.GRAY_DYE, be.dualsfwshield.deathswap.util.Lang.get("gui-details-manage-swap-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-manage-swap-lore")));
         }
 
         // Slot 16: Players
-        inv.setItem(16, AdminGUI.createItem(Material.PLAYER_HEAD, "&bGérer Joueurs", "&7Voir/Kick/Ban joueurs"));
+        inv.setItem(16, AdminGUI.createItem(Material.PLAYER_HEAD, be.dualsfwshield.deathswap.util.Lang.get("gui-details-manage-players-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-manage-players-lore")));
 
         // Slot 22: Back
-        inv.setItem(22, AdminGUI.createItem(Material.ARROW, "&eRetour", "&7Vers la liste des arènes"));
+        inv.setItem(22, AdminGUI.createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-details-back-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-back-lore")));
 
         // Slot 26: Settings
-        inv.setItem(26, AdminGUI.createItem(Material.COMPARATOR, "&6Configuration", "&7Modifier les paramètres"));
+        inv.setItem(26, AdminGUI.createItem(Material.COMPARATOR, be.dualsfwshield.deathswap.util.Lang.get("gui-details-config-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-details-config-lore")));
 
         // Fillers
         ItemStack filler = AdminGUI.createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
@@ -107,7 +110,8 @@ public class ArenaDetailsGUI implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player))
             return;
-        if (!event.getView().getTitle().startsWith(TITLE_PREFIX))
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-details-title-prefix");
+        if (!event.getView().getTitle().startsWith(prefix))
             return;
 
         event.setCancelled(true);
@@ -116,7 +120,7 @@ public class ArenaDetailsGUI implements Listener {
                 || clicked.getType() == Material.GRAY_STAINED_GLASS_PANE)
             return;
 
-        String arenaId = event.getView().getTitle().substring(TITLE_PREFIX.length());
+        String arenaId = event.getView().getTitle().substring(prefix.length());
         
         // We might valid config even if game instance is null
         // actions requiring game instance must check for it
@@ -126,14 +130,14 @@ public class ArenaDetailsGUI implements Listener {
 
         if (slot == 12) { // Start/Stop
              if (arena == null) {
-                 player.sendMessage(Component.text("Instance d'arène introuvable (non chargée ?).", NamedTextColor.RED));
+                 be.dualsfwshield.deathswap.util.Lang.send(player, "gui-details-error-instance");
                  return;
              }
              GameState state = arena.getState();
              if (state == GameState.RUNNING || state == GameState.STARTING) {
                  // Stop
                  arena.stopGame();
-                 player.sendMessage(Component.text("Jeu arrêté.", NamedTextColor.RED));
+                 be.dualsfwshield.deathswap.util.Lang.send(player, "gui-details-game-stopped");
              } else {
                  // Start
                  if (event.getClick().isShiftClick()) {
@@ -167,7 +171,7 @@ public class ArenaDetailsGUI implements Listener {
              if (arena != null && arena.getState() == GameState.RUNNING) {
                  // Swap Immediate
                  arena.performSwap();
-                 player.sendMessage(Component.text("Swap forcé !", NamedTextColor.AQUA));
+                 be.dualsfwshield.deathswap.util.Lang.send(player, "gui-details-swap-forced");
              } else if (arena == null || arena.getState() == GameState.WAITING || arena.getState() == GameState.DISABLED) {
                  // Regenerate logic
                  be.dualsfwshield.deathswap.ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
@@ -175,8 +179,8 @@ public class ArenaDetailsGUI implements Listener {
                  
                   String gameWorld = config.gameWorld;
                   plugin.getConfirmationGUI().open(player,
-                          "Régénérer " + gameWorld,
-                          "Tous les joueurs seront téléportés au hub.",
+                          be.dualsfwshield.deathswap.util.Lang.get("gui-details-regen-confirm-title", "%world%", gameWorld),
+                          be.dualsfwshield.deathswap.util.Lang.get("gui-details-regen-confirm-subtitle"),
                           NamedTextColor.GOLD,
                           () -> {
                               if (arena != null) {
@@ -185,9 +189,7 @@ public class ArenaDetailsGUI implements Listener {
                                   }
                               }
                               Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cwr reset " + gameWorld);
-                              player.sendMessage(
-                                      Component.text("Monde '" + gameWorld + "' en cours de régénération...",
-                                              NamedTextColor.GREEN));
+                              be.dualsfwshield.deathswap.util.Lang.send(player, "gui-details-regen-success", "%world%", gameWorld);
                               player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.0f);
                           },
                           () -> open(player, arenaId)

@@ -26,28 +26,29 @@ public class HelpGUI implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Aide DeathSwap", NamedTextColor.DARK_BLUE));
+        Component title = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-title");
+        Inventory inv = Bukkit.createInventory(null, 27, title);
 
         // Row 1: Player Commands
-        inv.setItem(10, createItem(Material.EMERALD, "&aRejoindre", "/ds join [arena]", "Rejoindre une partie en attente."));
-        inv.setItem(11, createItem(Material.RED_BED, "&cQuitter", "/ds leave", "Quitter la partie actuelle."));
-        inv.setItem(12, createItem(Material.PAPER, "&bStatistiques", "/ds stats [joueur]", "Voir vos statistiques ou celles d'un autre."));
-        inv.setItem(13, createItem(Material.GOLD_INGOT, "&6Classement", "/ds top [stat]", "Voir le classement des joueurs."));
-        inv.setItem(14, createItem(Material.HOPPER, "&eVote", "/ds vote [num]", "Voter pour une configuration (si actif)."));
+        inv.setItem(10, createItem(Material.EMERALD, be.dualsfwshield.deathswap.util.Lang.get("gui-help-join-name"), "/ds join [arena]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-join-desc")));
+        inv.setItem(11, createItem(Material.RED_BED, be.dualsfwshield.deathswap.util.Lang.get("gui-help-leave-name"), "/ds leave", be.dualsfwshield.deathswap.util.Lang.get("gui-help-leave-desc")));
+        inv.setItem(12, createItem(Material.PAPER, be.dualsfwshield.deathswap.util.Lang.get("gui-help-stats-name"), "/ds stats [joueur]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-stats-desc")));
+        inv.setItem(13, createItem(Material.GOLD_INGOT, be.dualsfwshield.deathswap.util.Lang.get("gui-help-top-name"), "/ds top [stat]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-top-desc")));
+        inv.setItem(14, createItem(Material.HOPPER, be.dualsfwshield.deathswap.util.Lang.get("gui-help-vote-name"), "/ds vote [num]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-vote-desc")));
 
         // Row 2: Admin Commands (Only if permission)
         if (player.hasPermission("deathswap.admin")) {
-            inv.setItem(19, createItem(Material.COMMAND_BLOCK, "&cAdmin Dashboard", "/ds admin list", "Ouvrir le menu de gestion des arènes."));
-            inv.setItem(20, createItem(Material.COMPARATOR, "&cParamètres", "/ds settings", "Ouvrir les paramètres globaux (déprécié).")); // Assuming settings is per arena mostly now, but keeping command
-            inv.setItem(21, createItem(Material.LIME_WOOL, "&aDémarrer", "/ds start [debug]", "Forcer le démarrage (Debug: bypass min players)."));
-            inv.setItem(22, createItem(Material.RED_WOOL, "&cArrêter", "/ds stop [arena]", "Arrêter une partie en cours."));
-            inv.setItem(23, createItem(Material.ENDER_PEARL, "&5Swap Immédiat", "/ds swapnow", "Forcer un échange de position immédiat."));
-            inv.setItem(24, createItem(Material.REPEATER, "&7Reload", "/ds reload", "Recharger la configuration du plugin."));
-            inv.setItem(25, createItem(Material.BOOK, "&eAide Commandes", "/ds help commands", "Voir la liste détaillée des commandes admin."));
+            inv.setItem(19, createItem(Material.COMMAND_BLOCK, be.dualsfwshield.deathswap.util.Lang.get("gui-help-admin-dashboard-name"), "/ds admin list", be.dualsfwshield.deathswap.util.Lang.get("gui-help-admin-dashboard-desc")));
+            inv.setItem(20, createItem(Material.COMPARATOR, be.dualsfwshield.deathswap.util.Lang.get("gui-help-settings-name"), "/ds settings", be.dualsfwshield.deathswap.util.Lang.get("gui-help-settings-desc"))); 
+            inv.setItem(21, createItem(Material.LIME_WOOL, be.dualsfwshield.deathswap.util.Lang.get("gui-help-start-name"), "/ds start [debug]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-start-desc")));
+            inv.setItem(22, createItem(Material.RED_WOOL, be.dualsfwshield.deathswap.util.Lang.get("gui-help-stop-name"), "/ds stop [arena]", be.dualsfwshield.deathswap.util.Lang.get("gui-help-stop-desc")));
+            inv.setItem(23, createItem(Material.ENDER_PEARL, be.dualsfwshield.deathswap.util.Lang.get("gui-help-swap-name"), "/ds swapnow", be.dualsfwshield.deathswap.util.Lang.get("gui-help-swap-desc")));
+            inv.setItem(24, createItem(Material.REPEATER, be.dualsfwshield.deathswap.util.Lang.get("gui-help-reload-name"), "/ds reload", be.dualsfwshield.deathswap.util.Lang.get("gui-help-reload-desc")));
+            inv.setItem(25, createItem(Material.BOOK, be.dualsfwshield.deathswap.util.Lang.get("gui-help-commands-name"), "/ds help commands", be.dualsfwshield.deathswap.util.Lang.get("gui-help-commands-desc")));
         }
         
         // Close Button
-        inv.setItem(26, createItem(Material.BARRIER, "&cFermer", "", "Fermer le menu."));
+        inv.setItem(26, createItem(Material.BARRIER, be.dualsfwshield.deathswap.util.Lang.get("gui-help-close-name"), "", be.dualsfwshield.deathswap.util.Lang.get("gui-help-close-desc")));
 
         // Fill empty slots with glass pane
         ItemStack filler = createItem(Material.GRAY_STAINED_GLASS_PANE, " ", "", "");
@@ -64,16 +65,16 @@ public class HelpGUI implements Listener {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text(name.replace("&", "§"), NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+            meta.displayName(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(name).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
             if (!usage.isEmpty()) {
-                lore.add(Component.text("Usage: " + usage, NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+                lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-usage", "%usage%", usage).decoration(TextDecoration.ITALIC, false));
             }
             if (!description.isEmpty()) {
-                lore.add(Component.text(description, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+                lore.add(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(description).colorIfAbsent(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
             }
             lore.add(Component.empty());
-            lore.add(Component.text("Cliquez pour suggérer la commande", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, true));
+            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-click-suggest").decoration(TextDecoration.ITALIC, true));
             meta.lore(lore);
             item.setItemMeta(meta);
         }
@@ -90,15 +91,16 @@ public class HelpGUI implements Listener {
         // OR better: Since this is a GUI, clicking usually executes. But the user asked "suggests the command".
         // Let's print a clickable message in chat.
         
-        player.sendMessage(Component.text("Cliquez ici pour utiliser: ", NamedTextColor.GRAY)
+        player.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-click-chat")
             .append(Component.text(command, NamedTextColor.YELLOW, TextDecoration.BOLD)
             .clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand(command))
-            .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Cliquez pour insérer", NamedTextColor.GREEN)))));
+            .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-click-insert")))));
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().title().equals(Component.text("Aide DeathSwap", NamedTextColor.DARK_BLUE))) return;
+        Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-help-title");
+        if (!expectedTitle.equals(event.getView().title())) return;
 
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;

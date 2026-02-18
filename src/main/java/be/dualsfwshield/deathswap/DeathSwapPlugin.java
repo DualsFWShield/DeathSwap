@@ -38,6 +38,9 @@ public class DeathSwapPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // 0. Language Init
+        be.dualsfwshield.deathswap.util.Lang.init(this);
+
         // 1. Config Manager
         this.configManager = new ConfigManager(this);
 
@@ -77,8 +80,6 @@ public class DeathSwapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(arenaDetailsGUI, this);
         getServer().getPluginManager().registerEvents(playerListGUI, this);
         getServer().getPluginManager().registerEvents(playerActionGUI, this);
-        getServer().getPluginManager().registerEvents(playerActionGUI, this);
-        getServer().getPluginManager().registerEvents(confirmationGUI, this);
         getServer().getPluginManager().registerEvents(confirmationGUI, this);
         getServer().getPluginManager().registerEvents(arenaListGUI, this);
         this.helpGUI = new be.dualsfwshield.deathswap.gui.HelpGUI(this);

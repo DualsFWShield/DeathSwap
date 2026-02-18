@@ -18,14 +18,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 public class PlayerActionGUI implements Listener {
 
     private final DeathSwapPlugin plugin;
-    private static final String TITLE_PREFIX = "Action: ";
+    // Removed static TITLE_PREFIX, using key instead
 
     public PlayerActionGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void open(Player admin, String arenaId, Player target) {
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text(TITLE_PREFIX + target.getName()));
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-title");
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text(prefix + target.getName()));
 
         // Slot 4: Target Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
@@ -36,16 +37,16 @@ public class PlayerActionGUI implements Listener {
         inv.setItem(4, head);
 
         // Slot 10: Teleport
-        inv.setItem(10, AdminGUI.createItem(Material.ENDER_PEARL, "&bTéléporter", "&7Aller à la position du joueur"));
+        inv.setItem(10, AdminGUI.createItem(Material.ENDER_PEARL, be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-tp-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-tp-lore")));
 
         // Slot 12: InvSee
-        inv.setItem(12, AdminGUI.createItem(Material.CHEST, "&eVoir Inventaire", "&7Ouvrir l'inventaire du joueur"));
+        inv.setItem(12, AdminGUI.createItem(Material.CHEST, be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-invsee-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-invsee-lore")));
 
         // Slot 14: Kick Arena
-        inv.setItem(14, AdminGUI.createItem(Material.IRON_BOOTS, "&cKick de l'Arène", "&7Renvoyer au Hub"));
+        inv.setItem(14, AdminGUI.createItem(Material.IRON_BOOTS, be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-kick-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-kick-lore")));
 
         // Slot 16: Ban (placeholder)
-        inv.setItem(16, AdminGUI.createItem(Material.BARRIER, "&4Bannir (CMD)", "&7Exécuter /ban"));
+        inv.setItem(16, AdminGUI.createItem(Material.BARRIER, be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-ban-name"), be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-ban-lore")));
 
         // Slot 22: Back
         // Store arenaId in invisible item or metadata? Or just assume admin context?
@@ -57,7 +58,7 @@ public class PlayerActionGUI implements Listener {
         ItemStack hidden = AdminGUI.createItem(Material.GRAY_STAINED_GLASS_PANE, "ID:" + arenaId);
         inv.setItem(0, hidden); // Top left
 
-        inv.setItem(22, AdminGUI.createItem(Material.ARROW, "&eRetour"));
+        inv.setItem(22, AdminGUI.createItem(Material.ARROW, be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-back")));
 
         // Fillers
         ItemStack filler = AdminGUI.createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
@@ -73,7 +74,8 @@ public class PlayerActionGUI implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player admin))
             return;
-        if (!event.getView().getTitle().startsWith(TITLE_PREFIX))
+        String prefix = be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-title");
+        if (!event.getView().getTitle().startsWith(prefix))
             return;
 
         event.setCancelled(true);
@@ -93,21 +95,22 @@ public class PlayerActionGUI implements Listener {
         String arenaId = hiddenName.replace("ID:", "").trim();
 
         // Target Name from Title
-        String targetName = event.getView().getTitle().substring(TITLE_PREFIX.length());
+        // Target Name from Title
+        String targetName = event.getView().getTitle().substring(prefix.length());
         Player target = Bukkit.getPlayer(targetName);
 
         if (clicked.getType() == Material.ENDER_PEARL) {
             if (target != null) {
                 admin.teleport(target);
-                admin.sendMessage(Component.text("Téléporté à " + targetName, NamedTextColor.GREEN));
+                be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-teleported", "%player%", targetName);
             } else {
-                admin.sendMessage(Component.text("Joueur hors ligne.", NamedTextColor.RED));
+                be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-offline");
             }
         } else if (clicked.getType() == Material.CHEST) {
             if (target != null) {
                 admin.openInventory(target.getInventory());
             } else {
-                admin.sendMessage(Component.text("Joueur hors ligne.", NamedTextColor.RED));
+                be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-offline");
             }
         } else if (clicked.getType() == Material.IRON_BOOTS) {
             if (target != null) {
@@ -121,20 +124,19 @@ public class PlayerActionGUI implements Listener {
                         if (hub != null)
                             target.teleport(hub.getSpawnLocation());
                     }
-                    target.sendMessage(
-                            Component.text("Vous avez été exclu de l'arène par un admin.", NamedTextColor.RED));
-                    admin.sendMessage(Component.text(targetName + " exclu de l'arène.", NamedTextColor.GREEN));
+                    be.dualsfwshield.deathswap.util.Lang.send(target, "gui-player-action-kick-message");
+                    be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-kick-success", "%player%", targetName);
                 }
             } else {
                 // Try offline kick if stored in arena? complex.
-                admin.sendMessage(Component.text("Joueur hors ligne.", NamedTextColor.RED));
+                be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-offline");
             }
             plugin.getPlayerListGUI().open(admin, arenaId); // Refresh list
         } else if (clicked.getType() == Material.BARRIER) {
             // Ban: confirmation required
             plugin.getConfirmationGUI().open(admin,
-                    "Bannir " + targetName,
-                    "Le joueur sera kick + banni du serveur.",
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-ban-confirm-title", "%player%", targetName),
+                    be.dualsfwshield.deathswap.util.Lang.get("gui-player-action-ban-confirm-subtitle"),
                     NamedTextColor.DARK_RED,
                     () -> {
                         // On confirm
@@ -147,7 +149,7 @@ public class PlayerActionGUI implements Listener {
                         }
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                                 "ban " + targetName + " Banni via Admin Dashboard par " + admin.getName());
-                        admin.sendMessage(Component.text(targetName + " banni du serveur.", NamedTextColor.DARK_RED));
+                        be.dualsfwshield.deathswap.util.Lang.send(admin, "gui-player-action-ban-success", "%player%", targetName);
                     },
                     () -> {
                         // On cancel: re-open action GUI

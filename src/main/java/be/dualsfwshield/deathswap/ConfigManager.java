@@ -49,6 +49,10 @@ public class ConfigManager {
     // Per-arena settings
     private final Map<String, ArenaConfig> arenaConfigs = new HashMap<>();
 
+    // Mode-specific configs
+    private BlockShuffleConfig blockShuffleConfig;
+    private DeathShuffleConfig deathShuffleConfig;
+
     public ConfigManager(DeathSwapPlugin plugin) {
         this.plugin = plugin;
         load();
@@ -161,6 +165,10 @@ public class ConfigManager {
             voteOptionsCount = 3;
         }
 
+        // --- Load Mode Configs ---
+        loadBlockShuffleConfig();
+        loadDeathShuffleConfig();
+
         // --- Arena Migration Logic ---
         File arenasFolder = new File(plugin.getDataFolder(), "arenas");
         if (!arenasFolder.exists()) {
@@ -213,6 +221,38 @@ public class ConfigManager {
         }
 
         plugin.getLogger().info("Loaded " + arenaConfigs.size() + " arena(s) from arenas/ folder.");
+    }
+
+    private void loadBlockShuffleConfig() {
+        File file = new File(plugin.getDataFolder(), "modes/blockshuffle.yml");
+        if (!file.exists()) {
+            plugin.saveResource("modes/blockshuffle.yml", false);
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        
+        List<BlockShuffleTarget> targets = new ArrayList<>();
+        List<String> blockList = config.getStringList("blocks");
+        if (blockList != null) {
+            for (String matName : blockList) {
+                // For simplicity, we assume basic STAND items for now or infer logic?
+                // The current implementation has difficulty and type (STAND/CRAFT).
+                // To support full config, we might need a more complex YAML structure.
+                // For now, let's keep the hardcoded list as FALLBACK or default, 
+                // and if config has simple list, try to map it.
+                // Actually, let's just make the Config object available and let the Instance handle parsing/defaults.
+            }
+        }
+        
+        this.blockShuffleConfig = new BlockShuffleConfig(config);
+    }
+
+    private void loadDeathShuffleConfig() {
+        File file = new File(plugin.getDataFolder(), "modes/deathshuffle.yml");
+        if (!file.exists()) {
+            plugin.saveResource("modes/deathshuffle.yml", false);
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        this.deathShuffleConfig = new DeathShuffleConfig(config);
     }
 
     public void createArena(String id) {
@@ -656,6 +696,34 @@ public class ConfigManager {
      * Challenge configuration entry.
      */
     public record ChallengeConfig(String type, String target, int amount, String reward, String description) {
+    }
+
+    public BlockShuffleConfig getBlockShuffleConfig() {
+        return blockShuffleConfig;
+    }
+
+    public DeathShuffleConfig getDeathShuffleConfig() {
+        return deathShuffleConfig;
+    }
+
+    public static class BlockShuffleConfig {
+        private final FileConfiguration config;
+        
+        public BlockShuffleConfig(FileConfiguration config) {
+            this.config = config;
+        }
+        
+        public FileConfiguration getConfig() { return config; }
+    }
+
+    public static class DeathShuffleConfig {
+        private final FileConfiguration config;
+        
+        public DeathShuffleConfig(FileConfiguration config) {
+            this.config = config;
+        }
+        
+        public FileConfiguration getConfig() { return config; }
     }
 
 }
