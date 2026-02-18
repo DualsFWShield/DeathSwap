@@ -1,6 +1,7 @@
 package be.dualsfwshield.deathswap.gui;
 
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -26,7 +27,11 @@ import java.util.UUID;
  */
 public class ConfirmationGUI implements Listener {
 
-    // Removed static TITLE, using key instead
+    // ── Inventory layout ──────────────────────────────────────────────
+    private static final int INV_SIZE = 27;
+    private static final int SLOT_CANCEL = 11;
+    private static final int SLOT_WARNING = 13;
+    private static final int SLOT_CONFIRM = 15;
 
     private final DeathSwapPlugin plugin;
 
@@ -55,38 +60,43 @@ public class ConfirmationGUI implements Listener {
         // Store the pending action
         pendingActions.put(player.getUniqueId(), new PendingAction(onConfirm, onCancel));
 
-        Component title = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-title");
-        Inventory inv = Bukkit.createInventory(null, 27, title);
+        Component title = Lang.getComponent("gui-confirmation-title");
+        Inventory inv = Bukkit.createInventory(null, INV_SIZE, title);
 
         // Slot 11: CANCEL (green wool - safe option)
         ItemStack cancel = new ItemStack(Material.GREEN_WOOL);
         ItemMeta cancelMeta = cancel.getItemMeta();
-        cancelMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-cancel-name").decoration(TextDecoration.ITALIC, false));
+        cancelMeta.displayName(
+                Lang.getComponent("gui-confirmation-cancel-name").decoration(TextDecoration.ITALIC, false));
         cancelMeta.lore(List.of(
-                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-cancel-lore").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
+                Lang.getComponent("gui-confirmation-cancel-lore").color(NamedTextColor.GRAY)
+                        .decoration(TextDecoration.ITALIC, false)));
         cancel.setItemMeta(cancelMeta);
-        inv.setItem(11, cancel);
+        inv.setItem(SLOT_CANCEL, cancel);
 
         // Slot 13: Warning icon (description of action)
         ItemStack warning = new ItemStack(Material.TNT);
         ItemMeta warningMeta = warning.getItemMeta();
-        warningMeta.displayName(Component.text(actionName, warningColor, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        warningMeta.displayName(
+                Component.text(actionName, warningColor, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
         warningMeta.lore(List.of(
                 Component.text(description, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-warning-irreversible").decoration(TextDecoration.ITALIC, false)));
+                Lang.getComponent("gui-confirmation-warning-irreversible").decoration(TextDecoration.ITALIC, false)));
         warning.setItemMeta(warningMeta);
-        inv.setItem(13, warning);
+        inv.setItem(SLOT_WARNING, warning);
 
         // Slot 15: CONFIRM (red wool - danger option)
         ItemStack confirm = new ItemStack(Material.RED_WOOL);
         ItemMeta confirmMeta = confirm.getItemMeta();
-        confirmMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-confirm-name").decoration(TextDecoration.ITALIC, false));
+        confirmMeta.displayName(
+                Lang.getComponent("gui-confirmation-confirm-name").decoration(TextDecoration.ITALIC, false));
         confirmMeta.lore(List.of(
-                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-confirm-lore-1").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-confirm-lore-2").decoration(TextDecoration.ITALIC, false)));
+                Lang.getComponent("gui-confirmation-confirm-lore-1").color(NamedTextColor.GRAY)
+                        .decoration(TextDecoration.ITALIC, false),
+                Lang.getComponent("gui-confirmation-confirm-lore-2").decoration(TextDecoration.ITALIC, false)));
         confirm.setItemMeta(confirmMeta);
-        inv.setItem(15, confirm);
+        inv.setItem(SLOT_CONFIRM, confirm);
 
         player.openInventory(inv);
     }
@@ -95,7 +105,7 @@ public class ConfirmationGUI implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player))
             return;
-        Component expectedTitle = be.dualsfwshield.deathswap.util.Lang.getComponent("gui-confirmation-title");
+        Component expectedTitle = Lang.getComponent("gui-confirmation-title");
         if (!expectedTitle.equals(event.getView().title()))
             return;
 

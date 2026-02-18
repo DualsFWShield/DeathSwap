@@ -2,9 +2,11 @@ package be.dualsfwshield.deathswap.gui;
 
 import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,8 +25,11 @@ import java.util.Map;
 
 public class GamerulesGUI implements Listener {
 
+    // ── Inventory layout ──────────────────────────────────────────────
+    private static final int INV_SIZE = 27;
+    private static final int SLOT_BACK = 22;
+
     private final DeathSwapPlugin plugin;
-    // Removed static GUI_TITLE, using key instead
 
     public GamerulesGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -33,12 +38,12 @@ public class GamerulesGUI implements Listener {
     public void open(Player player, String arenaName) {
         ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaName);
         if (config == null) {
-            be.dualsfwshield.deathswap.util.Lang.send(player, "gui-gamerules-error-arena");
+            Lang.send(player, "gui-gamerules-error-arena");
             return;
         }
 
-        String title = be.dualsfwshield.deathswap.util.Lang.get("gui-gamerules-title", "%arena%", arenaName);
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text(title));
+        String title = Lang.get("gui-gamerules-title", "%arena%", arenaName);
+        Inventory inv = Bukkit.createInventory(null, INV_SIZE, Component.text(title));
 
         // Define boolean rules to manage
         List<String> rules = Arrays.asList(
@@ -61,11 +66,11 @@ public class GamerulesGUI implements Listener {
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(rule, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-current", "%value%", "")
+            lore.add(Lang.getComponent("gui-gamerules-current", "%value%", "")
                     .append(Component.text(enabled ? "ON" : "OFF",
                             enabled ? NamedTextColor.GREEN : NamedTextColor.RED)));
             lore.add(Component.empty());
-            lore.add(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-click-toggle")
+            lore.add(Lang.getComponent("gui-gamerules-click-toggle")
                     .color(NamedTextColor.YELLOW));
             meta.lore(lore);
             item.setItemMeta(meta);
@@ -76,41 +81,23 @@ public class GamerulesGUI implements Listener {
         // Back button
         ItemStack back = new ItemStack(Material.ARROW);
         ItemMeta backMeta = back.getItemMeta();
-        backMeta.displayName(be.dualsfwshield.deathswap.util.Lang.getComponent("gui-gamerules-back")
+        backMeta.displayName(Lang.getComponent("gui-gamerules-back")
                 .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         back.setItemMeta(backMeta);
-        inv.setItem(22, back); // Bottom middle
+        inv.setItem(SLOT_BACK, back); // Bottom middle
 
         player.openInventory(inv);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        String expectedTitlePrefix = be.dualsfwshield.deathswap.util.Lang.get("gui-gamerules-title").replace("%arena%",
+        String expectedTitlePrefix = Lang.get("gui-gamerules-title").replace("%arena%",
                 "");
-        String rawTitle = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText()
+        String rawTitle = PlainTextComponentSerializer.plainText()
                 .serialize(event.getView().title());
 
         if (!rawTitle.contains(expectedTitlePrefix))
             return;
-        // Adventure components in title might need robust check, checking raw string
-        // containment key
-        // Simple check: if title starts with "Gamerules - " (but Adventure titles are
-        // diff)
-        // Bukkit.createInventory(..., Component) sets title. event.getView().title()
-        // returns Component.
-        // We should check string serialization or legacy.
-        // For simplicity in this project context (where we used legacy or string titles
-        // before),
-        // let's assume adventure text components are stringified or we check
-        // differently.
-        // Actually, older code used String titles?
-        // SettingsGUI used: `Bukkit.createInventory(null, 54,
-        // Component.text("Paramètres Arène: " + arenaName));`
-        // And check: `if (!event.getView().title().equals(Component.text("Paramètres
-        // Arène: " + ...)))` is hard because arena name variable.
-        // SettingsGUI used `event.getView().getTitle()` (Legacy).
-        // I will use `event.getView().getTitle().startsWith("Gamerules - ")`.
 
         event.setCancelled(true);
 
