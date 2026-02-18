@@ -115,7 +115,6 @@ public class DeathShuffleInstance extends GameInstance {
             difficulty = 3; // Rounds 7+: Hard
 
         // Pick random death cause from difficulty tier
-        // Pick random death cause from difficulty tier
         // Filter by allowed causes
         DeathCause[] causes = Arrays.stream(DeathCause.getByDifficulty(difficulty))
                 .filter(allowedCauses::contains)

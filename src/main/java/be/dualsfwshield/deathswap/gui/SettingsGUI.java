@@ -8,21 +8,16 @@ import be.dualsfwshield.deathswap.GameType;
 import be.dualsfwshield.deathswap.UIMode;
 import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main settings GUI for configuring an arena (54 slots / 6 rows).

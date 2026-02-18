@@ -2,17 +2,18 @@ package be.dualsfwshield.deathswap.listeners;
 
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import be.dualsfwshield.deathswap.GameInstance;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Handles ready/unready item interactions in the lobby and player quit.
@@ -25,7 +26,7 @@ public class ReadyListener implements Listener {
         this.plugin = plugin;
     }
 
-    private final java.util.Set<java.util.UUID> interactionCooldowns = new java.util.HashSet<>();
+    private final Set<UUID> interactionCooldowns = new HashSet<>();
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {

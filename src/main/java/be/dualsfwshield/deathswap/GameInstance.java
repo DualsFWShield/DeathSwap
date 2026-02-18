@@ -1,6 +1,5 @@
 package be.dualsfwshield.deathswap;
 
-import be.dualsfwshield.deathswap.vote.VoteManager;
 import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;

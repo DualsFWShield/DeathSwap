@@ -8,7 +8,6 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -191,7 +191,7 @@ public class VoteManager {
      */
     private List<SeedEntry> pickRandom(List<SeedEntry> source, int count) {
         List<SeedEntry> shuffled = new ArrayList<>(source);
-        java.util.Collections.shuffle(shuffled);
+        Collections.shuffle(shuffled);
         return shuffled.subList(0, Math.min(count, shuffled.size()));
     }
 

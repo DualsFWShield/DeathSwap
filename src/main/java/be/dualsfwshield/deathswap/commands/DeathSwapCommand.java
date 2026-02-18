@@ -14,7 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -672,8 +671,8 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(Component.text("/ds admin", NamedTextColor.YELLOW)
                 .append(Lang.getComponent("admin-help-dashboard"))); // You might need
-                                                                                                     // to add this key
-                                                                                                     // or reuse another
+                                                                     // to add this key
+                                                                     // or reuse another
 
         sender.sendMessage(Component.text("/ds admin list", NamedTextColor.YELLOW)
                 .append(Lang.getComponent("admin-help-list")));

@@ -88,7 +88,6 @@ public class BlockShuffleInstance extends GameInstance {
             new ShuffleTarget(Material.ENCHANTING_TABLE, 3, AssignmentType.CRAFT, "Table d'enchantement"),
             new ShuffleTarget(Material.GOLDEN_APPLE, 3, AssignmentType.CRAFT, "Pomme dorée"),
             new ShuffleTarget(Material.PISTON, 3, AssignmentType.CRAFT, "Piston"),
-            new ShuffleTarget(Material.PISTON, 3, AssignmentType.CRAFT, "Piston"),
             new ShuffleTarget(Material.CAKE, 3, AssignmentType.CRAFT, "Gâteau"));
 
     private final List<ShuffleTarget> targets = new ArrayList<>();
@@ -162,7 +161,6 @@ public class BlockShuffleInstance extends GameInstance {
         else
             difficulty = 3;
 
-        // Pick random target from difficulty tier
         // Pick random target from difficulty tier
         // If we loaded from config (simple list), everything is difficulty 1.
         // So validation: check if we have targets for this difficulty.
