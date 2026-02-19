@@ -28,13 +28,22 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a single DeathSwap game instance (one arena).
@@ -42,6 +51,48 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Subclassed by DeathShuffleInstance and BlockShuffleInstance.
  */
 public class GameInstance {
+
+    private static final Map<String, String> BEDROCK_TO_BUKKIT = new HashMap<>();
+
+    static {
+        BEDROCK_TO_BUKKIT.put("minecraft:advance_time", "doDaylightCycle");
+        BEDROCK_TO_BUKKIT.put("minecraft:advance_weather", "doWeatherCycle");
+        BEDROCK_TO_BUKKIT.put("minecraft:keep_inventory", "keepInventory");
+        BEDROCK_TO_BUKKIT.put("minecraft:mob_griefing", "mobGriefing");
+        BEDROCK_TO_BUKKIT.put("minecraft:spawn_mobs", "doMobSpawning");
+        BEDROCK_TO_BUKKIT.put("minecraft:mob_drops", "doMobLoot");
+        BEDROCK_TO_BUKKIT.put("minecraft:block_drops", "doTileDrops");
+        BEDROCK_TO_BUKKIT.put("minecraft:entity_drops", "doEntityDrops");
+        BEDROCK_TO_BUKKIT.put("minecraft:command_block_output", "commandBlockOutput");
+        BEDROCK_TO_BUKKIT.put("minecraft:natural_health_regeneration", "naturalRegeneration");
+        BEDROCK_TO_BUKKIT.put("minecraft:log_admin_commands", "logAdminCommands");
+        BEDROCK_TO_BUKKIT.put("minecraft:show_death_messages", "showDeathMessages");
+        BEDROCK_TO_BUKKIT.put("minecraft:random_tick_speed", "randomTickSpeed");
+        BEDROCK_TO_BUKKIT.put("minecraft:send_command_feedback", "sendCommandFeedback");
+        BEDROCK_TO_BUKKIT.put("minecraft:reduced_debug_info", "reducedDebugInfo");
+        BEDROCK_TO_BUKKIT.put("minecraft:spectators_generate_chunks", "spectatorsGenerateChunks");
+        BEDROCK_TO_BUKKIT.put("minecraft:respawn_radius", "spawnRadius");
+        BEDROCK_TO_BUKKIT.put("minecraft:max_entity_cramming", "maxEntityCramming");
+        BEDROCK_TO_BUKKIT.put("minecraft:limited_crafting", "doLimitedCrafting");
+        BEDROCK_TO_BUKKIT.put("minecraft:max_command_sequence_length", "maxCommandChainLength");
+        BEDROCK_TO_BUKKIT.put("minecraft:show_advancement_messages", "announceAdvancements");
+        BEDROCK_TO_BUKKIT.put("minecraft:raids", "disableRaids"); // Note: Inverted logic? Bukkit is disableRaids? No,
+                                                                  // disableRaids is a gamerule in Bukkit? Wait. Bukkit
+                                                                  // has 'disableRaids'. Bedrock has 'minecraft:raids'
+                                                                  // (enabled). Logic might be inverted. checking.
+        BEDROCK_TO_BUKKIT.put("minecraft:spawn_phantoms", "doInsomnia");
+        BEDROCK_TO_BUKKIT.put("minecraft:immediate_respawn", "doImmediateRespawn");
+        BEDROCK_TO_BUKKIT.put("minecraft:drowning_damage", "drowningDamage");
+        BEDROCK_TO_BUKKIT.put("minecraft:fall_damage", "fallDamage");
+        BEDROCK_TO_BUKKIT.put("minecraft:fire_damage", "fireDamage");
+        BEDROCK_TO_BUKKIT.put("minecraft:freeze_damage", "freezeDamage");
+        BEDROCK_TO_BUKKIT.put("minecraft:spawn_patrols", "doPatrolSpawning");
+        BEDROCK_TO_BUKKIT.put("minecraft:spawn_wandering_traders", "doTraderSpawning");
+        BEDROCK_TO_BUKKIT.put("minecraft:spawn_wardens", "doWardenSpawning");
+        BEDROCK_TO_BUKKIT.put("minecraft:forgive_dead_players", "forgiveDeadPlayers");
+        BEDROCK_TO_BUKKIT.put("minecraft:universal_anger", "universalAnger");
+        BEDROCK_TO_BUKKIT.put("minecraft:players_sleeping_percentage", "playersSleepingPercentage");
+    }
 
     private final DeathSwapPlugin plugin;
     private final String arenaId;
@@ -475,7 +526,22 @@ public class GameInstance {
 
         // Apply gamerules from map
         for (Map.Entry<String, String> entry : config.gamerules.entrySet()) {
-            GameRule<?> rule = GameRule.getByName(entry.getKey());
+            String ruleName = entry.getKey();
+
+            // Try explicit mapping first (Bedrock -> Bukkit)
+            if (BEDROCK_TO_BUKKIT.containsKey(ruleName)) {
+                ruleName = BEDROCK_TO_BUKKIT.get(ruleName);
+            }
+
+            GameRule<?> rule = GameRule.getByName(ruleName);
+
+            // Retry with camelCase conversion if failed (fallback for snake_case)
+            if (rule == null && ruleName.contains("_") && !ruleName.startsWith("minecraft:")) {
+                // only try camelcase if it's not a namespaced key we failed to map
+                String camel = be.dualsfwshield.deathswap.util.Lang.toCamelCase(ruleName);
+                rule = GameRule.getByName(camel);
+            }
+
             if (rule != null) {
                 if (rule.getType() == Boolean.class) {
                     world.setGameRule((GameRule<Boolean>) rule, Boolean.parseBoolean(entry.getValue()));

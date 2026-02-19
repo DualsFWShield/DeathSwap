@@ -45,7 +45,10 @@ sounds:
   round-success: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
   round-fail: { type: "ENTITY_VILLAGER_NO", volume: 1.0, pitch: 0.8 }
   challenge-complete: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
-  vote-cast: { type: "ENTITY_UI_BUTTON_CLICK", volume: 1.0, pitch: 2.0 }
+  vote-cast:
+    type: "UI_BUTTON_CLICK"
+    volume: 1.0
+    pitch: 1.0
 
 # =========================================
 #   Arenas (each = independent game)

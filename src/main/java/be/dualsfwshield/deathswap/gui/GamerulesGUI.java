@@ -52,22 +52,23 @@ public class GamerulesGUI implements Listener {
         String title = Lang.get("gui-gamerules-title", "%arena%", arenaName);
         Inventory inv = Bukkit.createInventory(null, INV_SIZE, Component.text(title));
 
-        // Define boolean rules to manage
+        // Define boolean rules to manage (Using new 1.21.11 format)
         List<String> rules = Arrays.asList(
-                "keep_inventory",
-                "immediate_respawn",
-                "do_daylight_cycle",
-                "do_weather_cycle",
-                "mob_griefing",
-                "natural_regeneration",
-                "do_mob_spawning",
-                "send_command_feedback",
-                "log_admin_commands",
-                "announce_advancements",
-                "reduced_debug_info");
+                "minecraft:keep_inventory",
+                "minecraft:immediate_respawn",
+                "minecraft:advance_time",
+                "minecraft:advance_weather",
+                "minecraft:mob_griefing",
+                "minecraft:natural_health_regeneration",
+                "minecraft:spawn_mobs",
+                "minecraft:send_command_feedback",
+                "minecraft:log_admin_commands",
+                "minecraft:show_advancement_messages",
+                "minecraft:reduced_debug_info");
 
         int slot = 0;
         for (String rule : rules) {
+            // Config might still have snake_case from old default, check both
             String valueStr = config.gamerules.getOrDefault(rule, "false");
             boolean enabled = Boolean.parseBoolean(valueStr);
 

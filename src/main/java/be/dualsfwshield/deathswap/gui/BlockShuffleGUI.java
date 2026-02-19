@@ -4,6 +4,7 @@ import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -85,7 +86,8 @@ public class BlockShuffleGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().startsWith(Lang.get("gui-shuffle-title-blockshuffle")))
+        if (!event.getView().getTitle()
+                .startsWith(ChatColor.translateAlternateColorCodes('&', Lang.get("gui-shuffle-title-blockshuffle"))))
             return;
 
         event.setCancelled(true);

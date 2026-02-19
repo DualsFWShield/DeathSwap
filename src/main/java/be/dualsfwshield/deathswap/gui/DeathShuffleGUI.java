@@ -4,7 +4,9 @@ import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import be.dualsfwshield.deathswap.modes.DeathCause;
 import be.dualsfwshield.deathswap.util.Lang;
+import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -56,8 +58,9 @@ public class DeathShuffleGUI implements Listener {
             String status = entry.enabled() ? Lang.get("gui-shuffle-enabled") : Lang.get("gui-shuffle-disabled");
             String difficultyName = getDifficultyName(entry.difficulty());
 
-            // Use PAPER for death causes as they don't have specific materials
-            inv.setItem(i - startIndex, GuiUtils.createItem(Material.PAPER,
+            Material icon = getIcon(dc);
+
+            inv.setItem(i - startIndex, GuiUtils.createItem(icon,
                     "&e" + dc.getDisplayName(),
                     status,
                     Lang.get("gui-shuffle-difficulty", "%difficulty%", difficultyName),
@@ -89,7 +92,8 @@ public class DeathShuffleGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().startsWith(Lang.get("gui-shuffle-title-deathshuffle")))
+        if (!event.getView().getTitle()
+                .startsWith(ChatColor.translateAlternateColorCodes('&', Lang.get("gui-shuffle-title-deathshuffle"))))
             return;
 
         event.setCancelled(true);
@@ -159,6 +163,45 @@ public class DeathShuffleGUI implements Listener {
                 config.save();
                 open(player, page);
             }
+        }
+    }
+
+    private Material getIcon(DeathCause dc) {
+        switch (dc) {
+            case DROWNING:
+                return Material.WATER_BUCKET;
+            case FALL:
+                return Material.FEATHER;
+            case FIRE:
+                return Material.FLINT_AND_STEEL;
+            case CONTACT:
+                return Material.CACTUS;
+            case STARVATION:
+                return Material.ROTTEN_FLESH;
+            case SUFFOCATION:
+                return Material.SAND;
+            case LAVA:
+                return Material.LAVA_BUCKET;
+            case EXPLOSION:
+                return Material.TNT;
+            case PROJECTILE:
+                return Material.ARROW;
+            case MAGIC:
+                return Material.POTION;
+            case HOT_FLOOR:
+                return Material.MAGMA_BLOCK;
+            case FREEZE:
+                return Material.POWDER_SNOW_BUCKET;
+            case LIGHTNING:
+                return Material.LIGHTNING_ROD;
+            case FLY_INTO_WALL:
+                return Material.ELYTRA;
+            case FALLING_BLOCK:
+                return Material.ANVIL;
+            case VOID:
+                return Material.ENDER_EYE;
+            default:
+                return Material.SKELETON_SKULL;
         }
     }
 }

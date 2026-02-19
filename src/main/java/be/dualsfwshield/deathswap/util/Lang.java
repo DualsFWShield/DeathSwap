@@ -114,4 +114,26 @@ public class Lang {
         sender.sendMessage(LegacyComponentSerializer.legacyAmpersand()
                 .deserialize(msg));
     }
+
+    /**
+     * Converts a snake_case string to camelCase.
+     * e.g. "spawn_radius" -> "spawnRadius"
+     */
+    public static String toCamelCase(String snakeCase) {
+        StringBuilder sb = new StringBuilder();
+        boolean nextUpper = false;
+        for (char c : snakeCase.toCharArray()) {
+            if (c == '_') {
+                nextUpper = true;
+            } else {
+                if (nextUpper) {
+                    sb.append(Character.toUpperCase(c));
+                    nextUpper = false;
+                } else {
+                    sb.append(c);
+                }
+            }
+        }
+        return sb.toString();
+    }
 }
