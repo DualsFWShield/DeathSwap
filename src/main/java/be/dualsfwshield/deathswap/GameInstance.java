@@ -126,6 +126,7 @@ public class GameInstance {
     // Force Start
     private BukkitTask forceStartTask;
     private int forceStartCountdown;
+    private BukkitTask startTask;
 
     public boolean isGracePeriod() {
         return System.currentTimeMillis() < gracePeriodEndTime;
@@ -352,11 +353,12 @@ public class GameInstance {
     /**
      * Check if all lobby players are ready and enough to start.
      */
+
     /**
      * Check if all lobby players are ready and enough to start.
      */
     private void checkAllReady() {
-        if (state != GameState.WAITING)
+        if (state != GameState.WAITING && state != GameState.STARTING)
             return;
 
         int readyCount = readyPlayers.size();
@@ -366,7 +368,7 @@ public class GameInstance {
 
         // Global Constraint: players >= 2 (unless debug)
         if (totalPlayers < 2 && !config.debugMode) {
-            cancelForceStart();
+            cancelStart(); // Cancel everything
             return;
         }
 
@@ -397,39 +399,55 @@ public class GameInstance {
         }
 
         if (shouldStart) {
-            cancelForceStart();
+            // If already starting, do nothing
+            if (state == GameState.STARTING && startTask != null) {
+                return;
+            }
+
+            cancelForceStartTimer(); // Stop AFK timer if running
             broadcastLobby(Lang.get("lobby-all-ready"));
             state = GameState.STARTING; // Lock ready status
-            Bukkit.getScheduler().runTaskLater(plugin, () -> startGame(false), 60L); // 3s
+
+            // Schedule actual start
+            startTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                startTask = null; // Clear task ref
+                startGame(false);
+            }, 60L); // 3s
+
         } else if (antiAfkTrigger) {
+            // Cancel pending start if we fell back to AFK trigger (e.g. someone unreadied)
+            if (state == GameState.STARTING) {
+                cancelStart();
+                // We fall through to startForceStartTimer below immediately
+            }
+
             if (forceStartTask == null) {
                 startForceStartTimer();
             }
         } else {
-            // Conditions not met, cancel any pending timers
-            cancelForceStart();
+            // Conditions not met, cancel everything
+            cancelStart();
         }
     }
 
     private void startForceStartTimer() {
-        // Use configured delay or default to 30s
+        // ... (Existing logic, but ensure we don't double start)
+        if (forceStartTask != null)
+            return;
+
         int delay = config.forceStartDelay > 0 ? config.forceStartDelay : 30;
         forceStartCountdown = delay;
         broadcastLobby(Lang.get("lobby-forcestart-countdown", "%time%", String.valueOf(forceStartCountdown)));
 
         forceStartTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (state != GameState.WAITING) {
-                cancelForceStart();
+                cancelForceStartTimer();
                 return;
             }
 
-            // Consistency check is handled by checkAllReady() calls on events.
-            // But we can double check:
-            // If condition lost, checkAllReady should have cancelled us.
-
             forceStartCountdown--;
             if (forceStartCountdown <= 0) {
-                cancelForceStart();
+                cancelForceStartTimer();
                 forceAllReadyAndStart();
                 return;
             }
@@ -440,11 +458,35 @@ public class GameInstance {
         }, 20L, 20L);
     }
 
-    private void cancelForceStart() {
+    /**
+     * Cancels ONLY the AFK/Force Start timer.
+     */
+    private void cancelForceStartTimer() {
         if (forceStartTask != null) {
             forceStartTask.cancel();
             forceStartTask = null;
-            broadcastLobby(Lang.get("lobby-forcestart-cancelled"));
+            // No broadcast here to avoid spam, usually handled by cancelStart or
+            // checkAllReady logic
+        }
+    }
+
+    /**
+     * Cancels ALL start timers (AFK and Final Countdown) and resets state.
+     */
+    private void cancelStart() {
+        boolean wasStarting = (state == GameState.STARTING);
+        boolean wasForceTimer = (forceStartTask != null);
+
+        cancelForceStartTimer();
+
+        if (startTask != null) {
+            startTask.cancel();
+            startTask = null;
+        }
+
+        if (wasStarting || wasForceTimer) {
+            state = GameState.WAITING;
+            broadcastLobby(Lang.get("lobby-cancel-not-enough")); // Or generic cancel message
         }
     }
 

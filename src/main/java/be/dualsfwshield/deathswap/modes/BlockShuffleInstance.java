@@ -361,7 +361,7 @@ public class BlockShuffleInstance extends GameInstance {
      * When the round timer expires.
      */
     private void onRoundTimeExpired() {
-        broadcastGame("&c&lTemps écoulé !");
+        broadcastGame(Lang.get("ds-round-fail-everyone"));
 
         Set<Player> failed = new HashSet<>();
         for (Player p : new HashSet<>(getAlivePlayers())) {
@@ -370,15 +370,33 @@ public class BlockShuffleInstance extends GameInstance {
             }
         }
 
-        for (Player p : failed) {
-            broadcastGame("&c" + p.getName() + " n'a pas réussi ! → Spectateur");
-            eliminatePlayer(p);
+        if (failed.size() == getAlivePlayers().size() && !failed.isEmpty()) {
+            // Mercy Rule: Everyone failed, nobody is eliminated
+            broadcastGame(Lang.get("ds-round-mercy"));
+        } else {
+            // Normal elimination
+            for (Player p : failed) {
+                broadcastGame(Lang.get("ds-round-fail", "%player%", p.getName()));
+                eliminatePlayer(p);
+            }
         }
 
-        if (getAlivePlayers().size() <= 1) {
-            checkWinCondition();
+        if (getAlivePlayers().size() == 0) {
+            stopGame(); // No winner
         } else {
+            // Context: User wants game to continue until global time OR "Everyone loses"
+            // logic.
+            // If we have survivors, continue.
             Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        }
+    }
+
+    @Override
+    public void checkWinCondition() {
+        // Override to prevent early ending on 1 player
+        // Game only ends on 0 players or Time Limit
+        if (getAlivePlayers().isEmpty()) {
+            stopGame();
         }
     }
 
@@ -435,10 +453,11 @@ public class BlockShuffleInstance extends GameInstance {
         completedRound.add(player.getUniqueId());
 
         if (getConfig().blockShuffleRaceMode) {
-            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-race-win", "%player%", player.getName()));
+            broadcastGame(Lang.get("ds-round-success", "%player%", player.getName(), "%count%", "1", "%total%", "1"));
             if (getPlugin().getSoundManager() != null) {
                 getPlugin().getSoundManager().playSound("victory", player);
             }
+            broadcastGame(Lang.get("game-winner", "%winner%", player.getName()));
             stopGame();
             return;
         }

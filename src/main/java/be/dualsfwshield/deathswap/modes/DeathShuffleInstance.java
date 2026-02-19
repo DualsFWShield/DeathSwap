@@ -306,7 +306,7 @@ public class DeathShuffleInstance extends GameInstance {
      * challenge.
      */
     private void onRoundTimeExpired() {
-        broadcastGame("&c&lTemps écoulé !");
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-fail-everyone"));
 
         Set<Player> failed = new HashSet<>();
         for (Player p : new HashSet<>(getAlivePlayers())) {
@@ -315,17 +315,31 @@ public class DeathShuffleInstance extends GameInstance {
             }
         }
 
-        for (Player p : failed) {
-            broadcastGame("&c" + p.getName() + " n'a pas réussi ! → Spectateur");
-            eliminatePlayer(p);
+        if (failed.size() == getAlivePlayers().size() && !failed.isEmpty()) {
+            // Mercy Rule
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-mercy"));
+        } else {
+            // Normal elimination
+            for (Player p : failed) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-fail", "%player%", p.getName()));
+                eliminatePlayer(p);
+            }
         }
 
-        // Check win condition
-        if (getAlivePlayers().size() <= 1) {
-            checkWinCondition();
+        if (getAlivePlayers().size() == 0) {
+            stopGame(); // No winner
         } else {
-            // Start next round after delay
+            // Continue as long as survivors exist (or until global time ends)
             Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        }
+    }
+
+    @Override
+    public void checkWinCondition() {
+        // Override to prevent early ending on 1 player
+        // Game only ends on 0 players or Time Limit
+        if (getAlivePlayers().isEmpty()) {
+            stopGame();
         }
     }
 
@@ -352,7 +366,8 @@ public class DeathShuffleInstance extends GameInstance {
 
             // Race Mode Check
             if (getConfig().deathShuffleRaceMode) {
-                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-race-win", "%player%", player.getName()));
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-success", "%player%", player.getName(),
+                        "%count%", "1", "%total%", "1"));
                 if (getPlugin().getSoundManager() != null) {
                     getPlugin().getSoundManager().playSound("victory", player);
                 }
