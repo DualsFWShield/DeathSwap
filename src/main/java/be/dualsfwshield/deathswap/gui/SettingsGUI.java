@@ -66,7 +66,6 @@ public class SettingsGUI implements Listener {
     private static final int SLOT_TP_CMD = 37;
     private static final int SLOT_RESET_CMD = 39;
     private static final int SLOT_RESILIENCE = 41;
-    private static final int SLOT_RACE_MODE = 43;
     private static final int SLOT_MODE_CONFIG = 44;
 
     // Row 6 (45-53): Footer
@@ -130,7 +129,12 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-change")));
 
         // Row 2 (9-17): Timers & Limits
-        inv.setItem(SLOT_SWAP_TIMER, createItem(Material.CLOCK, Lang.get("gui-settings-timer-name"),
+        String timerNameKey = "gui-settings-swap-timer-name";
+        if (config.gameType != GameType.DEATHSWAP) {
+            timerNameKey = "gui-settings-round-timer-name";
+        }
+        inv.setItem(SLOT_SWAP_TIMER, createItem(Material.CLOCK,
+                Lang.get(timerNameKey),
                 Lang.get("gui-settings-timer-mode", "%mode%", config.swapMode.name()),
                 config.swapMode.name().equals("FIXED")
                         ? Lang.get("gui-settings-timer-interval", "%time%", GuiUtils.formatTime(config.swapInterval))
@@ -251,15 +255,6 @@ public class SettingsGUI implements Listener {
                     Lang.get("gui-settings-mode-config-lore", "%mode%", config.gameType.name()),
                     "",
                     Lang.get("gui-settings-mode-config-click")));
-        }
-
-        if (config.gameType == GameType.BLOCKSHUFFLE) {
-            String raceStatus = config.blockShuffleRaceMode ? Lang.get("enabled") : Lang.get("disabled");
-            inv.setItem(SLOT_RACE_MODE, createItem(Material.GOLDEN_BOOTS,
-                    Lang.get("gui-settings-race-mode-name"),
-                    Lang.get("gui-settings-race-mode-lore", "%status%", raceStatus),
-                    "",
-                    Lang.get("gui-settings-click-toggle")));
         }
 
         // Row 6 (45-53): Footer
@@ -482,21 +477,15 @@ public class SettingsGUI implements Listener {
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
-            case SLOT_RACE_MODE -> {
-                if (config.gameType == GameType.BLOCKSHUFFLE) {
-                    config.blockShuffleRaceMode = !config.blockShuffleRaceMode;
-                    plugin.getConfigManager().saveArena(config);
-                    open(player, arenaId);
-                }
-            }
+
             case SLOT_MODE_CONFIG -> {
                 if (config.gameType == GameType.BLOCKSHUFFLE) {
                     if (plugin.getBlockShuffleGUI() != null) {
-                        plugin.getBlockShuffleGUI().open(player, 1);
+                        plugin.getBlockShuffleGUI().open(player, arenaId, 1);
                     }
                 } else if (config.gameType == GameType.DEATHSHUFFLE) {
                     if (plugin.getDeathShuffleGUI() != null) {
-                        plugin.getDeathShuffleGUI().open(player, 1);
+                        plugin.getDeathShuffleGUI().open(player, arenaId, 1);
                     }
                 }
             }

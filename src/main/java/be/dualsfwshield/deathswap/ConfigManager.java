@@ -407,7 +407,12 @@ public class ConfigManager {
         // Resilience settings
         ac.startIfMinPlayersMet = section.getBoolean("start-if-min-players-met", false);
         ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
+        ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
+
         ac.blockShuffleRaceMode = section.getBoolean("game.blockshuffle-race-mode", false);
+        ac.blockShuffleUniqueTargets = section.getBoolean("game.blockshuffle-unique-targets", true);
+        ac.deathShuffleRaceMode = section.getBoolean("game.deathshuffle-race-mode", false);
+        ac.deathShuffleUniqueCauses = section.getBoolean("game.deathshuffle-unique-causes", true);
 
         // Command overrides
         ac.teleportCommand = section.getString("teleport-command", null);
@@ -492,7 +497,12 @@ public class ConfigManager {
         config.set("game.pvp-enabled", ac.pvpEnabled);
         config.set("game.nether-enabled", ac.netherEnabled);
         config.set("game.end-enabled", ac.endEnabled);
+        config.set("game.end-enabled", ac.endEnabled);
+
         config.set("game.blockshuffle-race-mode", ac.blockShuffleRaceMode);
+        config.set("game.blockshuffle-unique-targets", ac.blockShuffleUniqueTargets);
+        config.set("game.deathshuffle-race-mode", ac.deathShuffleRaceMode);
+        config.set("game.deathshuffle-unique-causes", ac.deathShuffleUniqueCauses);
 
         ConfigurationSection rulesSection = config.createSection("gamerules");
         for (Map.Entry<String, String> ruleEntry : ac.gamerules.entrySet()) {
@@ -651,8 +661,13 @@ public class ConfigManager {
         public boolean startIfMinPlayersMet = false;
         public boolean preventCancelAfterCountdown = false;
 
-        // Block Shuffle Race Mode
+        // Block Shuffle
         public boolean blockShuffleRaceMode = false;
+        public boolean blockShuffleUniqueTargets = true;
+
+        // Death Shuffle
+        public boolean deathShuffleRaceMode = false;
+        public boolean deathShuffleUniqueCauses = true;
 
         // Command overrides (null = use global default)
         public String teleportCommand = null;

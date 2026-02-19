@@ -22,8 +22,10 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -93,8 +95,10 @@ public class BlockShuffleInstance extends GameInstance {
 
     private final List<ShuffleTarget> targets = new ArrayList<>();
 
+    private final Map<UUID, ShuffleTarget> playerTargets = new HashMap<>(); // Replaces single currentTarget
+
     private int currentRound = 0;
-    private ShuffleTarget currentTarget;
+    // private ShuffleTarget currentTarget; // REMOVED
     private int roundTimer;
     private int roundDuration;
     private BukkitTask roundTask;
@@ -144,6 +148,9 @@ public class BlockShuffleInstance extends GameInstance {
     /**
      * Start a new round with a random target.
      */
+    /**
+     * Start a new round with a random target.
+     */
     private void startNextRound() {
         if (getState() != GameState.RUNNING)
             return;
@@ -152,6 +159,7 @@ public class BlockShuffleInstance extends GameInstance {
 
         currentRound++;
         completedRound.clear();
+        playerTargets.clear();
 
         // Determine difficulty tier
         int difficulty;
@@ -163,9 +171,6 @@ public class BlockShuffleInstance extends GameInstance {
             difficulty = 3;
 
         // Pick random target from difficulty tier
-        // If we loaded from config (simple list), everything is difficulty 1.
-        // So validation: check if we have targets for this difficulty.
-        // If not, use all available targets.
         List<ShuffleTarget> pool = targets.stream()
                 .filter(t -> t.difficulty() == difficulty)
                 .toList();
@@ -173,59 +178,67 @@ public class BlockShuffleInstance extends GameInstance {
         if (pool.isEmpty()) {
             pool = new ArrayList<>(targets); // fallback to all
         }
-
         if (pool.isEmpty()) {
-            // Should not happen if fallback used, unless targets is empty
             if (targets.isEmpty())
                 targets.addAll(TARGETS);
             pool = targets;
         }
-        currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+
+        // Assign targets
+        if (getConfig().blockShuffleRaceMode) {
+            // Race Mode: Single target for everyone, infinite time
+            ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+            for (Player p : getAlivePlayers()) {
+                playerTargets.put(p.getUniqueId(), sharedTarget);
+            }
+            roundDuration = Integer.MAX_VALUE;
+        } else if (getConfig().blockShuffleUniqueTargets) {
+            // Unique targets per player
+            for (Player p : getAlivePlayers()) {
+                ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+                playerTargets.put(p.getUniqueId(), t);
+            }
+            roundDuration = getConfig().getRoundTime(difficulty);
+        } else {
+            // Classic mode: Same target for everyone
+            ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+            for (Player p : getAlivePlayers()) {
+                playerTargets.put(p.getUniqueId(), sharedTarget);
+            }
+            roundDuration = getConfig().getRoundTime(difficulty);
+        }
 
         roundTimer = roundDuration;
 
-        // RACE MODE OVERRIDE
-        if (getConfig().blockShuffleRaceMode) {
-            // Pick ONE target for everyone
-            ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
-            currentTarget = sharedTarget; // Everyone gets same target (currentTarget is field)
-            // But wait, checks below use currentTarget.
-            // If we have per-player targets in future we'd need change, but here
-            // currentTarget IS shared in this class?
-            // Line 96: private ShuffleTarget currentTarget;
-            // Yes, strict BlockShuffle usually assigns different targets?
-            // Wait, BlockShuffleInstance as written in Step 637 uses 'currentTarget' field.
-            // Meaning everyone ALREADY has same target?
-            // Line 182: currentTarget = pool.get(...);
-            // Then loop 196: for (Player p... p.showTitle(... currentTarget ...)).
-            // So standard BlockShuffle ALREADY gives same target to everyone?
-            // Let's re-read Step 637 carefully.
-            // Yes, 'private ShuffleTarget currentTarget;' is a single field.
-            // So standard BlockShuffle here is "Everyone finds same block within time
-            // limit".
-            // So 'Race Mode' starts with same block, BUT:
-            // 1. Infinite time (or no time limit).
-            // 2. First to find wins (instead of "everyone must find").
-
-            roundDuration = Integer.MAX_VALUE; // Infinite
-            roundTimer = roundDuration;
+        // Announcements
+        if (getConfig().blockShuffleUniqueTargets && !getConfig().blockShuffleRaceMode) {
+            // Everyone has different target, broadcast generic message
+            broadcastGame("&b&lROUND " + currentRound + " &7— &eObjectifs individuels assignés !");
         } else {
-            currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+            // Everyone has same target (Race or Classic)
+            // Pick one to display (they are all same)
+            if (!getAlivePlayers().isEmpty()) {
+                // Get ANY target
+                ShuffleTarget display = playerTargets.values().iterator().next();
+                String emoji = display.type() == AssignmentType.STAND ? "🧱" : "🔨";
+                String action = display.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
+                broadcastGame("&b&lROUND " + currentRound + " &7— " + emoji + " &e" + action + display.displayName());
+            }
         }
+        broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e"
+                + (roundDuration == Integer.MAX_VALUE ? "∞" : roundDuration + "s"));
 
-        // Build announcement
-        String emoji = currentTarget.type() == AssignmentType.STAND ? "🧱" : "🔨";
-        String action = currentTarget.type() == AssignmentType.STAND
-                ? "Tiens-toi sur : "
-                : "Craft : ";
-
-        broadcastGame("&b&lROUND " + currentRound + " &7— " + emoji + " &e" + action + currentTarget.displayName());
-        broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e" + roundDuration + "s");
-
+        // Personal Titles / Sounds
         for (Player p : getAlivePlayers()) {
+            ShuffleTarget t = playerTargets.get(p.getUniqueId());
+            if (t == null)
+                continue; // Should not happen
+
+            String action = t.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
+
             p.showTitle(Title.title(
                     Component.text("ROUND " + currentRound, NamedTextColor.AQUA, TextDecoration.BOLD),
-                    Component.text(action + currentTarget.displayName(), NamedTextColor.YELLOW),
+                    Component.text(action + t.displayName(), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
             if (getPlugin().getSoundManager() != null) {
@@ -233,10 +246,20 @@ public class BlockShuffleInstance extends GameInstance {
             }
         }
 
-        // Update boss bar
+        // Update BossBar (Only works well if shared target, or we show generic info)
         if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
-            getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
-                    .append(Component.text(emoji + " " + currentTarget.displayName(), NamedTextColor.YELLOW)));
+            if (getConfig().blockShuffleUniqueTargets && !getConfig().blockShuffleRaceMode) {
+                getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
+                        .append(Component.text("Objectif personnel", NamedTextColor.YELLOW)));
+            } else {
+                // Shared
+                if (!playerTargets.isEmpty()) {
+                    ShuffleTarget t = playerTargets.values().iterator().next();
+                    String emoji = t.type() == AssignmentType.STAND ? "🧱" : "🔨";
+                    getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
+                            .append(Component.text(emoji + " " + t.displayName(), NamedTextColor.YELLOW)));
+                }
+            }
             getBossBar().color(BossBar.Color.BLUE);
             getBossBar().progress(1.0f);
         }
@@ -250,10 +273,12 @@ public class BlockShuffleInstance extends GameInstance {
                     return;
                 }
 
-                roundTimer--;
+                if (roundDuration != Integer.MAX_VALUE) {
+                    roundTimer--;
+                }
 
                 // Boss bar progress
-                if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
+                if (getConfig().uiMode == UIMode.RICH && getBossBar() != null && roundDuration != Integer.MAX_VALUE) {
                     float progress = Math.max(0, Math.min(1, (float) roundTimer / roundDuration));
                     getBossBar().progress(progress);
                     if (roundTimer <= 10) {
@@ -264,13 +289,23 @@ public class BlockShuffleInstance extends GameInstance {
                 if (getConfig().uiMode == UIMode.RICH) {
                     // Action bar for players
                     for (Player p : getAlivePlayers()) {
-                        if (!completedRound.contains(p.getUniqueId())) {
+                        ShuffleTarget t = playerTargets.get(p.getUniqueId());
+                        if (getConfig().blockShuffleRaceMode) {
+                            // RACE MODE ACTION BAR
+                            if (t != null) {
+                                p.sendActionBar(Component.text("🏁 RACE: " + t.displayName(), NamedTextColor.GOLD,
+                                        TextDecoration.BOLD));
+                            }
+                            continue;
+                        }
+
+                        if (!completedRound.contains(p.getUniqueId()) && t != null) {
                             if (roundTimer <= 10) {
                                 p.sendActionBar(
-                                        Component.text("⚠ " + roundTimer + "s — " + currentTarget.displayName() + " ⚠",
+                                        Component.text("⚠ " + roundTimer + "s — " + t.displayName() + " ⚠",
                                                 NamedTextColor.RED, TextDecoration.BOLD));
                             } else {
-                                p.sendActionBar(Component.text(currentTarget.displayName() + " — " + roundTimer + "s",
+                                p.sendActionBar(Component.text(t.displayName() + " — " + roundTimer + "s",
                                         NamedTextColor.AQUA));
                             }
                         } else {
@@ -279,29 +314,32 @@ public class BlockShuffleInstance extends GameInstance {
                         }
                     }
                 } else if (getConfig().uiMode == UIMode.RICH && getConfig().blockShuffleRaceMode) {
-                    // RACE MODE ACTION BAR
-                    for (Player p : getAlivePlayers()) {
-                        p.sendActionBar(Component.text("🏁 RACE: " + currentTarget.displayName(), NamedTextColor.GOLD,
-                                TextDecoration.BOLD));
-                    }
+                    // Handled in loop above
                 } else {
                     // CLEAN Mode: Chat notifications
-                    if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
-                            || (roundTimer <= 5 && roundTimer > 0)) {
-                        broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
-                        if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
-                            getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
+                    if (roundDuration != Integer.MAX_VALUE) {
+                        if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
+                                || (roundTimer <= 5 && roundTimer > 0)) {
+                            broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
+                            if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
+                                getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
+                            }
+                        }
+                        if (roundTimer % 60 == 0 && roundTimer > 0) {
+                            // Reminder
+                            for (Player p : getAlivePlayers()) {
+                                ShuffleTarget t = playerTargets.get(p.getUniqueId());
+                                if (t != null) {
+                                    String emoji = t.type() == AssignmentType.STAND ? "🧱" : "🔨";
+                                    String action = t.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
+                                    p.sendMessage(Lang.get("game-prefix")
+                                            + Component.text("Rappel: " + emoji + " " + action + t.displayName(),
+                                                    NamedTextColor.YELLOW));
+                                }
+                            }
                         }
                     }
-                    if (roundTimer % 60 == 0 && roundTimer > 0) {
-                        String emoji = currentTarget.type() == AssignmentType.STAND ? "🧱" : "🔨";
-                        String action = currentTarget.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
-                        broadcastGame("&eRappel: " + emoji + " " + action + "&6" + currentTarget.displayName());
-                    }
                 }
-
-                // RACE MODE: Check if anyone won?
-                // Handled in completeRound.
 
                 // All alive completed?
                 if (allAliveCompleted()) {
@@ -311,7 +349,7 @@ public class BlockShuffleInstance extends GameInstance {
                     return;
                 }
 
-                if (roundTimer <= 0) {
+                if (roundTimer <= 0 && roundDuration != Integer.MAX_VALUE) {
                     cancel();
                     onRoundTimeExpired();
                 }
@@ -354,11 +392,13 @@ public class BlockShuffleInstance extends GameInstance {
             return false;
         if (completedRound.contains(player.getUniqueId()))
             return false;
-        if (currentTarget == null)
+
+        ShuffleTarget t = playerTargets.get(player.getUniqueId());
+        if (t == null)
             return false;
-        if (currentTarget.type() != AssignmentType.STAND)
+        if (t.type() != AssignmentType.STAND)
             return false;
-        if (blockType != currentTarget.material())
+        if (blockType != t.material())
             return false;
 
         completeRound(player);
@@ -375,11 +415,13 @@ public class BlockShuffleInstance extends GameInstance {
             return false;
         if (completedRound.contains(player.getUniqueId()))
             return false;
-        if (currentTarget == null)
+
+        ShuffleTarget t = playerTargets.get(player.getUniqueId());
+        if (t == null)
             return false;
-        if (currentTarget.type() != AssignmentType.CRAFT)
+        if (t.type() != AssignmentType.CRAFT)
             return false;
-        if (itemType != currentTarget.material())
+        if (itemType != t.material())
             return false;
 
         completeRound(player);
@@ -451,8 +493,23 @@ public class BlockShuffleInstance extends GameInstance {
     /**
      * Get the current target for the listener.
      */
+    /**
+     * Get the target for a specific player.
+     * Replaces getCurrentTarget.
+     */
+    public ShuffleTarget getPlayerTarget(Player player) {
+        return playerTargets.get(player.getUniqueId());
+    }
+
+    /**
+     * Deprecated, kept for safety but should not be used if unique targets are
+     * enabled.
+     * Returns the target of the first player found.
+     */
     public ShuffleTarget getCurrentTarget() {
-        return currentTarget;
+        if (playerTargets.isEmpty())
+            return null;
+        return playerTargets.values().iterator().next();
     }
 
     public int getCurrentRound() {
@@ -467,6 +524,20 @@ public class BlockShuffleInstance extends GameInstance {
         }
         completedRound.clear();
         currentRound = 0;
+        playerTargets.clear();
         super.stopGame();
+    }
+
+    @Override
+    public void handleDeath(Player player) {
+        // In BlockShuffle, death does not eliminate you (unless time runs out).
+        // call super.handleDeath(player) ONLY if you want to eliminate them.
+        // Here we just notify.
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-death", "%player%", player.getName()));
+
+        // Stats can still be recorded
+        if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
+            getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
+        }
     }
 }

@@ -463,8 +463,23 @@ gui-shuffle-difficulty-medium: "Moyen"
 gui-shuffle-difficulty-hard: "Difficile"
 
 # ─── Item Race Mode ───
-gui-settings-race-mode-name: "&6Mode Item Race"
-gui-settings-race-mode-lore: "&7Premier à trouver gagne !"
-game-race-win: "&a&l%player% a trouvé le bloc et gagne la partie !"
-enabled: "&aActivé"
-disabled: "&cDésactivé"
+gui-settings-race-mode-block-name: "&6Mode Item Race"
+gui-settings-race-mode-block-lore: "&7Premier à trouver gagne !"
+gui-settings-race-mode-death-name: "&6Mode Death Run"
+gui-settings-race-mode-death-lore: "&7Premier à mourir gagne !"
+
+gui-settings-unique-targets-name: "&6Cibles Uniques"
+gui-settings-unique-targets-lore: "&7Chacun a un bloc différent"
+gui-settings-unique-causes-name: "&6Morts Uniques"
+gui-settings-unique-causes-lore: "&7Chacun a une mort différente"
+
+gui-settings-status: "&7Statut : %status%"
+
+mode-item-race: "Item Race"
+mode-death-run: "Death Run"
+
+# ─── Settings GUI Extras ───
+gui-settings-swap-timer-name: "&bTemps de Swap"
+gui-settings-round-timer-name: "&bTemps de Jeu"
+
+

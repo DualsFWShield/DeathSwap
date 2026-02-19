@@ -136,4 +136,16 @@ public class Lang {
         }
         return sb.toString();
     }
+
+    /**
+     * Helper to get a difficulty string.
+     */
+    public static String getDifficultyName(int difficulty) {
+        return switch (difficulty) {
+            case 1 -> "Easy";
+            case 2 -> "Medium";
+            case 3 -> "Hard";
+            default -> "Unknown";
+        };
+    }
 }

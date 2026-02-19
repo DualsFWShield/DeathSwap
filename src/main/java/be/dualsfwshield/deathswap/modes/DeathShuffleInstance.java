@@ -38,7 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DeathShuffleInstance extends GameInstance {
 
     private int currentRound = 0;
-    private DeathCause currentDeathCause;
+    // private DeathCause currentDeathCause; // REMOVED
+    private final Map<UUID, DeathCause> playerCauses = new HashMap<>();
     private int roundTimer;
     private int roundDuration;
     private BukkitTask roundTask;
@@ -108,6 +109,9 @@ public class DeathShuffleInstance extends GameInstance {
     /**
      * Start a new round with a random death cause of appropriate difficulty.
      */
+    /**
+     * Start a new round with a random death cause of appropriate difficulty.
+     */
     private void startNextRound() {
         if (getState() != GameState.RUNNING)
             return;
@@ -116,6 +120,7 @@ public class DeathShuffleInstance extends GameInstance {
 
         currentRound++;
         completedRound.clear();
+        playerCauses.clear();
 
         // Determine difficulty tier based on round number
         int difficulty;
@@ -135,20 +140,53 @@ public class DeathShuffleInstance extends GameInstance {
             // Fallback to all allowed causes
             causes = allowedCauses.toArray(new DeathCause[0]);
         }
-        currentDeathCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
 
-        // Round duration based on difficulty
-        roundDuration = getConfig().getRoundTime(difficulty);
+        // Assign causes and duration
+        if (getConfig().deathShuffleRaceMode) {
+            // Race Mode: Infinite time
+            DeathCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+            for (Player p : getAlivePlayers()) {
+                playerCauses.put(p.getUniqueId(), sharedCause);
+            }
+            roundDuration = Integer.MAX_VALUE;
+        } else if (getConfig().deathShuffleUniqueCauses) {
+            // Unique causes per player
+            for (Player p : getAlivePlayers()) {
+                DeathCause dc = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+                playerCauses.put(p.getUniqueId(), dc);
+            }
+            roundDuration = getConfig().getRoundTime(difficulty);
+        } else {
+            // Classic Mode: Shared cause
+            DeathCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+            for (Player p : getAlivePlayers()) {
+                playerCauses.put(p.getUniqueId(), sharedCause);
+            }
+            roundDuration = getConfig().getRoundTime(difficulty);
+        }
+
         roundTimer = roundDuration;
 
-        // Announce the round
-        broadcastGame("&d&lROUND " + currentRound + " &7— &e" + currentDeathCause.getChallenge());
-        broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e" + roundDuration + "s");
+        // Announcements
+        if (getConfig().deathShuffleUniqueCauses && !getConfig().deathShuffleRaceMode) {
+            broadcastGame("&d&lROUND " + currentRound + " &7— &eObjectifs individuels assignés !");
+        } else {
+            if (!getAlivePlayers().isEmpty()) {
+                DeathCause display = playerCauses.values().iterator().next();
+                broadcastGame("&d&lROUND " + currentRound + " &7— &e" + display.getChallenge());
+            }
+        }
+        broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e"
+                + (roundDuration == Integer.MAX_VALUE ? "∞" : roundDuration + "s"));
 
         for (Player p : getAlivePlayers()) {
+            DeathCause dc = playerCauses.get(p.getUniqueId());
+            if (dc == null)
+                continue;
+
             p.showTitle(Title.title(
                     Component.text("ROUND " + currentRound, NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
-                    Component.text(currentDeathCause.getChallenge(), NamedTextColor.YELLOW),
+                    Component.text(dc.getChallenge(), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
             if (getPlugin().getSoundManager() != null) {
@@ -158,8 +196,16 @@ public class DeathShuffleInstance extends GameInstance {
 
         // Update boss bar
         if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
-            getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
-                    .append(Component.text(currentDeathCause.getDisplayName(), NamedTextColor.YELLOW)));
+            if (getConfig().deathShuffleUniqueCauses && !getConfig().deathShuffleRaceMode) {
+                getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
+                        .append(Component.text("Objectif personnel", NamedTextColor.YELLOW)));
+            } else {
+                if (!playerCauses.isEmpty()) {
+                    DeathCause dc = playerCauses.values().iterator().next();
+                    getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
+                            .append(Component.text(dc.getDisplayName(), NamedTextColor.YELLOW)));
+                }
+            }
             getBossBar().color(BossBar.Color.PURPLE);
             getBossBar().progress(1.0f);
         }
@@ -173,10 +219,12 @@ public class DeathShuffleInstance extends GameInstance {
                     return;
                 }
 
-                roundTimer--;
+                if (roundDuration != Integer.MAX_VALUE) {
+                    roundTimer--;
+                }
 
                 // Update boss bar progress
-                if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
+                if (getConfig().uiMode == UIMode.RICH && getBossBar() != null && roundDuration != Integer.MAX_VALUE) {
                     float progress = Math.max(0, Math.min(1, (float) roundTimer / roundDuration));
                     getBossBar().progress(progress);
 
@@ -188,16 +236,25 @@ public class DeathShuffleInstance extends GameInstance {
                 if (getConfig().uiMode == UIMode.RICH) {
                     // Action bar countdown
                     for (Player p : getAlivePlayers()) {
+                        DeathCause dc = playerCauses.get(p.getUniqueId());
+                        if (dc == null)
+                            continue;
+
                         if (!completedRound.contains(p.getUniqueId())) {
-                            if (roundTimer <= 10) {
-                                p.sendActionBar(
-                                        Component.text(
-                                                "⚠ " + roundTimer + "s — " + currentDeathCause.getChallenge() + " ⚠",
-                                                NamedTextColor.RED, TextDecoration.BOLD));
+                            if (getConfig().deathShuffleRaceMode) {
+                                p.sendActionBar(Component.text("🏁 RACE: " + dc.getChallenge(), NamedTextColor.GOLD,
+                                        TextDecoration.BOLD));
                             } else {
-                                p.sendActionBar(
-                                        Component.text(currentDeathCause.getChallenge() + " — " + roundTimer + "s",
-                                                NamedTextColor.YELLOW));
+                                if (roundTimer <= 10) {
+                                    p.sendActionBar(
+                                            Component.text(
+                                                    "⚠ " + roundTimer + "s — " + dc.getChallenge() + " ⚠",
+                                                    NamedTextColor.RED, TextDecoration.BOLD));
+                                } else {
+                                    p.sendActionBar(
+                                            Component.text(dc.getChallenge() + " — " + roundTimer + "s",
+                                                    NamedTextColor.YELLOW));
+                                }
                             }
                         } else {
                             p.sendActionBar(
@@ -206,15 +263,24 @@ public class DeathShuffleInstance extends GameInstance {
                     }
                 } else {
                     // CLEAN Mode: Chat notifications
-                    if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
-                            || (roundTimer <= 5 && roundTimer > 0)) {
-                        broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
-                        if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
-                            getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
+                    if (roundDuration != Integer.MAX_VALUE) {
+                        if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
+                                || (roundTimer <= 5 && roundTimer > 0)) {
+                            broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
+                            if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
+                                getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
+                            }
                         }
-                    }
-                    if (roundTimer % 60 == 0 && roundTimer > 0) {
-                        broadcastGame("&eRappel: Vous devez mourir par &6" + currentDeathCause.getDisplayName());
+                        if (roundTimer % 60 == 0 && roundTimer > 0) {
+                            for (Player p : getAlivePlayers()) {
+                                DeathCause dc = playerCauses.get(p.getUniqueId());
+                                if (dc != null) {
+                                    p.sendMessage(be.dualsfwshield.deathswap.util.Lang.get("game-prefix")
+                                            + Component.text("Rappel: Vous devez mourir par " + dc.getDisplayName(),
+                                                    NamedTextColor.YELLOW));
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -227,7 +293,7 @@ public class DeathShuffleInstance extends GameInstance {
                 }
 
                 // Round time expired
-                if (roundTimer <= 0) {
+                if (roundTimer <= 0 && roundDuration != Integer.MAX_VALUE) {
                     cancel();
                     onRoundTimeExpired();
                 }
@@ -277,10 +343,22 @@ public class DeathShuffleInstance extends GameInstance {
         if (completedRound.contains(player.getUniqueId()))
             return false;
 
-        if (currentDeathCause != null && currentDeathCause.getDamageCause() == cause) {
+        DeathCause dc = playerCauses.get(player.getUniqueId());
+
+        if (dc != null && dc.getDamageCause() == cause) {
             // Correct death!
             completedRound.add(player.getUniqueId());
             pendingRespawn.put(player.getUniqueId(), true);
+
+            // Race Mode Check
+            if (getConfig().deathShuffleRaceMode) {
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-race-win", "%player%", player.getName()));
+                if (getPlugin().getSoundManager() != null) {
+                    getPlugin().getSoundManager().playSound("victory", player);
+                }
+                stopGame();
+                return true;
+            }
 
             broadcastGame("&a" + player.getName() + " a réussi le challenge ! &7(" +
                     completedRound.size() + "/" + getAlivePlayers().size() + ")");
@@ -303,8 +381,12 @@ public class DeathShuffleInstance extends GameInstance {
 
         // Wrong death: respawn but don't mark as complete
         pendingRespawn.put(player.getUniqueId(), false);
-        player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + currentDeathCause.getChallenge(),
-                NamedTextColor.RED));
+        if (dc != null) {
+            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + dc.getChallenge(),
+                    NamedTextColor.RED));
+        } else {
+            player.sendMessage(Component.text("❌ Mauvaise mort !", NamedTextColor.RED));
+        }
 
         if (getPlugin().getSoundManager() != null) {
             getPlugin().getSoundManager().playSound("round-fail", player);
@@ -372,8 +454,22 @@ public class DeathShuffleInstance extends GameInstance {
     /**
      * Get the current death cause for the listener.
      */
+    /**
+     * Get the current death cause for a specific player.
+     * Replaces getCurrentDeathCause.
+     */
+    public DeathCause getPlayerDeathCause(Player player) {
+        return playerCauses.get(player.getUniqueId());
+    }
+
+    /**
+     * Deprecated, kept for safety.
+     * Returns the cause for the first player found.
+     */
     public DeathCause getCurrentDeathCause() {
-        return currentDeathCause;
+        if (playerCauses.isEmpty())
+            return null;
+        return playerCauses.values().iterator().next();
     }
 
     /**
@@ -384,6 +480,20 @@ public class DeathShuffleInstance extends GameInstance {
     }
 
     @Override
+    public void handleDeath(Player player) {
+        // In DeathShuffle, death is the GOAL (if correct cause).
+        // We do not eliminate players here. Check the cause.
+
+        org.bukkit.event.entity.EntityDamageEvent lastDamage = player.getLastDamageCause();
+        org.bukkit.event.entity.EntityDamageEvent.DamageCause cause = (lastDamage != null) ? lastDamage.getCause()
+                : org.bukkit.event.entity.EntityDamageEvent.DamageCause.CUSTOM;
+
+        onPlayerDeath(player, cause);
+
+        // Do NOT call super.handleDeath(player) which eliminates them.
+    }
+
+    @Override
     public void stopGame() {
         if (roundTask != null) {
             roundTask.cancel();
@@ -391,6 +501,7 @@ public class DeathShuffleInstance extends GameInstance {
         }
         completedRound.clear();
         pendingRespawn.clear();
+        playerCauses.clear();
         currentRound = 0;
         super.stopGame();
     }

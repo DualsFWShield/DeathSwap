@@ -27,9 +27,10 @@ public class BlockShuffleGUI implements Listener {
         this.plugin = plugin;
     }
 
-    public void open(Player player, int page) {
-        ConfigManager.BlockShuffleConfig config = plugin.getConfigManager().getBlockShuffleConfig();
-        List<ConfigManager.BlockShuffleEntry> entries = config.getEntries();
+    public void open(Player player, String arenaId, int page) {
+        ConfigManager.BlockShuffleConfig globalConfig = plugin.getConfigManager().getBlockShuffleConfig();
+        ConfigManager.ArenaConfig arenaConfig = plugin.getConfigManager().getArenaConfig(arenaId);
+        List<ConfigManager.BlockShuffleEntry> entries = globalConfig.getEntries();
 
         int totalPages = (int) Math.ceil((double) entries.size() / ITEMS_PER_PAGE);
         if (page < 1)
@@ -71,7 +72,26 @@ public class BlockShuffleGUI implements Listener {
             inv.setItem(53, GuiUtils.createItem(Material.ARROW, Lang.get("gui-shuffle-next-page")));
         }
 
-        inv.setItem(49, GuiUtils.createItem(Material.BARRIER, Lang.get("gui-shuffle-back")));
+        // Toggles
+        if (arenaConfig != null) {
+            String raceStatus = arenaConfig.blockShuffleRaceMode ? Lang.get("enabled") : Lang.get("disabled");
+            inv.setItem(48, GuiUtils.createItem(Material.GOLDEN_BOOTS,
+                    Lang.get("gui-settings-race-mode-block-name"),
+                    Lang.get("gui-settings-race-mode-block-lore"),
+                    Lang.get("gui-settings-status", "%status%", raceStatus),
+                    "",
+                    Lang.get("gui-settings-click-toggle")));
+
+            String uniqueStatus = arenaConfig.blockShuffleUniqueTargets ? Lang.get("enabled") : Lang.get("disabled");
+            inv.setItem(50, GuiUtils.createItem(Material.TARGET,
+                    Lang.get("gui-settings-unique-targets-name"),
+                    Lang.get("gui-settings-unique-targets-lore"),
+                    Lang.get("gui-settings-status", "%status%", uniqueStatus),
+                    "",
+                    Lang.get("gui-settings-click-toggle")));
+        }
+
+        inv.setItem(49, GuiUtils.createItem(Material.BARRIER, Lang.get("gui-shuffle-back"), "&8Arena: " + arenaId));
 
         player.openInventory(inv);
     }
@@ -112,25 +132,54 @@ public class BlockShuffleGUI implements Listener {
 
         int slot = event.getSlot();
 
+        // Get Arena ID from Back Button (Slot 49) Lore
+        ItemStack backItem = event.getClickedInventory().getItem(49);
+        String arenaId = null;
+        if (backItem != null && backItem.hasItemMeta() && backItem.getItemMeta().hasLore()) {
+            List<String> lore = backItem.getItemMeta().getLore();
+            for (String line : lore) {
+                if (line.contains("Arena: ")) {
+                    arenaId = ChatColor.stripColor(line).replace("Arena: ", "").trim();
+                    break;
+                }
+            }
+        }
+
+        if (arenaId == null)
+            return; // Should not happen if opened via this GUI
+        ConfigManager.ArenaConfig arenaConfig = plugin.getConfigManager().getArenaConfig(arenaId);
+
         // Pagination & Back
         if (slot == 45 && page > 1) {
-            open(player, page - 1);
+            open(player, arenaId, page - 1);
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
             return;
         }
         if (slot == 53 && page < totalPages) {
-            open(player, page + 1);
+            open(player, arenaId, page + 1);
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
             return;
         }
         if (slot == 49) {
-            // Go back to generic settings or close
-            // Since this is global config, maybe just close or back to main admin gui?
-            // For now, let's close or go back to AdminGUI if we had a reference.
-            // But we don't know which arena triggered this if opened from settings.
-            // Actually, this is a GLOBAL config, not per arena.
-            // So we just close or maybe return to a main menu if we had one.
             player.closeInventory();
+            // Optionally go back to SettingsGUI
+            plugin.getSettingsGUI().open(player, arenaId);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+            return;
+        }
+
+        // Toggles
+        if (slot == 48 && arenaConfig != null) {
+            arenaConfig.blockShuffleRaceMode = !arenaConfig.blockShuffleRaceMode;
+            plugin.getConfigManager().saveArena(arenaConfig);
+            open(player, arenaId, page);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+            return;
+        }
+        if (slot == 50 && arenaConfig != null) {
+            arenaConfig.blockShuffleUniqueTargets = !arenaConfig.blockShuffleUniqueTargets;
+            plugin.getConfigManager().saveArena(arenaConfig);
+            open(player, arenaId, page);
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
             return;
         }
@@ -161,7 +210,7 @@ public class BlockShuffleGUI implements Listener {
 
             if (changed) {
                 config.save();
-                open(player, page);
+                open(player, arenaId, page);
             }
         }
     }
