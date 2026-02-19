@@ -6,6 +6,7 @@ import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.GameState;
 import be.dualsfwshield.deathswap.GameType;
 import be.dualsfwshield.deathswap.UIMode;
+import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -107,24 +108,24 @@ public class BlockShuffleInstance extends GameInstance {
     private void loadTargets() {
         targets.clear();
         ConfigManager.BlockShuffleConfig bsConfig = getPlugin().getConfigManager().getBlockShuffleConfig();
-        if (bsConfig != null) {
-            List<String> blockList = bsConfig.getConfig().getStringList("blocks");
-            if (blockList != null && !blockList.isEmpty()) {
-                for (String matName : blockList) {
-                    try {
-                        Material mat = Material.valueOf(matName.toUpperCase());
-                        // Default to Difficulty 1, STAND, and formatted name
-                        String name = matName.toLowerCase().replace("_", " ");
-                        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                        targets.add(new ShuffleTarget(mat, 1, AssignmentType.STAND, name));
-                    } catch (IllegalArgumentException e) {
-                        getPlugin().getLogger().warning("Invalid material in blockshuffle.yml: " + matName);
-                    }
+        if (bsConfig != null && !bsConfig.getEntries().isEmpty()) {
+            for (ConfigManager.BlockShuffleEntry entry : bsConfig.getEntries()) {
+                if (!entry.enabled())
+                    continue;
+                try {
+                    Material mat = Material.valueOf(entry.material().toUpperCase());
+                    String typeName = entry.type() != null ? entry.type().toUpperCase() : "STAND";
+                    AssignmentType assignType = typeName.equals("CRAFT") ? AssignmentType.CRAFT : AssignmentType.STAND;
+                    String name = entry.material().toLowerCase().replace("_", " ");
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    targets.add(new ShuffleTarget(mat, entry.difficulty(), assignType, name));
+                } catch (IllegalArgumentException e) {
+                    getPlugin().getLogger().warning("Invalid material in blockshuffle.yml: " + entry.material());
                 }
             }
         }
 
-        // Fallback if config empty
+        // Fallback if config empty or all disabled
         if (targets.isEmpty()) {
             targets.addAll(TARGETS);
         }
@@ -181,8 +182,36 @@ public class BlockShuffleInstance extends GameInstance {
         }
         currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
 
-        roundDuration = getConfig().getRoundTime(difficulty);
         roundTimer = roundDuration;
+
+        // RACE MODE OVERRIDE
+        if (getConfig().blockShuffleRaceMode) {
+            // Pick ONE target for everyone
+            ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+            currentTarget = sharedTarget; // Everyone gets same target (currentTarget is field)
+            // But wait, checks below use currentTarget.
+            // If we have per-player targets in future we'd need change, but here
+            // currentTarget IS shared in this class?
+            // Line 96: private ShuffleTarget currentTarget;
+            // Yes, strict BlockShuffle usually assigns different targets?
+            // Wait, BlockShuffleInstance as written in Step 637 uses 'currentTarget' field.
+            // Meaning everyone ALREADY has same target?
+            // Line 182: currentTarget = pool.get(...);
+            // Then loop 196: for (Player p... p.showTitle(... currentTarget ...)).
+            // So standard BlockShuffle ALREADY gives same target to everyone?
+            // Let's re-read Step 637 carefully.
+            // Yes, 'private ShuffleTarget currentTarget;' is a single field.
+            // So standard BlockShuffle here is "Everyone finds same block within time
+            // limit".
+            // So 'Race Mode' starts with same block, BUT:
+            // 1. Infinite time (or no time limit).
+            // 2. First to find wins (instead of "everyone must find").
+
+            roundDuration = Integer.MAX_VALUE; // Infinite
+            roundTimer = roundDuration;
+        } else {
+            currentTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+        }
 
         // Build announcement
         String emoji = currentTarget.type() == AssignmentType.STAND ? "🧱" : "🔨";
@@ -249,6 +278,12 @@ public class BlockShuffleInstance extends GameInstance {
                                     Component.text("✅ Complété ! En attente des autres...", NamedTextColor.GREEN));
                         }
                     }
+                } else if (getConfig().uiMode == UIMode.RICH && getConfig().blockShuffleRaceMode) {
+                    // RACE MODE ACTION BAR
+                    for (Player p : getAlivePlayers()) {
+                        p.sendActionBar(Component.text("🏁 RACE: " + currentTarget.displayName(), NamedTextColor.GOLD,
+                                TextDecoration.BOLD));
+                    }
                 } else {
                     // CLEAN Mode: Chat notifications
                     if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
@@ -264,6 +299,9 @@ public class BlockShuffleInstance extends GameInstance {
                         broadcastGame("&eRappel: " + emoji + " " + action + "&6" + currentTarget.displayName());
                     }
                 }
+
+                // RACE MODE: Check if anyone won?
+                // Handled in completeRound.
 
                 // All alive completed?
                 if (allAliveCompleted()) {
@@ -353,6 +391,15 @@ public class BlockShuffleInstance extends GameInstance {
      */
     private void completeRound(Player player) {
         completedRound.add(player.getUniqueId());
+
+        if (getConfig().blockShuffleRaceMode) {
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-race-win", "%player%", player.getName()));
+            if (getPlugin().getSoundManager() != null) {
+                getPlugin().getSoundManager().playSound("victory", player);
+            }
+            stopGame();
+            return;
+        }
 
         broadcastGame("&a" + player.getName() + " a réussi ! &7(" +
                 completedRound.size() + "/" + getAlivePlayers().size() + ")");

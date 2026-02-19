@@ -62,7 +62,9 @@ public class GamerulesGUI implements Listener {
                 "natural_regeneration",
                 "do_mob_spawning",
                 "send_command_feedback",
-                "log_admin_commands");
+                "log_admin_commands",
+                "announce_advancements",
+                "reduced_debug_info");
 
         int slot = 0;
         for (String rule : rules) {

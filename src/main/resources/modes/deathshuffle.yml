@@ -1,8 +1,61 @@
 # DeathShuffle Configuration
-# List of death causes to use.
-# If empty, all implemented causes are used.
-# Available causes:
-# - DROWNING, FALL, FIRE, CONTACT, STARVATION, SUFFOCATION (Easy)
-# - LAVA, EXPLOSION, PROJECTILE, MAGIC, HOT_FLOOR, FREEZE (Medium)
-# - LIGHTNING, FLY_INTO_WALL, FALLING_BLOCK, VOID (Hard)
-causes: []
+# Each death cause can be individually enabled/disabled with custom difficulty.
+# difficulty: 1 = Easy, 2 = Medium, 3 = Hard
+#
+# The plugin uses these defaults if this file is empty.
+# You can modify difficulty, toggle entries on/off, etc.
+
+causes:
+  # ─── Easy (Difficulty 1) ───
+  DROWNING:
+    enabled: true
+    difficulty: 1
+  FALL:
+    enabled: true
+    difficulty: 1
+  FIRE:
+    enabled: true
+    difficulty: 1
+  CONTACT:
+    enabled: true
+    difficulty: 1
+  STARVATION:
+    enabled: true
+    difficulty: 1
+  SUFFOCATION:
+    enabled: true
+    difficulty: 1
+
+  # ─── Medium (Difficulty 2) ───
+  LAVA:
+    enabled: true
+    difficulty: 2
+  EXPLOSION:
+    enabled: true
+    difficulty: 2
+  PROJECTILE:
+    enabled: true
+    difficulty: 2
+  MAGIC:
+    enabled: true
+    difficulty: 2
+  HOT_FLOOR:
+    enabled: true
+    difficulty: 2
+  FREEZE:
+    enabled: true
+    difficulty: 2
+
+  # ─── Hard (Difficulty 3) ───
+  LIGHTNING:
+    enabled: true
+    difficulty: 3
+  FLY_INTO_WALL:
+    enabled: true
+    difficulty: 3
+  FALLING_BLOCK:
+    enabled: true
+    difficulty: 3
+  VOID:
+    enabled: true
+    difficulty: 3

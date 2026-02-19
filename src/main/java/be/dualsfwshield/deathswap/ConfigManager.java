@@ -229,10 +229,7 @@ public class ConfigManager {
             plugin.saveResource("modes/blockshuffle.yml", false);
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-        // Config reading logic moved to BlockShuffleInstance or kept minimal here
-
-        this.blockShuffleConfig = new BlockShuffleConfig(config);
+        this.blockShuffleConfig = new BlockShuffleConfig(config, file);
     }
 
     private void loadDeathShuffleConfig() {
@@ -241,7 +238,7 @@ public class ConfigManager {
             plugin.saveResource("modes/deathshuffle.yml", false);
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        this.deathShuffleConfig = new DeathShuffleConfig(config);
+        this.deathShuffleConfig = new DeathShuffleConfig(config, file);
     }
 
     public void createArena(String id) {
@@ -301,6 +298,13 @@ public class ConfigManager {
         clone.swapMax = source.swapMax;
         clone.maxGameTime = source.maxGameTime;
         clone.spawnProtection = source.spawnProtection;
+        clone.spawnRadius = source.spawnRadius;
+        clone.minPlayerDistance = source.minPlayerDistance;
+        clone.rtpMaxRetries = source.rtpMaxRetries;
+        clone.gracePeriodBuffer = source.gracePeriodBuffer;
+        clone.swapBlindnessDuration = source.swapBlindnessDuration;
+        clone.endGameDelay = source.endGameDelay;
+        clone.challengeRewardDuration = source.challengeRewardDuration;
         clone.roundTimeEasy = source.roundTimeEasy;
         clone.roundTimeMedium = source.roundTimeMedium;
         clone.roundTimeHard = source.roundTimeHard;
@@ -360,6 +364,13 @@ public class ConfigManager {
             ac.swapMax = timers.getInt("swap-max", 420);
             ac.maxGameTime = timers.getInt("max-game-time", 1800);
             ac.spawnProtection = timers.getInt("spawn-protection", 30);
+            ac.spawnRadius = timers.getInt("spawn-radius", 100);
+            ac.minPlayerDistance = timers.getInt("min-player-distance", 50);
+            ac.rtpMaxRetries = timers.getInt("rtp-max-retries", 10);
+            ac.gracePeriodBuffer = timers.getInt("grace-period-buffer", 15);
+            ac.swapBlindnessDuration = timers.getInt("swap-blindness-duration", 3);
+            ac.endGameDelay = timers.getInt("end-game-delay", 5);
+            ac.challengeRewardDuration = timers.getInt("challenge-reward-duration", 30);
         }
 
         // Round timers (for DeathShuffle / BlockShuffle)
@@ -396,6 +407,7 @@ public class ConfigManager {
         // Resilience settings
         ac.startIfMinPlayersMet = section.getBoolean("start-if-min-players-met", false);
         ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
+        ac.blockShuffleRaceMode = section.getBoolean("game.blockshuffle-race-mode", false);
 
         // Command overrides
         ac.teleportCommand = section.getString("teleport-command", null);
@@ -465,6 +477,13 @@ public class ConfigManager {
         config.set("timers.swap-max", ac.swapMax);
         config.set("timers.max-game-time", ac.maxGameTime);
         config.set("timers.spawn-protection", ac.spawnProtection);
+        config.set("timers.spawn-radius", ac.spawnRadius);
+        config.set("timers.min-player-distance", ac.minPlayerDistance);
+        config.set("timers.rtp-max-retries", ac.rtpMaxRetries);
+        config.set("timers.grace-period-buffer", ac.gracePeriodBuffer);
+        config.set("timers.swap-blindness-duration", ac.swapBlindnessDuration);
+        config.set("timers.end-game-delay", ac.endGameDelay);
+        config.set("timers.challenge-reward-duration", ac.challengeRewardDuration);
 
         config.set("round-timers.easy", ac.roundTimeEasy);
         config.set("round-timers.medium", ac.roundTimeMedium);
@@ -473,6 +492,7 @@ public class ConfigManager {
         config.set("game.pvp-enabled", ac.pvpEnabled);
         config.set("game.nether-enabled", ac.netherEnabled);
         config.set("game.end-enabled", ac.endEnabled);
+        config.set("game.blockshuffle-race-mode", ac.blockShuffleRaceMode);
 
         ConfigurationSection rulesSection = config.createSection("gamerules");
         for (Map.Entry<String, String> ruleEntry : ac.gamerules.entrySet()) {
@@ -603,6 +623,13 @@ public class ConfigManager {
         public int swapMax = 420;
         public int maxGameTime = 1800;
         public int spawnProtection = 30;
+        public int spawnRadius = 100;
+        public int minPlayerDistance = 50;
+        public int rtpMaxRetries = 10;
+        public int gracePeriodBuffer = 15;
+        public int swapBlindnessDuration = 3;
+        public int endGameDelay = 5;
+        public int challengeRewardDuration = 30;
 
         // Round timers (DeathShuffle / BlockShuffle)
         public int roundTimeEasy = 90;
@@ -624,6 +651,9 @@ public class ConfigManager {
         public boolean startIfMinPlayersMet = false;
         public boolean preventCancelAfterCountdown = false;
 
+        // Block Shuffle Race Mode
+        public boolean blockShuffleRaceMode = false;
+
         // Command overrides (null = use global default)
         public String teleportCommand = null;
         public List<String> worldResetCommands = null;
@@ -641,6 +671,7 @@ public class ConfigManager {
             gamerules.put("do_weather_cycle", "true");
             gamerules.put("mob_griefing", "true");
             gamerules.put("natural_regeneration", "true");
+            gamerules.put("reduced_debug_info", "true");
             gamerules.put("do_mob_spawning", "true");
         }
 
@@ -689,11 +720,75 @@ public class ConfigManager {
         return deathShuffleConfig;
     }
 
+    /**
+     * Entry for a block shuffle target with enabled, difficulty and type.
+     */
+    public record BlockShuffleEntry(String material, boolean enabled, int difficulty, String type) {
+    }
+
     public static class BlockShuffleConfig {
         private final FileConfiguration config;
+        private final File file;
+        private final List<BlockShuffleEntry> entries = new ArrayList<>();
 
-        public BlockShuffleConfig(FileConfiguration config) {
+        public BlockShuffleConfig(FileConfiguration config, File file) {
             this.config = config;
+            this.file = file;
+            load();
+        }
+
+        private void load() {
+            entries.clear();
+            ConfigurationSection blocks = config.getConfigurationSection("blocks");
+            if (blocks != null) {
+                for (String key : blocks.getKeys(false)) {
+                    ConfigurationSection sec = blocks.getConfigurationSection(key);
+                    if (sec != null) {
+                        boolean enabled = sec.getBoolean("enabled", true);
+                        int difficulty = sec.getInt("difficulty", 1);
+                        String type = sec.getString("type", "STAND");
+                        entries.add(new BlockShuffleEntry(key, enabled, difficulty, type));
+                    }
+                }
+            }
+        }
+
+        public List<BlockShuffleEntry> getEntries() {
+            return entries;
+        }
+
+        public void setEnabled(String material, boolean enabled) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).material().equalsIgnoreCase(material)) {
+                    BlockShuffleEntry old = entries.get(i);
+                    entries.set(i, new BlockShuffleEntry(old.material(), enabled, old.difficulty(), old.type()));
+                    break;
+                }
+            }
+        }
+
+        public void setDifficulty(String material, int difficulty) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).material().equalsIgnoreCase(material)) {
+                    BlockShuffleEntry old = entries.get(i);
+                    entries.set(i, new BlockShuffleEntry(old.material(), old.enabled(), difficulty, old.type()));
+                    break;
+                }
+            }
+        }
+
+        public void save() {
+            for (BlockShuffleEntry entry : entries) {
+                String path = "blocks." + entry.material();
+                config.set(path + ".enabled", entry.enabled());
+                config.set(path + ".difficulty", entry.difficulty());
+                config.set(path + ".type", entry.type());
+            }
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                // Logged by caller
+            }
         }
 
         public FileConfiguration getConfig() {
@@ -701,11 +796,73 @@ public class ConfigManager {
         }
     }
 
+    /**
+     * Entry for a death shuffle cause with enabled and difficulty.
+     */
+    public record DeathShuffleEntry(String cause, boolean enabled, int difficulty) {
+    }
+
     public static class DeathShuffleConfig {
         private final FileConfiguration config;
+        private final File file;
+        private final List<DeathShuffleEntry> entries = new ArrayList<>();
 
-        public DeathShuffleConfig(FileConfiguration config) {
+        public DeathShuffleConfig(FileConfiguration config, File file) {
             this.config = config;
+            this.file = file;
+            load();
+        }
+
+        private void load() {
+            entries.clear();
+            ConfigurationSection causes = config.getConfigurationSection("causes");
+            if (causes != null) {
+                for (String key : causes.getKeys(false)) {
+                    ConfigurationSection sec = causes.getConfigurationSection(key);
+                    if (sec != null) {
+                        boolean enabled = sec.getBoolean("enabled", true);
+                        int difficulty = sec.getInt("difficulty", 1);
+                        entries.add(new DeathShuffleEntry(key, enabled, difficulty));
+                    }
+                }
+            }
+        }
+
+        public List<DeathShuffleEntry> getEntries() {
+            return entries;
+        }
+
+        public void setEnabled(String cause, boolean enabled) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).cause().equalsIgnoreCase(cause)) {
+                    DeathShuffleEntry old = entries.get(i);
+                    entries.set(i, new DeathShuffleEntry(old.cause(), enabled, old.difficulty()));
+                    break;
+                }
+            }
+        }
+
+        public void setDifficulty(String cause, int difficulty) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).cause().equalsIgnoreCase(cause)) {
+                    DeathShuffleEntry old = entries.get(i);
+                    entries.set(i, new DeathShuffleEntry(old.cause(), old.enabled(), difficulty));
+                    break;
+                }
+            }
+        }
+
+        public void save() {
+            for (DeathShuffleEntry entry : entries) {
+                String path = "causes." + entry.cause();
+                config.set(path + ".enabled", entry.enabled());
+                config.set(path + ".difficulty", entry.difficulty());
+            }
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                // Logged by caller
+            }
         }
 
         public FileConfiguration getConfig() {

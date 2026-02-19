@@ -1,49 +1,51 @@
 package be.dualsfwshield.deathswap.modes;
 
+import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
  * Death causes for DeathShuffle mode, ordered by difficulty.
  * Maps to Bukkit's DamageCause enum.
+ * Display names and challenges are localized via Lang keys.
  */
 public enum DeathCause {
 
     // Difficulty 1 — Easy
-    DROWNING("Noyade", 1, EntityDamageEvent.DamageCause.DROWNING, "Noie-toi !"),
-    FALL("Chute", 1, EntityDamageEvent.DamageCause.FALL, "Meurs d'une chute !"),
-    FIRE("Feu", 1, EntityDamageEvent.DamageCause.FIRE_TICK, "Meurs dans les flammes !"),
-    CONTACT("Cactus", 1, EntityDamageEvent.DamageCause.CONTACT, "Meurs par un cactus !"),
-    STARVATION("Famine", 1, EntityDamageEvent.DamageCause.STARVATION, "Meurs de faim !"),
-    SUFFOCATION("Suffocation", 1, EntityDamageEvent.DamageCause.SUFFOCATION, "Étouffe dans un bloc !"),
+    DROWNING(1, EntityDamageEvent.DamageCause.DROWNING),
+    FALL(1, EntityDamageEvent.DamageCause.FALL),
+    FIRE(1, EntityDamageEvent.DamageCause.FIRE_TICK),
+    CONTACT(1, EntityDamageEvent.DamageCause.CONTACT),
+    STARVATION(1, EntityDamageEvent.DamageCause.STARVATION),
+    SUFFOCATION(1, EntityDamageEvent.DamageCause.SUFFOCATION),
 
     // Difficulty 2 — Medium
-    LAVA("Lave", 2, EntityDamageEvent.DamageCause.LAVA, "Meurs dans la lave !"),
-    EXPLOSION("Explosion", 2, EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, "Meurs d'une explosion !"),
-    PROJECTILE("Projectile", 2, EntityDamageEvent.DamageCause.PROJECTILE, "Meurs par un projectile !"),
-    MAGIC("Magie", 2, EntityDamageEvent.DamageCause.MAGIC, "Meurs par la magie !"),
-    HOT_FLOOR("Magma", 2, EntityDamageEvent.DamageCause.HOT_FLOOR, "Meurs sur du magma !"),
-    FREEZE("Gel", 2, EntityDamageEvent.DamageCause.FREEZE, "Meurs de froid !"),
+    LAVA(2, EntityDamageEvent.DamageCause.LAVA),
+    EXPLOSION(2, EntityDamageEvent.DamageCause.ENTITY_EXPLOSION),
+    PROJECTILE(2, EntityDamageEvent.DamageCause.PROJECTILE),
+    MAGIC(2, EntityDamageEvent.DamageCause.MAGIC),
+    HOT_FLOOR(2, EntityDamageEvent.DamageCause.HOT_FLOOR),
+    FREEZE(2, EntityDamageEvent.DamageCause.FREEZE),
 
     // Difficulty 3 — Hard
-    LIGHTNING("Foudre", 3, EntityDamageEvent.DamageCause.LIGHTNING, "Meurs foudroyé !"),
-    FLY_INTO_WALL("Mur", 3, EntityDamageEvent.DamageCause.FLY_INTO_WALL, "Vole dans un mur !"),
-    FALLING_BLOCK("Enclume/Bloc", 3, EntityDamageEvent.DamageCause.FALLING_BLOCK, "Meurs sous un bloc !"),
-    VOID("Vide", 3, EntityDamageEvent.DamageCause.VOID, "Tombe dans le vide !");
+    LIGHTNING(3, EntityDamageEvent.DamageCause.LIGHTNING),
+    FLY_INTO_WALL(3, EntityDamageEvent.DamageCause.FLY_INTO_WALL),
+    FALLING_BLOCK(3, EntityDamageEvent.DamageCause.FALLING_BLOCK),
+    VOID(3, EntityDamageEvent.DamageCause.VOID);
 
-    private final String displayName;
     private final int difficulty;
     private final EntityDamageEvent.DamageCause damageCause;
-    private final String challenge;
 
-    DeathCause(String displayName, int difficulty, EntityDamageEvent.DamageCause cause, String challenge) {
-        this.displayName = displayName;
+    DeathCause(int difficulty, EntityDamageEvent.DamageCause cause) {
         this.difficulty = difficulty;
         this.damageCause = cause;
-        this.challenge = challenge;
     }
 
+    /**
+     * Get the localized display name from lang files.
+     * Key format: death-cause-NAME-name (e.g. death-cause-drowning-name)
+     */
     public String getDisplayName() {
-        return displayName;
+        return Lang.get("death-cause-" + name().toLowerCase().replace("_", "-") + "-name");
     }
 
     public int getDifficulty() {
@@ -54,8 +56,12 @@ public enum DeathCause {
         return damageCause;
     }
 
+    /**
+     * Get the localized challenge text from lang files.
+     * Key format: death-cause-NAME-challenge (e.g. death-cause-drowning-challenge)
+     */
     public String getChallenge() {
-        return challenge;
+        return Lang.get("death-cause-" + name().toLowerCase().replace("_", "-") + "-challenge");
     }
 
     /**

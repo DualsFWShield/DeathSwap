@@ -1,8 +1,144 @@
 # BlockShuffle Configuration
-# List of blocks/items to use for challenges.
-# If this list is empty or missing, the plugin will use the default hardcoded list
-# which includes varying difficulties and assignment types (Stand vs Craft).
+# Each block/item can be individually enabled/disabled with custom difficulty.
+# difficulty: 1 = Easy, 2 = Medium, 3 = Hard
+# type: STAND (stand on block) or CRAFT (craft the item)
 #
-# Currently, defining blocks here forces them all to Difficulty 1 and "Stand" type.
-# To keep the default balanced game, keep this list empty.
-blocks: []
+# The plugin uses these defaults if this file is empty.
+# You can modify difficulty, toggle entries on/off, etc.
+
+blocks:
+  # ─── Easy (Difficulty 1) ───
+  # Stand
+  DIRT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_LOG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLESTONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SAND:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  # Craft
+  CRAFTING_TABLE:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+  OAK_PLANKS:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+  STICK:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+  WOODEN_PICKAXE:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+  TORCH:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+
+  # ─── Medium (Difficulty 2) ───
+  # Stand
+  IRON_ORE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLD_ORE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CLAY:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_COBBLESTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ICE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  # Craft
+  IRON_PICKAXE:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+  FURNACE:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+  BUCKET:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+  SHIELD:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+  COMPASS:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+  BOOKSHELF:
+    enabled: true
+    difficulty: 2
+    type: CRAFT
+
+  # ─── Hard (Difficulty 3) ───
+  # Stand
+  DIAMOND_ORE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EMERALD_ORE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SPAWNER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  DEEPSLATE_DIAMOND_ORE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  # Craft
+  DIAMOND_PICKAXE:
+    enabled: true
+    difficulty: 3
+    type: CRAFT
+  ENCHANTING_TABLE:
+    enabled: true
+    difficulty: 3
+    type: CRAFT
+  GOLDEN_APPLE:
+    enabled: true
+    difficulty: 3
+    type: CRAFT
+  PISTON:
+    enabled: true
+    difficulty: 3
+    type: CRAFT
+  CAKE:
+    enabled: true
+    difficulty: 3
+    type: CRAFT

@@ -54,16 +54,20 @@ public class SettingsGUI implements Listener {
     private static final int SLOT_MIN_PLAYERS = 20;
     private static final int SLOT_MAX_PLAYERS = 22;
     private static final int SLOT_SPAWN_PROT = 24;
+    private static final int SLOT_SPAWN_RADIUS = 26;
 
     // Row 4 (27-35): Dimensions & misc
     private static final int SLOT_NETHER = 28;
     private static final int SLOT_END = 30;
     private static final int SLOT_SEEDS = 32;
+    private static final int SLOT_MIN_PLAYER_DIST = 34;
 
     // Row 5 (36-44): Commands & resilience
     private static final int SLOT_TP_CMD = 37;
     private static final int SLOT_RESET_CMD = 39;
     private static final int SLOT_RESILIENCE = 41;
+    private static final int SLOT_RACE_MODE = 43;
+    private static final int SLOT_MODE_CONFIG = 44;
 
     // Row 6 (45-53): Footer
     private static final int SLOT_ARENA_INFO = 45;
@@ -173,6 +177,12 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-add-5s"),
                 Lang.get("gui-settings-click-sub-5s")));
 
+        inv.setItem(SLOT_SPAWN_RADIUS, createItem(Material.ENDER_EYE, Lang.get("gui-settings-spawnradius-name"),
+                Lang.get("gui-settings-spawnradius-current", "%radius%", String.valueOf(config.spawnRadius)),
+                "",
+                Lang.get("gui-settings-click-add-50"),
+                Lang.get("gui-settings-click-sub-50")));
+
         // Row 4 (27-35): Dimensions & Misc
         inv.setItem(SLOT_NETHER, createItem(
                 config.netherEnabled ? Material.NETHERRACK : Material.BARRIER,
@@ -194,6 +204,13 @@ public class SettingsGUI implements Listener {
                 "",
                 Lang.get("gui-settings-seeds-lore-1"),
                 Lang.get("gui-settings-seeds-lore-2", "%arena%", arenaId)));
+
+        inv.setItem(SLOT_MIN_PLAYER_DIST, createItem(Material.LEAD, Lang.get("gui-settings-minplayerdist-name"),
+                Lang.get("gui-settings-minplayerdist-current", "%distance%",
+                        String.valueOf(config.minPlayerDistance)),
+                "",
+                Lang.get("gui-settings-click-add-10"),
+                Lang.get("gui-settings-click-sub-10")));
 
         // Row 5 (36-44): Commands & Resilience
         String tpCmdPreview = config.teleportCommand != null && !config.teleportCommand.isEmpty()
@@ -226,6 +243,24 @@ public class SettingsGUI implements Listener {
                         String.valueOf(config.preventCancelAfterCountdown)),
                 "",
                 Lang.get("gui-settings-resilience-click")));
+
+        // Mode specific config
+        if (config.gameType == GameType.BLOCKSHUFFLE || config.gameType == GameType.DEATHSHUFFLE) {
+            inv.setItem(SLOT_MODE_CONFIG, createItem(Material.REPEATER,
+                    Lang.get("gui-settings-mode-config-name"),
+                    Lang.get("gui-settings-mode-config-lore", "%mode%", config.gameType.name()),
+                    "",
+                    Lang.get("gui-settings-mode-config-click")));
+        }
+
+        if (config.gameType == GameType.BLOCKSHUFFLE) {
+            String raceStatus = config.blockShuffleRaceMode ? Lang.get("enabled") : Lang.get("disabled");
+            inv.setItem(SLOT_RACE_MODE, createItem(Material.GOLDEN_BOOTS,
+                    Lang.get("gui-settings-race-mode-name"),
+                    Lang.get("gui-settings-race-mode-lore", "%status%", raceStatus),
+                    "",
+                    Lang.get("gui-settings-click-toggle")));
+        }
 
         // Row 6 (45-53): Footer
         inv.setItem(SLOT_ARENA_INFO,
@@ -350,6 +385,18 @@ public class SettingsGUI implements Listener {
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
+            case SLOT_SPAWN_RADIUS -> { // Spawn radius
+                config.spawnRadius += isLeftClick ? 50 : -50;
+                config.spawnRadius = Math.max(50, config.spawnRadius);
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_MIN_PLAYER_DIST -> { // Min player distance
+                config.minPlayerDistance += isLeftClick ? 10 : -10;
+                config.minPlayerDistance = Math.max(0, config.minPlayerDistance);
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
             case SLOT_NETHER -> { // Nether
                 config.netherEnabled = !config.netherEnabled;
                 plugin.getConfigManager().saveArena(config);
@@ -434,6 +481,24 @@ public class SettingsGUI implements Listener {
                 config.preventCancelAfterCountdown = value;
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
+            }
+            case SLOT_RACE_MODE -> {
+                if (config.gameType == GameType.BLOCKSHUFFLE) {
+                    config.blockShuffleRaceMode = !config.blockShuffleRaceMode;
+                    plugin.getConfigManager().saveArena(config);
+                    open(player, arenaId);
+                }
+            }
+            case SLOT_MODE_CONFIG -> {
+                if (config.gameType == GameType.BLOCKSHUFFLE) {
+                    if (plugin.getBlockShuffleGUI() != null) {
+                        plugin.getBlockShuffleGUI().open(player, 1);
+                    }
+                } else if (config.gameType == GameType.DEATHSHUFFLE) {
+                    if (plugin.getDeathShuffleGUI() != null) {
+                        plugin.getDeathShuffleGUI().open(player, 1);
+                    }
+                }
             }
             case SLOT_STOP -> { // Stop Arena
                 GameInstance game = plugin.getArenaManager().getArena(arenaId);

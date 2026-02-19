@@ -106,10 +106,15 @@ public class ChallengeManager {
                         .append(Component.text(active.getDescription(), NamedTextColor.YELLOW)
                                 .decoration(TextDecoration.BOLD, false)));
 
-                // Apply reward
+                // Apply reward (use arena-specific duration if available)
                 PotionEffectType effect = active.getRewardPotionEffect();
                 if (effect != null) {
-                    player.addPotionEffect(new PotionEffect(effect, 600, 0, false, true)); // 30 seconds
+                    int rewardTicks = 30 * 20; // default 30 seconds
+                    GameInstance game = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
+                    if (game != null) {
+                        rewardTicks = game.getConfig().challengeRewardDuration * 20;
+                    }
+                    player.addPotionEffect(new PotionEffect(effect, rewardTicks, 0, false, true));
                 }
 
                 if (plugin.getSoundManager() != null) {

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,8 @@ public class DeathShuffleInstance extends GameInstance {
 
     // Allowed causes from config
     private final Set<DeathCause> allowedCauses = new HashSet<>();
+    // Custom difficulty overrides from config
+    private final Map<DeathCause, Integer> customDifficulties = new EnumMap<>(DeathCause.class);
 
     public DeathShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
@@ -57,17 +60,19 @@ public class DeathShuffleInstance extends GameInstance {
 
     private void loadAllowedCauses() {
         allowedCauses.clear();
+        customDifficulties.clear();
         ConfigManager.DeathShuffleConfig dsConfig = getPlugin().getConfigManager().getDeathShuffleConfig();
-        if (dsConfig != null) {
-            List<String> causesList = dsConfig.getConfig().getStringList("causes");
-            if (causesList != null && !causesList.isEmpty()) {
-                for (String causeName : causesList) {
-                    try {
-                        DeathCause dc = DeathCause.valueOf(causeName.toUpperCase());
-                        allowedCauses.add(dc);
-                    } catch (IllegalArgumentException e) {
-                        getPlugin().getLogger().warning("Invalid cause in deathshuffle.yml: " + causeName);
-                    }
+        if (dsConfig != null && !dsConfig.getEntries().isEmpty()) {
+            for (ConfigManager.DeathShuffleEntry entry : dsConfig.getEntries()) {
+                if (!entry.enabled())
+                    continue;
+                try {
+                    DeathCause dc = DeathCause.valueOf(entry.cause().toUpperCase());
+                    allowedCauses.add(dc);
+                    // Store custom difficulty override
+                    customDifficulties.put(dc, entry.difficulty());
+                } catch (IllegalArgumentException e) {
+                    getPlugin().getLogger().warning("Invalid cause in deathshuffle.yml: " + entry.cause());
                 }
             }
         }
@@ -78,6 +83,13 @@ public class DeathShuffleInstance extends GameInstance {
                 allowedCauses.add(dc);
             }
         }
+    }
+
+    /**
+     * Get the effective difficulty for a death cause (from config or default).
+     */
+    private int getEffectiveDifficulty(DeathCause dc) {
+        return customDifficulties.getOrDefault(dc, dc.getDifficulty());
     }
 
     @Override
@@ -114,10 +126,9 @@ public class DeathShuffleInstance extends GameInstance {
         else
             difficulty = 3; // Rounds 7+: Hard
 
-        // Pick random death cause from difficulty tier
-        // Filter by allowed causes
-        DeathCause[] causes = Arrays.stream(DeathCause.getByDifficulty(difficulty))
-                .filter(allowedCauses::contains)
+        // Pick random death cause matching difficulty tier (using config overrides)
+        DeathCause[] causes = allowedCauses.stream()
+                .filter(dc -> getEffectiveDifficulty(dc) == difficulty)
                 .toArray(DeathCause[]::new);
 
         if (causes.length == 0) {

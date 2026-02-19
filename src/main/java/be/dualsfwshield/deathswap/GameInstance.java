@@ -452,7 +452,7 @@ public class GameInstance {
             // Initialize grace period BEFORE teleport to ensure coverage
             long protectionMillis = config.spawnProtection * 1000L;
             // Add buffer for spread/loading logic
-            gracePeriodEndTime = System.currentTimeMillis() + protectionMillis + 15000L;
+            gracePeriodEndTime = System.currentTimeMillis() + protectionMillis + config.gracePeriodBuffer * 1000L;
 
             // Teleport players (handles spreading internal)
             teleportPlayersToGame();
@@ -522,6 +522,9 @@ public class GameInstance {
         lobbyPlayers.clear();
         readyPlayers.clear();
 
+        // Track spawn locations for smart scatter (min distance between players)
+        List<Location> assignedSpawns = new ArrayList<>();
+
         for (Player player : playersToTeleport) {
             if (!this.testMode && !playersToTeleport.contains(player))
                 continue; // Safety
@@ -534,10 +537,13 @@ public class GameInstance {
             gamePlayers.add(player);
             alivePlayers.add(player);
 
-            // Async RTP
-            teleportRandomlyAsync(player, gameWorld).thenAccept(success -> {
+            // Async RTP with smart scatter
+            teleportRandomlyAsync(player, gameWorld, assignedSpawns, config.minPlayerDistance).thenAccept(success -> {
                 if (success) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
+                        // Record this player's location for distance checks
+                        assignedSpawns.add(player.getLocation().clone());
+
                         player.setGameMode(GameMode.SURVIVAL);
                         if (config.uiMode == UIMode.RICH && bossBar != null) {
                             player.showBossBar(bossBar);
@@ -555,11 +561,6 @@ public class GameInstance {
                                 new PotionEffect(PotionEffectType.SATURATION, prot * 20, 255, false, false));
 
                         if (teleportedCount.incrementAndGet() == totalPlayers) {
-                            // All teleported - trigger game start logic that was previously in
-                            // spreadPlayers or delayed
-                            // But wait, the original logic had a delayed task calling spreadPlayers() then
-                            // doing game start.
-                            // We should probably trigger that "post-teleport" logic here.
                             onAllPlayersTeleported();
                         }
                     });
@@ -621,12 +622,13 @@ public class GameInstance {
     }
 
     /**
-     * Async random teleport logic.
+     * Async random teleport logic with smart scatter support.
      */
-    private CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world) {
+    private CompletableFuture<Boolean> teleportRandomlyAsync(Player player, World world,
+            List<Location> existingSpawns, int minDistance) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        findSafeLocationAsync(world, 5000).thenAccept(loc -> {
+        findSafeLocationAsync(world, config.spawnRadius, existingSpawns, minDistance).thenAccept(loc -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (loc != null) {
                     player.teleport(loc);
@@ -640,13 +642,15 @@ public class GameInstance {
         return future;
     }
 
-    private CompletableFuture<Location> findSafeLocationAsync(World world, int radius) {
+    private CompletableFuture<Location> findSafeLocationAsync(World world, int radius,
+            List<Location> existingSpawns, int minDistance) {
         CompletableFuture<Location> future = new CompletableFuture<>();
-        findSafeLocationRecursive(world, radius, 10, future);
+        findSafeLocationRecursive(world, radius, config.rtpMaxRetries, existingSpawns, minDistance, future);
         return future;
     }
 
     private void findSafeLocationRecursive(World world, int radius, int attempts,
+            List<Location> existingSpawns, int minDistance,
             CompletableFuture<Location> future) {
         if (attempts <= 0) {
             plugin.getLogger().warning("Could not find safe RTP location after retries.");
@@ -663,17 +667,34 @@ public class GameInstance {
             Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
 
             Material block = loc.getBlock().getRelative(BlockFace.DOWN).getType();
-            if (isSafeBlock(block)) {
+            if (isSafeBlock(block) && isDistanceSafe(loc, existingSpawns, minDistance)) {
                 future.complete(loc);
             } else {
                 // Retry
-                findSafeLocationRecursive(world, radius, attempts - 1, future);
+                findSafeLocationRecursive(world, radius, attempts - 1, existingSpawns, minDistance, future);
             }
         }).exceptionally(ex -> {
             ex.printStackTrace();
             future.complete(world.getSpawnLocation());
             return null;
         });
+    }
+
+    /**
+     * Check if a location is far enough from all existing spawn points.
+     */
+    private boolean isDistanceSafe(Location loc, List<Location> existingSpawns, int minDistance) {
+        if (minDistance <= 0 || existingSpawns.isEmpty())
+            return true;
+        double minDistSq = (double) minDistance * minDistance;
+        for (Location spawn : existingSpawns) {
+            double dx = loc.getX() - spawn.getX();
+            double dz = loc.getZ() - spawn.getZ();
+            if (dx * dx + dz * dz < minDistSq) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isSafeBlock(Material mat) {
@@ -821,7 +842,8 @@ public class GameInstance {
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             }
-            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 0, false, false));
+            p.addPotionEffect(
+                    new PotionEffect(PotionEffectType.BLINDNESS, config.swapBlindnessDuration * 20, 0, false, false));
         }
 
         // Circular rotation: each player goes to the next player's position
@@ -976,7 +998,7 @@ public class GameInstance {
                 broadcastGame(Lang.get("game-draw"));
             }
 
-            Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, 100L); // 5 seconds
+            Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, config.endGameDelay * 20L); // Configurable delay
         }
     }
 
