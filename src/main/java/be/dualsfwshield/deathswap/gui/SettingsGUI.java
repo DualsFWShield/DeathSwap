@@ -65,7 +65,8 @@ public class SettingsGUI implements Listener {
     // Row 5 (36-44): Commands & resilience
     private static final int SLOT_TP_CMD = 37;
     private static final int SLOT_RESET_CMD = 39;
-    private static final int SLOT_RESILIENCE = 41;
+    private static final int SLOT_RESILIENCE = 41; // Now Launch Mode
+    private static final int SLOT_DEBUG_MODE = 43;
     private static final int SLOT_MODE_CONFIG = 44;
 
     // Row 6 (45-53): Footer
@@ -241,12 +242,19 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-reset-click-cycle"),
                 Lang.get("gui-settings-reset-click-custom")));
 
-        inv.setItem(SLOT_RESILIENCE, createItem(Material.TOTEM_OF_UNDYING, Lang.get("gui-settings-resilience-name"),
-                Lang.get("gui-settings-resilience-start", "%bool%", String.valueOf(config.startIfMinPlayersMet)),
-                Lang.get("gui-settings-resilience-cancel", "%bool%",
-                        String.valueOf(config.preventCancelAfterCountdown)),
+        inv.setItem(SLOT_RESILIENCE, createItem(Material.TOTEM_OF_UNDYING, Lang.get("gui-settings-launchmode-name"),
+                Lang.get("gui-settings-launchmode-current", "%mode%", config.launchMode.name()),
+                Lang.get("gui-settings-launchmode-lore"),
                 "",
-                Lang.get("gui-settings-resilience-click")));
+                Lang.get("gui-settings-click-change")));
+
+        inv.setItem(SLOT_DEBUG_MODE, createItem(
+                config.debugMode ? Material.REDSTONE_TORCH : Material.LEVER,
+                Lang.get("gui-settings-debug-name"),
+                config.debugMode ? Lang.get("gui-settings-debug-enabled") : Lang.get("gui-settings-debug-disabled"),
+                Lang.get("gui-settings-debug-lore"),
+                "",
+                Lang.get("gui-settings-click-toggle")));
 
         // Mode specific config
         if (config.gameType == GameType.BLOCKSHUFFLE || config.gameType == GameType.DEATHSHUFFLE) {
@@ -470,10 +478,15 @@ public class SettingsGUI implements Listener {
                             });
                 }
             }
-            case SLOT_RESILIENCE -> { // Resilience
-                boolean value = !config.startIfMinPlayersMet;
-                config.startIfMinPlayersMet = value;
-                config.preventCancelAfterCountdown = value;
+            case SLOT_RESILIENCE -> { // Launch Mode
+                config.launchMode = (config.launchMode == ConfigManager.LaunchMode.MINIMUM)
+                        ? ConfigManager.LaunchMode.MAXIMUM
+                        : ConfigManager.LaunchMode.MINIMUM;
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_DEBUG_MODE -> { // Debug Mode
+                config.debugMode = !config.debugMode;
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }

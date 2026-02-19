@@ -405,9 +405,14 @@ public class ConfigManager {
         }
 
         // Resilience settings
-        ac.startIfMinPlayersMet = section.getBoolean("start-if-min-players-met", false);
+        ac.forceStartDelay = section.getInt("force-start-delay", 30);
         ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
-        ac.preventCancelAfterCountdown = section.getBoolean("prevent-cancel-after-countdown", false);
+        try {
+            ac.launchMode = LaunchMode.valueOf(section.getString("launch-mode", "MINIMUM").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            ac.launchMode = LaunchMode.MINIMUM;
+        }
+        ac.debugMode = section.getBoolean("debug-mode", false);
 
         ac.blockShuffleRaceMode = section.getBoolean("game.blockshuffle-race-mode", false);
         ac.blockShuffleUniqueTargets = section.getBoolean("game.blockshuffle-unique-targets", true);
@@ -516,8 +521,10 @@ public class ConfigManager {
             map.put("name", se.name());
             seedMaps.add(map);
         }
-        config.set("start-if-min-players-met", ac.startIfMinPlayersMet);
+        config.set("force-start-delay", ac.forceStartDelay);
         config.set("prevent-cancel-after-countdown", ac.preventCancelAfterCountdown);
+        config.set("launch-mode", ac.launchMode.name());
+        config.set("debug-mode", ac.debugMode);
 
         if (ac.teleportCommand != null) {
             config.set("teleport-command", ac.teleportCommand);
@@ -609,6 +616,10 @@ public class ConfigManager {
 
     // --- Inner classes ---
 
+    public enum LaunchMode {
+        MINIMUM, MAXIMUM
+    }
+
     /**
      * Holds all configuration values for a single arena.
      */
@@ -658,8 +669,10 @@ public class ConfigManager {
         public Map<String, String> gamerules = new HashMap<>();
 
         // Resilience
-        public boolean startIfMinPlayersMet = false;
+        public int forceStartDelay = 30; // 0 = disabled, otherwise seconds to wait before force start
         public boolean preventCancelAfterCountdown = false;
+        public LaunchMode launchMode = LaunchMode.MINIMUM;
+        public boolean debugMode = false;
 
         // Block Shuffle
         public boolean blockShuffleRaceMode = false;

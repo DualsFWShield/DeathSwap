@@ -123,6 +123,10 @@ public class GameInstance {
     private long gameStartEpoch;
     private long gracePeriodEndTime = 0;
 
+    // Force Start
+    private BukkitTask forceStartTask;
+    private int forceStartCountdown;
+
     public boolean isGracePeriod() {
         return System.currentTimeMillis() < gracePeriodEndTime;
     }
@@ -252,21 +256,7 @@ public class GameInstance {
             notReady.setItemMeta(meta);
             player.getInventory().setItem(4, notReady);
 
-            // If game was starting, maybe cancel?
-            if (state == GameState.STARTING && !config.startIfMinPlayersMet) {
-                // If config says cancel on unready, we cancel
-                // But current logic doesn't explicitly cancel task here, just relies on check
-                // later?
-                // Actually startCountdown() doesn't check ready status during run.
-                // onCountdownFinished() checks alivePlayers size, not ready status.
-                // So unready during countdown has no effect unless we add code here.
-                // Let's force cancel if we drop below min players and !startIfMinPlayersMet
-                if (readyPlayers.size() < config.minPlayers) {
-                    broadcastLobby(Lang.get("lobby-cancel-not-enough"));
-                    state = GameState.WAITING;
-                    // Note: The countdown task checks state != STARTING and will cancel itself.
-                }
-            }
+            checkAllReady(); // Re-evaluate logic (cancels timer if needed)
 
         } else {
             // Ready
@@ -362,15 +352,119 @@ public class GameInstance {
     /**
      * Check if all lobby players are ready and enough to start.
      */
-    public void checkAllReady() {
+    /**
+     * Check if all lobby players are ready and enough to start.
+     */
+    private void checkAllReady() {
         if (state != GameState.WAITING)
             return;
-        if (lobbyPlayers.size() < config.minPlayers)
-            return;
-        if (readyPlayers.size() != lobbyPlayers.size())
-            return;
 
-        broadcastLobby(Lang.get("lobby-all-ready"));
+        int readyCount = readyPlayers.size();
+        int totalPlayers = lobbyPlayers.size();
+        int minPlayers = config.minPlayers;
+        int maxPlayers = config.maxPlayers;
+
+        // Global Constraint: players >= 2 (unless debug)
+        if (totalPlayers < 2 && !config.debugMode) {
+            cancelForceStart();
+            return;
+        }
+
+        boolean shouldStart = false;
+        boolean antiAfkTrigger = false;
+
+        if (config.launchMode == ConfigManager.LaunchMode.MAXIMUM) {
+            // MAX Logic: Wait for full lobby
+            if (totalPlayers < maxPlayers) {
+                // Not full - do nothing (wait)
+            } else {
+                // Full
+                if (readyCount == totalPlayers) {
+                    shouldStart = true;
+                } else if (readyCount == totalPlayers - 1) {
+                    antiAfkTrigger = true;
+                }
+            }
+        } else {
+            // MINIMUM Logic
+            if (totalPlayers >= minPlayers) {
+                if (readyCount == totalPlayers) {
+                    shouldStart = true;
+                } else if (readyCount == totalPlayers - 1) {
+                    antiAfkTrigger = true;
+                }
+            }
+        }
+
+        if (shouldStart) {
+            cancelForceStart();
+            broadcastLobby(Lang.get("lobby-all-ready"));
+            state = GameState.STARTING; // Lock ready status
+            Bukkit.getScheduler().runTaskLater(plugin, () -> startGame(false), 60L); // 3s
+        } else if (antiAfkTrigger) {
+            if (forceStartTask == null) {
+                startForceStartTimer();
+            }
+        } else {
+            // Conditions not met, cancel any pending timers
+            cancelForceStart();
+        }
+    }
+
+    private void startForceStartTimer() {
+        // Use configured delay or default to 30s
+        int delay = config.forceStartDelay > 0 ? config.forceStartDelay : 30;
+        forceStartCountdown = delay;
+        broadcastLobby(Lang.get("lobby-forcestart-countdown", "%time%", String.valueOf(forceStartCountdown)));
+
+        forceStartTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (state != GameState.WAITING) {
+                cancelForceStart();
+                return;
+            }
+
+            // Consistency check is handled by checkAllReady() calls on events.
+            // But we can double check:
+            // If condition lost, checkAllReady should have cancelled us.
+
+            forceStartCountdown--;
+            if (forceStartCountdown <= 0) {
+                cancelForceStart();
+                forceAllReadyAndStart();
+                return;
+            }
+
+            if (forceStartCountdown <= 5 || forceStartCountdown == 10 || forceStartCountdown == 20) {
+                broadcastLobby(Lang.get("lobby-forcestart-countdown", "%time%", String.valueOf(forceStartCountdown)));
+            }
+        }, 20L, 20L);
+    }
+
+    private void cancelForceStart() {
+        if (forceStartTask != null) {
+            forceStartTask.cancel();
+            forceStartTask = null;
+            broadcastLobby(Lang.get("lobby-forcestart-cancelled"));
+        }
+    }
+
+    private void forceAllReadyAndStart() {
+        for (Player p : lobbyPlayers) {
+            if (!readyPlayers.contains(p)) {
+                readyPlayers.add(p);
+                // Update item visual
+                ItemStack ready = new ItemStack(Material.LIME_CONCRETE);
+                ItemMeta meta = ready.getItemMeta();
+                meta.displayName(Lang.getComponent("emoji-ready")
+                        .color(NamedTextColor.GREEN)
+                        .append(Lang.getComponent("item-click-cancel")
+                                .color(NamedTextColor.GRAY))
+                        .decoration(TextDecoration.ITALIC, false));
+                ready.setItemMeta(meta);
+                p.getInventory().setItem(4, ready);
+            }
+        }
+        broadcastLobby(Lang.get("lobby-all-ready")); // Broadcast that everyone is now ready
         Bukkit.getScheduler().runTaskLater(plugin, () -> startGame(false), 60L); // 3 seconds
     }
 
@@ -380,10 +474,10 @@ public class GameInstance {
      * @param debug if true, bypasses minimum player checks
      */
     public void startGame(boolean debug) {
-        if (state == GameState.RUNNING || state == GameState.STARTING) {
+        if (state == GameState.RUNNING) {
             return;
         }
-        if (state != GameState.WAITING)
+        if (state != GameState.WAITING && state != GameState.STARTING)
             return;
 
         this.testMode = debug;

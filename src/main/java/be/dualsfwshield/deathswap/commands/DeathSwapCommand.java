@@ -536,12 +536,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 case "nether" -> config.netherEnabled = Boolean.parseBoolean(value);
                 case "end" -> config.endEnabled = Boolean.parseBoolean(value);
 
-                // Resilience
-                case "resilience" -> {
-                    boolean b = Boolean.parseBoolean(value);
-                    config.startIfMinPlayersMet = b;
-                    config.preventCancelAfterCountdown = b;
-                }
+                // Force Start
+                case "forcestart" -> config.forceStartDelay = Integer.parseInt(value);
+                case "preventcancel" -> config.preventCancelAfterCountdown = Boolean.parseBoolean(value);
 
                 default -> {
                     Lang.send(player, "cmd-admin-set-unknown", "%prop%", property);
