@@ -2,15 +2,15 @@
 
 > **[English Version](README_EN.md)**
 >
-> **Un plugin Minecraft professionnel** pour **Paper 1.21.1** (et forks compatibles : Purpur, etc.) avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
+> **Un plugin Minecraft professionnel** pour **Paper 1.21.11** (et forks compatibles : Purpur, etc.) avec 3 modes de jeu, multi-arènes, dashboard admin et personnalisation complète.
 >
 > **Note :** Le plugin supporte le **Français** et l'**Anglais** (configurable).
 >
 > ⚠️ **Non compatible Spigot/Bukkit** — Le plugin utilise l'API Adventure native de Paper.
-> ⚠️ **Important :** Ce plugin a été conçu et testé pour **Minecraft 1.21.1**. La compatibilité avec d'autres versions n'est pas garantie.
+> ⚠️ **Important :** Ce plugin a été conçu et testé pour **Minecraft 1.21.11** (gamerules en snake_case requises).
 
 [![Java 21](https://img.shields.io/badge/Java-21-orange)](https://adoptium.net)
-[![Paper 1.21.1](https://img.shields.io/badge/Paper-1.21.1-blue)](https://papermc.io)
+[![Paper 1.21.11](https://img.shields.io/badge/Paper-1.21.11-blue)](https://papermc.io)
 [![License](https://img.shields.io/badge/license-Custom-yellow)](LICENSE.md)
 
 ---
@@ -64,7 +64,7 @@
 | Composant       | Version | Requis                                                                |
 | --------------- | ------- | --------------------------------------------------------------------- |
 | Java            | 21+     | ✅                                                                    |
-| Paper (ou fork) | 1.21.1  | ✅ Paper, Purpur, etc. — **pas** Spigot/Bukkit                       |
+| Paper (ou fork) | 1.21.11 | ✅ Paper, Purpur, etc. — **pas** Spigot/Bukkit                       |
 | Multiverse-Core | 4.x     | ⬜ Recommandé (gestion des mondes/TP) — peut être utilisé sans      |
 | CyberWorldReset | *       | ⬜ Optionnel (régénération de monde)                                 |
 

@@ -2,7 +2,7 @@
 
 > **[Wiki Français](WIKI.md)**
 >
-> Complete technical documentation for the DeathSwap plugin for **Paper 1.21.1** (and compatible forks: Purpur, etc.).
+> Complete technical documentation for the DeathSwap plugin for **Paper 1.21.11** (and compatible forks: Purpur, etc.). Tested on 1.21.11.
 >
 > ⚠️ **Not compatible with Spigot/Bukkit** — The plugin uses Paper's native Adventure API.
 
@@ -207,7 +207,7 @@ Modifiable via:
 
 ## 🎮 Gamerules
 
-Minecraft gamerules are configurable **per arena**, in **snake_case** format (standard Minecraft 1.21+).
+Minecraft gamerules are configurable **per arena**, in **snake_case** format (standard Minecraft 1.21.11+).
 
 ### Default Gamerules
 
@@ -535,7 +535,7 @@ Used for:
 ### Plugin does not start
 
 - Check that Java 21+ is installed (`java -version`)
-- Check that **Paper 1.21.1** (or a fork like Purpur) is used — Spigot/Bukkit are **not** supported
+- Check that **Paper 1.21.11** (or a fork like Purpur) is used — Spigot/Bukkit are **not** supported
 - Check console logs for errors
 
 ### Worlds do not load

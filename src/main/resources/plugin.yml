@@ -1,7 +1,7 @@
 name: DeathSwap
 version: ${project.version}
 main: be.dualsfwshield.deathswap.DeathSwapPlugin
-api-version: '1.21' # Tested on 1.21.1
+api-version: '1.21.11' # Requires 1.21.11+ (snake_case gamerules)
 description: Professional DeathSwap minigame with DeathShuffle and BlockShuffle modes
 authors: [DualsFWShield]
 website: https://dualsfwshield.be

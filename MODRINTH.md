@@ -1,8 +1,8 @@
 # 🎮 DeathSwap
 
-**A professional DeathSwap minigame plugin** for Paper 1.21.1 with 3 game modes, multi-arenas, admin dashboard, and full customization.
+**A professional DeathSwap minigame plugin** for Paper 1.21.11 with 3 game modes, multi-arenas, admin dashboard, and full customization.
 
-> ⚠️ **Paper 1.21.1 required** (or compatible forks like Purpur). Not compatible with Spigot/Bukkit.
+> ⚠️ **Paper 1.21.11 required** (or compatible forks like Purpur). Not compatible with Spigot/Bukkit.
 
 ---
 
@@ -61,7 +61,7 @@
 | Component | Version | Status |
 |-----------|---------|--------|
 | Java | 21+ | ✅ Required |
-| Paper (or fork) | 1.21.1 | ✅ Required |
+| Paper (or fork) | 1.21.11 | ✅ Required |
 | Multiverse-Core | 4.x | ⬜ Recommended |
 | CyberWorldReset | * | ⬜ Optional |
 

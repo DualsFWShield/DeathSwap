@@ -629,7 +629,7 @@ public class ConfigManager {
         public List<String> worldResetCommands = null;
 
         public ArenaConfig() {
-            // Default gamerules (1.21.1 snake_case names)
+            // Default gamerules (1.21.11 snake_case names)
             gamerules.put("keep_inventory", "false");
             gamerules.put("immediate_respawn", "true");
             gamerules.put("spawn_radius", "0");
