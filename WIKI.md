@@ -1,391 +1,641 @@
-# 📖 DeathSwap — Wiki Complet
+# 📚 DeathSwap — Wiki Technique (Français)
 
 > **[English Wiki](WIKI_EN.md)**
 >
-> Guide technique et utilisateur complet pour le plugin DeathSwap.  
-> Dernière mise à jour : Février 2026
+> Documentation technique complète du plugin DeathSwap pour **Paper 1.21.1** (et forks compatibles : Purpur, etc.).
 >
-> **Nouveautés :**
-> - Messages traduits (FR/EN).
-> - Objectifs BlockShuffle et causes DeathShuffle entièrement configurables via fichiers YAML.
+> ⚠️ **Non compatible Spigot/Bukkit** — Le plugin utilise l'API Adventure native de Paper.
 
 ---
 
-## 📑 Table des Matières
+## 📋 Table des Matières
 
-1. [Installation et Prérequis](#-installation-et-prérequis)
-2. [Premiers Pas](#-premiers-pas)
-3. [Modes de Jeu](#-modes-de-jeu)
-4. [Commandes Complètes](#-commandes-complètes)
-5. [Configuration Détaillée](#-configuration-détaillée)
-6. [Système de Permissions](#-système-de-permissions)
-7. [Interface Utilisateur (UI Modes)](#-interface-utilisateur-ui-modes)
-8. [Gamerules Minecraft](#-gamerules-minecraft)
-9. [Système de Seeds et Votes](#-système-de-seeds-et-votes)
-10. [Statistiques et Leaderboards](#-statistiques-et-leaderboards)
-11. [Challenges](#-challenges)
-12. [Sons Personnalisés](#-sons-personnalisés)
-13. [Dashboard Admin](#-dashboard-admin)
-14. [Multi-Arènes](#-multi-arènes)
-15. [Dépendances](#-dépendances)
-16. [FAQ et Dépannage](#-faq-et-dépannage)
-17. [Licence](#-licence)
-
----
-
-## 📥 Installation et Prérequis
-
-### Prérequis système
-
-| Composant | Version minimum | Rôle |
-|-----------|----------------|------|
-| **Java** | 21+ | Runtime |
-| **Paper** | 1.21.1 | Serveur Minecraft (1.21.1 uniquement) |
-| **Multiverse-Core** | 4.x | Gestion des mondes (création, chargement, TP) |
-| **CyberWorldReset** | * | Régénération de mondes (reset) |
-
-### Étapes d'installation
-
-```bash
-# 1. Compiler le plugin
-mvn clean package
-
-# 2. Copier le JAR dans le dossier plugins
-cp target/deathswap-1.0.0.jar /chemin/vers/serveur/plugins/
-
-# 3. Démarrer le serveur
-# Le fichier config.yml est auto-généré au premier lancement
-```
-
-### Configuration initiale requise
-
-Après le premier lancement :
-
-1. **Créer les mondes** via Multiverse :
-   ```
-   /mv create DS_WaitingLobby normal
-   /mv create DeathSwap_Game normal
-   ```
-2. **Configurer CyberWorldReset** pour le monde de jeu :
-   ```
-   /cwr add DeathSwap_Game
-   ```
-3. **Éditer** `plugins/DeathSwap/config.yml` pour pointer vers vos mondes
-4. **Recharger** via `/ds reload`
+- [Commandes Complètes](#-commandes-complètes)
+- [Configuration Détaillée](#️-configuration-détaillée)
+- [Système de Permissions](#-permissions)
+- [Modes d'Interface (UI)](#-modes-dinterface)
+- [Gamerules](#-gamerules)
+- [Seeds & Vote](#-seeds--vote)
+- [Statistiques](#-statistiques)
+- [Challenges](#-challenges)
+- [Sons Personnalisés](#-sons-personnalisés)
+- [Dashboard Admin](#️-dashboard-admin)
+- [Multi-Arènes](#️-multi-arènes)
+- [Propriétés Admin Set](#-propriétés-admin-set)
+- [Dépendances](#-dépendances)
+- [FAQ et Dépannage](#-faq-et-dépannage)
+- [Configuration de Référence](#-fichiers-de-configuration-de-référence)
+- [Licence](#-licence)
 
 ---
 
-## 🚀 Premiers Pas
-
-### Pour les joueurs
-
-1. Rejoindre une arène : `/ds join` (ou `/ds join <nom_arène>`)
-2. Attendre que tous les joueurs soient prêts
-3. Le jeu démarre automatiquement (ou un admin le force avec `/ds start`)
-4. Survivre !
-
-### Pour les admins
-
-1. Ouvrir le dashboard : `/ds admin`
-2. Cliquer sur une arène pour la gérer
-3. Utiliser `/ds reload` après chaque modification de config
-
----
-
-## 🕹️ Modes de Jeu
-
-### DeathSwap (Classique)
-
-> Piège la zone avant d'être échangé avec un autre joueur !
-
-- Les joueurs sont **téléportés aléatoirement** les uns aux positions des autres
-- Intervalle de swap configurable (fixe ou aléatoire)
-- Le dernier joueur en vie gagne
-- **PvP optionnel**, Nether/End configurables
-
-**Déroulement :**
-1. 🏠 Lobby → Tous les joueurs cliquent "Prêt"
-2. ⏳ Countdown + chargement du monde
-3. 🌍 Dispersion aléatoire dans le monde
-4. ⚡ Protection de spawn : Invulnérabilité totale + Chute lente (Slow Falling) + Résistance au feu (configurable)
-5. 🔄 Swaps à intervalles réguliers
-6. 🏆 Dernier vivant déclare vainqueur
-
-### DeathShuffle
-
-> Chaque round, un type de mort t'est assigné. Meurt de la bonne façon ! 
-
-- Rounds successifs avec un **type de mort** assigné
-- Exemples : mourir de lave, de chute, de noyade, d'explosion...
-- Timer par round basé sur la difficulté (easy/medium/hard)
-- Si tu ne meurs pas du bon type → **éliminé**
-- **Causes configurables** dans `modes/deathshuffle.yml`
-
-**Types de mort par difficulté :**
-| Facile | Moyen | Difficile |
-|--------|-------|-----------|
-| Chute | Lave | Lightning |
-| Noyade | Cactus | Wither |
-| Feu | Explosion | Void |
-| Mob | Flèche | Cramming |
-
-### BlockShuffle
-
-> Trouve et tiens-toi debout sur le bon bloc avant la fin du timer !
-
-- Chaque round, un **bloc ou item** est assigné
-- Les joueurs doivent trouver et se **tenir debout sur** ce bloc
-- Timer par round basé sur la rareté du bloc
-- Dernier joueur éliminé à chaque round
-- **Blocs configurables** dans `modes/blockshuffle.yml`
-
-### Architecture Simplifiée
-
-```mermaid
-graph TD
-    Plugin[DeathSwapPlugin] --> CM[ConfigManager]
-    Plugin --> AM[ArenaManager]
-    Plugin --> CMD[DeathSwapCommand]
-    Plugin --> L[Listeners]
-    
-    AM --> GI[GameInstance]
-    GI --> BSI[BlockShuffleInstance]
-    GI --> DSI[DeathShuffleInstance]
-    
-    GI --> VM[VoteManager]
-    GI --> CHM[ChallengeManager]
-    GI --> SM[SoundManager]
-    
-    CMD --> AM
-    CMD --> GUIs
-    
-    L --> AM
-    L --> GI
-```
-
-### Diagramme de Classes Complet
-
-```mermaid
-classDiagram
-    class DeathSwapPlugin {
-        +onEnable()
-        +onDisable()
-        +getArenaManager()
-        +getConfigManager()
-    }
-    
-    class ConfigManager {
-        +load()
-        +saveArena()
-        +getArenaConfig()
-    }
-    
-    class ArenaManager {
-        -Map~String, GameInstance~ arenas
-        +initArenas()
-        +getArena(id)
-        +getPlayerArena(player)
-    }
-    
-    class GameInstance {
-        -GameState state
-        -Set~Player~ players
-        +joinLobby()
-        +startGame()
-        +stopGame()
-        +performSwap()
-    }
-    
-    class BlockShuffleInstance {
-        +startNextRound()
-        +onPlayerStandOnBlock()
-    }
-    
-    class DeathShuffleInstance {
-        +startNextRound()
-        +onPlayerDeath()
-    }
-    
-    class Listeners {
-        <<Interface>>
-        +GameListener
-        +LobbyListener
-        +BlockShuffleListener
-        +DeathShuffleListener
-    }
-    
-    class Managers {
-        <<Interface>>
-        +VoteManager
-        +ChallengeManager
-        +SoundManager
-        +StatsManager
-    }
-    
-    class GUIs {
-        <<Interface>>
-        +SettingsGUI
-        +ArenaListGUI
-        +HelpGUI
-    }
-
-    DeathSwapPlugin --> ConfigManager
-    DeathSwapPlugin --> ArenaManager
-    DeathSwapPlugin --> Managers
-    DeathSwapPlugin --> GUIs
-    
-    ArenaManager --> GameInstance
-    GameInstance <|-- BlockShuffleInstance
-    GameInstance <|-- DeathShuffleInstance
-    
-    GameInstance --> Managers
-    
-    Listeners --> ArenaManager
-    Listeners --> GameInstance
-```
-
----
-
-## 📄 Documentation Complètes
+## 📋 Commandes Complètes
 
 ### Commandes Joueur
 
-| Commande | Arguments | Description | Exemples |
-|----------|-----------|-------------|----------|
-| `/ds join` | `[arène]` | Rejoindre une arène. Sans argument = arène `default` | `/ds join`, `/ds join arena2` |
-| `/ds leave` | — | Quitter la partie/lobby en cours | `/ds leave` |
-| `/ds list` | — | Voir toutes les arènes, leur statut et joueurs | `/ds list` |
-| `/ds stats` | `[joueur]` | Voir ses stats ou celles d'un joueur | `/ds stats`, `/ds stats Steve` |
-| `/ds top` | `[catégorie]` | Classement. Catégories : `wins`, `kills`, `deaths`, `time`, `games` | `/ds top`, `/ds top kills` |
-| `/ds vote` | `<arène> <choix>` | Voter pour un seed (déclenché par clic en jeu) | `/ds vote default 2` |
-| `/ds help` | — | Affiche les commandes principales en chat. | `/ds help` |
-| `/ds help gui` | — | Ouvre le menu d'aide visuel avec items cliquables | `/ds help gui` |
-| `/ds tp` | `<joueur>` | Téléporter vers un joueur (spectateurs uniquement) | `/ds tp Steve` |
+| Commande                      | Description                                     | Permission         |
+| ----------------------------- | ----------------------------------------------- | ------------------ |
+| `/ds join [arène]`         | Rejoint une arène (`default` par défaut)     | `deathswap.play` |
+| `/ds leave`                 | Quitte la partie en cours                       | `deathswap.play` |
+| `/ds stats [joueur]`        | Affiche les statistiques                        | `deathswap.play` |
+| `/ds top [catégorie]`      | Classement (wins/kills/deaths/time/games)       | `deathswap.play` |
+| `/ds vote <arène> <choix>` | Vote pour un seed                               | `deathswap.play` |
+| `/ds help`                  | Aide principale en chat                         | `deathswap.play` |
+| `/ds help gui`              | Ouvre le menu d'aide visuel (GUI)               | `deathswap.play` |
+| `/ds list`                  | Liste les arènes et leur statut                | `deathswap.play` |
+| `/ds tp <joueur>`           | TP vers un joueur (spectateur uniquement)       | `deathswap.play` |
 
 ### Commandes Admin
 
-| Commande | Arguments | Description | Exemples |
-|----------|-----------|-------------|----------|
-| `/ds start` | `[debug]` | Lancer le jeu. `debug` = ignore le min de joueurs | `/ds start`, `/ds start debug` |
-| `/ds stop` | `[arène]` | Arrêter une arène. Sans argument = `default` | `/ds stop`, `/ds stop arena2` |
-| `/ds swapnow` | — | Forcer un swap immédiat (DeathSwap) | `/ds swapnow` |
-| `/ds reload` | — | Recharger toute la configuration | `/ds reload` |
-| `/ds settings` | — | *(Réservé)* GUI Settings de l'arène | `/ds settings` |
-| `/ds admin` | — | Ouvrir le Dashboard Admin (GUI) | `/ds admin` |
-| `/ds admin create` | `<nom>` | Créer une nouvelle arène | `/ds admin create arena2` |
-| `/ds admin delete` | `<nom>` | Supprimer une arène (avec confirm) | `/ds admin delete arena2` |
-| `/ds admin clone` | `<src> <dst>` | Cloner une arène | `/ds admin clone default arena2` |
-| `/ds admin list` | — | Lister les arènes | `/ds admin list` |
-| `/ds admin set` | `<arène> <prop> <val>` | Modifier une priorité (lobby, game, type...) | `/ds admin set default lobby world_lobby` |
-| `/ds admin gamerule` | `<arène> set/remove <rule> [val]` | Modifier une gamerule | `/ds admin gamerule default set keepInventory true` |
-| `/ds admin command` | `<arène> tp/reset <val>` | Modifier commande TP/Reset | `/ds admin command default tp mvtp %player% ...` |
+| Commande                                         | Description                                   | Permission          |
+| ------------------------------------------------ | --------------------------------------------- | ------------------- |
+| `/ds start [debug]`                             | Lance la partie (debug = 1 joueur min)        | `deathswap.admin` |
+| `/ds stop [arène]`                             | Arrête une arène                             | `deathswap.admin` |
+| `/ds swapnow`                                   | Force un swap immédiat                       | `deathswap.admin` |
+| `/ds reload`                                    | Recharge la configuration complète            | `deathswap.admin` |
+| `/ds settings`                                  | Ouvre le GUI Settings de l'arène courante    | `deathswap.admin` |
+| `/ds help commands`                             | Affiche les commandes admin en chat           | `deathswap.admin` |
+| `/ds admin`                                     | Ouvre le Dashboard Admin (GUI)                | `deathswap.admin` |
+| `/ds admin list`                                | Liste les arènes (GUI)                       | `deathswap.admin` |
+| `/ds admin create <nom>`                        | Crée une arène                               | `deathswap.admin` |
+| `/ds admin edit <arène>`                       | Ouvre le GUI Settings d'une arène            | `deathswap.admin` |
+| `/ds admin delete <nom>`                        | Supprime une arène (confirmation requise)     | `deathswap.admin` |
+| `/ds admin clone <src> <dst>`                   | Clone une arène                               | `deathswap.admin` |
+| `/ds admin save`                                | Sauvegarde la configuration globale            | `deathswap.admin` |
+| `/ds admin set <arène> <prop> <val>`           | Modifie une propriété d'arène               | `deathswap.admin` |
+| `/ds admin gamerule <arène> set <r> <v>`       | Ajouter/modifier une gamerule                 | `deathswap.admin` |
+| `/ds admin gamerule <arène> remove <r>`        | Supprimer une gamerule                        | `deathswap.admin` |
+| `/ds admin command <arène> tp <commande>`      | Changer la commande de TP (ou `default`/`none`) | `deathswap.admin` |
+| `/ds admin command <arène> reset <preset>`     | Changer le reset : `cwr`, `mv`, `none` ou custom (séparées par `;`) | `deathswap.admin` |
 
-> **Alias :** `/deathswap` fonctionne aussi à la place de `/ds`
+> **Alias :** `/deathswap` fonctionne aussi.
 
 ---
 
 ## ⚙️ Configuration Détaillée
 
-Le fichier `plugins/DeathSwap/config.yml` contrôle 100% du comportement du plugin.
+### Fichier `config.yml` (Global)
 
-### Structure générale
-
-```yaml
-hub-world: "MainLobby"          # Monde de retour après partie/kick
-prefixes: { ... }               # Préfixes chat par mode
-stats: { ... }                  # Statistiques
-voting: { ... }                 # Système de vote
-challenges: { ... }             # Challenges (DeathSwap)
-sounds: { ... }                 # Sons personnalisés
-arenas:                         # Toutes les arènes
-  default: { ... }
-  arena2: { ... }
-```
-
-### `hub-world`
+Le `config.yml` contient **uniquement** les paramètres globaux. Les arènes sont dans `arenas/<id>.yml`.
 
 ```yaml
-hub-world: "MainLobby"
-```
-
-Le nom du monde Multiverse où les joueurs sont envoyés après :
-- Fin de partie
-- Kick d'arène
-- Commande `/ds leave`
-
-> ⚠️ Ce monde **doit exister** dans Multiverse. Créez-le avec `mv create MainLobby normal`.
-
-### `teleport-command` & `world-reset-commands`
-
-```yaml
-teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-world-reset-commands:
-  - "cwr edit %world% setSeed %seed%"
-  - "cwr reset %world%"
-```
-
-- **`teleport-command`** : Commande exécutée pour téléporter les joueurs.
-  - **Défaut** : Utilise Multiverse (`mvtp`).
-  - **Vanilla** : `execute in %world% run tp %player% %x% %y% %z% %yaw% %pitch%`
-- **`world-reset-commands`** : Liste de commandes pour reset le monde.
-  - **Défaut** : Utilise CyberWorldReset (`cwr`).
-  - **Sans Reset** : Laissez la liste vide `[]` pour jouer sur une map statique.
-
----
-
-## 📂 Fichiers de Configuration de Référence
-
-### `config.yml` Par Défaut
-```yaml
-# DeathSwap Global Configuration
-# ------------------------------
-
 # Monde de retour après partie/kick
 hub-world: "MainLobby"
 
-# Commande de téléportation.
-# Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%
-# Défaut (Multiverse): "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-# Vanilla: "execute in %world% run tp %player% %x% %y% %z% %yaw% %pitch%"
+# Commande de TP. Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%
 teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
 
-# Commandes de reset du monde avant la partie.
-# Placeholders: %world%, %seed%
-# Liste vide [] = pas de reset (map statique).
+# Commandes de reset. Placeholders: %world%, %seed%. Vide [] = pas de reset.
 world-reset-commands:
   - "cwr edit %world% setSeed %seed%"
   - "cwr reset %world%"
 
+# Préfixes chat
 prefixes:
-  deathswap: "&c[DS]"
-  deathshuffle: "&6[DSh]"
-  blockshuffle: "&b[BS]"
+  deathswap: "§8[§6DeathSwap§8]"
+  deathshuffle: "§8[§dDeathShuffle§8]"
+  blockshuffle: "§8[§bBlockShuffle§8]"
 
 stats:
   enabled: true
   auto-save-minutes: 5
 
+voting:
+  enabled: true
+  vote-time: 15
+  options-count: 3
+
+challenges:
+  enabled: false
+  list:
+    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "..." }
+
 sounds:
   enabled: true
-  # ... (voir section Sons)
+  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
+  # ... (voir README pour la liste complète)
+```
 
+### Structure des arènes
+
+```
+plugins/DeathSwap/arenas/
+├── example.yml     ← Référence uniquement (ignoré par le plugin)
+├── default.yml     ← Arène "default"
+├── arena2.yml      ← Autre arène...
+└── ...
+```
+
+Chaque fichier `.yml` contient la configuration **complète** d'une arène :
+
+```yaml
+game-type: DEATHSWAP        # DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
+game-world: "DS_Game"        # Monde de jeu
+lobby-world: "DS_Lobby"      # Monde de lobby
+min-players: 2
+max-players: 20
+ui-mode: RICH                # RICH ou CLEAN
+
+timers:
+  load-time: 40
+  swap-mode: FIXED           # FIXED ou RANDOM
+  swap-interval: 300         # Utilisé si FIXED
+  swap-min: 120              # Utilisé si RANDOM
+  swap-max: 420              # Utilisé si RANDOM
+  max-game-time: 1800        # 0 = illimité
+  spawn-protection: 30
+
+round-timers:                # DeathShuffle/BlockShuffle
+  easy: 90
+  medium: 70
+  hard: 50
+
+game:
+  pvp-enabled: true
+  nether-enabled: true
+  end-enabled: true
+
+gamerules:                   # Format snake_case
+  keep_inventory: "false"
+  immediate_respawn: "true"
+  # ... (voir README pour la liste complète)
+
+# Options avancées (optionnel)
+start-if-min-players-met: false
+prevent-cancel-after-countdown: false
+
+# Surcharge de commandes par arène (optionnel, null = utilise global)
+# teleport-command: "..."
+# world-reset-commands: [...]
+
+seeds:
+  - { seed: "123", name: "Mon seed" }
+```
+
+---
+
+## 🔐 Permissions
+
+| Permission          | Description          | Défaut         |
+| ------------------- | -------------------- | --------------- |
+| `deathswap.play`  | Jouer au DeathSwap   | `true` (tous) |
+| `deathswap.admin` | Accès admin complet | `op`          |
+
+### Détails
+
+- **`deathswap.play`** : Donne accès à `join`, `leave`, `stats`, `top`, `vote`, `help`, `help gui`, `list`, `tp`.
+- **`deathswap.admin`** : Donne accès à **tout** : `start`, `stop`, `swapnow`, `reload`, `settings`, `help commands`, `admin` et tous ses sous-commandes.
+
+---
+
+## 🎨 Modes d'Interface
+
+| Mode        | BossBar | ActionBar | Chat | Titres |
+| ----------- | ------- | --------- | ---- | ------ |
+| **RICH**  | ✅       | ✅         | ✅    | ✅      |
+| **CLEAN** | ❌       | ❌         | ✅    | ❌      |
+
+- **RICH** (défaut) : Expérience immersive avec BossBar pour les timers, ActionBar pour les infos, et Titres pour les événements (swap, mort, victoire).
+- **CLEAN** : Tout en chat. Idéal pour les serveurs légers.
+
+Modifiable via :
+- Fichier arène : `ui-mode: RICH`
+- GUI Settings : `/ds settings` ou `/ds admin edit <arène>`
+- Commande : `/ds admin set <arène> uimode CLEAN`
+
+---
+
+## 🎮 Gamerules
+
+Les gamerules Minecraft sont configurables **par arène**, en format **snake_case** (standard Minecraft 1.21+).
+
+### Gamerules par défaut
+
+| Gamerule                | Valeur | Description                    |
+| ----------------------- | ------ | ------------------------------ |
+| `keep_inventory`      | false  | Garder l'inventaire à la mort |
+| `immediate_respawn`   | true   | Réapparition immédiate       |
+| `do_daylight_cycle`   | true   | Cycle jour/nuit                |
+| `do_weather_cycle`    | true   | Cycle météo                  |
+| `mob_griefing`        | true   | Griefing des mobs              |
+| `natural_regeneration`| true   | Régénération naturelle        |
+| `do_mob_spawning`     | true   | Spawn des mobs                 |
+| `send_command_feedback`| false | Feedback des commandes         |
+| `log_admin_commands`  | false  | Log des commandes admin        |
+| `spawn_radius`        | 0      | Rayon de spawn                 |
+
+### Modifier en jeu
+
+1. **GUI** : `/ds settings` → Section Gamerules → Cliquer pour toggle
+2. **Commande Set** : `/ds admin gamerule <arène> set <règle> <valeur>`
+3. **Commande Remove** : `/ds admin gamerule <arène> remove <règle>`
+
+> **Important :** Les clés utilisent le format **snake_case** (ex: `keep_inventory`, pas `keepInventory`).
+
+---
+
+## 🌱 Seeds & Vote
+
+### Seeds prédéfinis
+
+Chaque arène peut contenir une liste de seeds dans son fichier de configuration :
+
+```yaml
+seeds:
+  - { seed: "-3542283819777", name: "Temple & Village" }
+  - { seed: "8490605437877207559", name: "Village & Ice Spikes" }
+  - { seed: "-13377777", name: "Désert & Pyramide" }
+```
+
+### Système de vote
+
+Quand `voting.enabled: true` dans `config.yml` :
+
+1. Au lancement, le système choisit aléatoirement `options-count` seeds
+2. Les joueurs votent via GUI (clic) pendant `vote-time` secondes
+3. Le seed gagnant est utilisé pour la génération du monde
+
+Si aucun seed n'est défini, un seed aléatoire est utilisé.
+
+---
+
+## 📊 Statistiques
+
+### Catégories
+
+| Statistique     | Description                      |
+| --------------- | -------------------------------- |
+| `wins`        | Nombre de victoires              |
+| `kills`       | Nombre de kills                  |
+| `deaths`      | Nombre de morts                  |
+| `gamesPlayed` | Nombre de parties jouées        |
+| `playTime`    | Temps de jeu total (secondes)    |
+
+### Commandes
+
+- `/ds stats` — Voir ses propres stats
+- `/ds stats <joueur>` — Voir les stats d'un autre joueur
+- `/ds top [catégorie]` — Classement global
+
+### Stockage
+
+- Fichier YAML par joueur dans `plugins/DeathSwap/stats/`
+- Sauvegarde automatique toutes les `stats.auto-save-minutes` minutes
+- Sauvegarde à la déconnexion du joueur et à l'arrêt du plugin
+
+---
+
+## 🎯 Challenges
+
+> Mode **DeathSwap uniquement**
+
+### Types de challenges
+
+| Type    | Description          | Exemple target           |
+| ------- | -------------------- | ------------------------ |
+| `CRAFT` | Fabriquer un objet   | `DIAMOND_PICKAXE`       |
+| `MINE`  | Miner un bloc        | `DIAMOND_ORE`           |
+| `KILL`  | Tuer un mob          | `ENDERMAN`              |
+
+### Récompenses (effets de potion)
+
+| Effet          | Nom config         |
+| -------------- | ------------------- |
+| Vitesse        | `SPEED`           |
+| Force          | `STRENGTH`        |
+| Vision Nocturne | `NIGHT_VISION`    |
+| Résistance    | `RESISTANCE`      |
+| Célérité     | `FASTER_DIGGING`  |
+
+### Exemple config
+
+```yaml
 challenges:
   enabled: true
   list:
-    - type: CRAFT
-      target: CRAFTING_TABLE
-      amount: 1
-      reward: SPEED
-      description: "Craft une table de craft"
+    - { type: CRAFT, target: DIAMOND_PICKAXE, amount: 1, reward: STRENGTH, description: "Craft une pioche en diamant" }
+    - { type: MINE, target: DIAMOND_ORE, amount: 5, reward: SPEED, description: "Mine 5 diamants" }
+    - { type: KILL, target: ENDERMAN, amount: 3, reward: NIGHT_VISION, description: "Tue 3 endermen" }
+```
+
+---
+
+## 🔊 Sons Personnalisés
+
+Chaque événement du jeu peut avoir un son personnalisé. La liste complète des sons Bukkit est disponible sur la [documentation Spigot](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html).
+
+### Événements sonores
+
+| Son config            | Événement                |
+| ---------------------- | ----------------------- |
+| `game-start`         | Début de partie         |
+| `countdown-tick`     | Tick du countdown       |
+| `countdown-go`       | Go ! (début)           |
+| `swap`               | Swap entre joueurs      |
+| `shuffle`            | Nouveau round           |
+| `death`              | Mort d'un joueur       |
+| `win`                | Victoire                |
+| `round-success`      | Round réussi           |
+| `round-fail`         | Round échoué          |
+| `challenge-complete` | Challenge complété    |
+| `vote-cast`          | Vote enregistré        |
+
+### Format de personnalisation
+
+```yaml
+sounds:
+  swap: { type: "ENTITY_GHAST_SCREAM", volume: 0.5, pitch: 1.5 }
+```
+
+- **`volume`** : de `0.0` (silencieux) à `2.0` (fort)
+- **`pitch`** : de `0.5` (grave) à `2.0` (aigu). `1.0` = normal
+
+---
+
+## 🛠️ Dashboard Admin
+
+Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit une interface graphique complète pour gérer les arènes et les joueurs.
+
+### Accès
+
+- **Commande :** `/ds admin`
+- **Permission requise :** `deathswap.admin`
+- **Joueur uniquement** (pas console)
+
+### Pages du Dashboard
+
+#### 1. Page Principale (Liste des Arènes)
+
+| Élément | Action |
+|---------|--------|
+| **Item arène** (béton coloré) | Affiche le statut et nombre de joueurs |
+| **Clic gauche** sur arène | → Ouvre les détails de l'arène |
+| **Clic droit** sur arène | → Téléporte au lobby de l'arène |
+| **Shift+Clic** sur arène | → Ouvre les Settings GUI |
+| **Étoile du Nether** | Recharger toute la configuration |
+| **Barrier** | Fermer le GUI |
+
+### 🛠️ Configuration en jeu (Settings GUI)
+
+Accessible via le **Shift+Clic** sur une arène dans le Dashboard, ou via `/ds settings` / `/ds admin edit <arène>`.
+Ce menu permet de modifier **tous** les aspects de l'arène sans toucher aux fichiers :
+
+- **Mondes** : Changer le monde Lobby et Game (saisie clavier dans le chat)
+- **Mode de Jeu** : Changer entre DeathSwap, DeathShuffle, BlockShuffle
+- **Gamerules** : Activer/Désactiver les règles (keep_inventory, etc.)
+- **Timers** : Ajuster les temps de swap, max game time, etc.
+- **Commandes** : Configurer la commande de TP et de Reset
+- **Résilience** : Activer les options de démarrage robuste
+
+**Couleurs de statut :**
+
+| Couleur | État |
+|---------|------|
+| 🟡 Jaune | `WAITING` — En attente de joueurs |
+| 🟢 Vert clair | `STARTING` — Le monde charge & les joueurs sont invulnérables |
+| 🟩 Vert | `RUNNING` — Partie en cours |
+| 🔴 Rouge | `ENDED` — Partie terminée |
+| ⬛ Barrier | `DISABLED` — Arène désactivée |
+
+#### 2. Détails de l'Arène
+
+| Bouton | Action |
+|--------|--------|
+| ⚔️ **Force Start** | Lance le jeu immédiatement (si WAITING/STARTING) |
+| 🛑 **Force Stop** | Arrête le jeu (si RUNNING) |
+| 💥 **Régénérer Monde** | Reset le monde → **⚠ Confirmation requise** |
+| 👥 **Gérer Joueurs** | → Ouvre la liste des joueurs |
+| ⬅️ **Retour** | → Retour à la page principale |
+
+#### 3. Liste des Joueurs
+
+Affiche tous les joueurs dans l'arène avec leur **tête**, leur **vie** (❤) et leur **faim** (🍗).
+
+| Action | Résultat |
+|--------|----------|
+| **Clic gauche** sur un joueur | → Ouvre les actions pour ce joueur |
+| **⬅️ Retour** | → Retour aux détails de l'arène |
+
+#### 4. Actions Joueur
+
+| Bouton | Action | Description |
+|--------|--------|-------------|
+| 🔮 **Téléporter** | TP l'admin vers le joueur | Téléportation directe |
+| 📦 **Voir Inventaire** | Ouvre l'inventaire du joueur | Voir/modifier l'inventaire |
+| 👢 **Kick de l'Arène** | Renvoie au hub | Retire de l'arène |
+| ⛔ **Bannir** | Kick + `/ban` | → **⚠ Confirmation requise** |
+| ⬅️ **Retour** | — | Retour à la liste des joueurs |
+
+#### 5. Écran de Confirmation
+
+Les actions destructives (**Régénérer Monde** et **Bannir**) passent par un écran de confirmation.
+
+| Slot | Item | Action |
+|------|------|--------|
+| 11 | 🟩 **Laine verte** | **Annuler** — retour |
+| 13 | 💥 **TNT** | Info : description + ⚠ "Cette action est irréversible !" |
+| 15 | 🟥 **Laine rouge** | **Confirmer** — exécute l'action |
+
+---
+
+## 🏟️ Multi-Arènes
+
+### Concept
+
+Chaque arène est une **instance indépendante** avec :
+- Son propre monde de jeu et lobby
+- Sa propre configuration complète
+- Ses propres joueurs et partie
+
+### Ajouter une arène
+
+**Méthode 1 : Via fichier**
+
+1. Copier `plugins/DeathSwap/arenas/example.yml` → `plugins/DeathSwap/arenas/monarene.yml`
+2. Éditer les valeurs (mondes, timers, mode, etc.)
+3. `/ds reload`
+4. Rejoindre : `/ds join monarene`
+
+**Méthode 2 : Via commande**
+
+1. `/ds admin create monarene` — Crée avec les valeurs par défaut
+2. `/ds admin edit monarene` — Ouvre le GUI pour configurer
+3. Ou via `/ds admin set monarene <prop> <val>`
+
+**Méthode 3 : Via clonage**
+
+1. `/ds admin clone default monarene` — Copie une arène existante
+2. Modifier si nécessaire via GUI ou commandes
+
+### Supprimer une arène
+
+- **Commande :** `/ds admin delete monarene` (avec confirmation)
+- **Manuellement :** Supprimer le fichier `arenas/monarene.yml` puis `/ds reload`
+
+---
+
+## 📝 Propriétés Admin Set
+
+La commande `/ds admin set <arène> <propriété> <valeur>` supporte les propriétés suivantes :
+
+| Propriété        | Type    | Description                        | Exemple                              |
+| ----------------- | ------- | ---------------------------------- | ------------------------------------ |
+| `lobby`         | String  | Monde lobby                        | `/ds admin set default lobby DS_Lobby` |
+| `game`          | String  | Monde de jeu                       | `/ds admin set default game DS_Game` |
+| `gametype`      | Enum    | Mode de jeu                        | `DEATHSWAP`, `DEATHSHUFFLE`, `BLOCKSHUFFLE` |
+| `minplayers`    | Int     | Minimum de joueurs                 | `2`                                  |
+| `maxplayers`    | Int     | Maximum de joueurs                 | `20`                                 |
+| `uimode`        | Enum    | Mode d'interface                   | `RICH` ou `CLEAN`                   |
+| `loadtime`      | Int     | Temps de chargement (secondes)     | `40`                                 |
+| `swapmode`      | Enum    | Mode de swap                       | `FIXED` ou `RANDOM`                 |
+| `swapinterval`  | Int     | Intervalle de swap fixe (sec)      | `300`                                |
+| `swapmin`       | Int     | Swap min aléatoire (sec)          | `120`                                |
+| `swapmax`       | Int     | Swap max aléatoire (sec)          | `420`                                |
+| `maxgametime`   | Int     | Durée max de la partie (sec)      | `1800`                               |
+| `spawnprotection` | Int   | Protection de spawn (sec)          | `30`                                 |
+| `roundtimeeasy` | Int     | Temps round facile (sec)           | `90`                                 |
+| `roundtimemedium` | Int   | Temps round moyen (sec)            | `70`                                 |
+| `roundtimehard` | Int     | Temps round difficile (sec)        | `50`                                 |
+| `pvp`           | Boolean | PvP activé                        | `true` / `false`                    |
+| `nether`        | Boolean | Nether activé                     | `true` / `false`                    |
+| `end`           | Boolean | End activé                        | `true` / `false`                    |
+| `resilience`    | Boolean | Active les deux options robustes   | `true` / `false`                    |
+
+---
+
+## 🔧 Dépendances
+
+### Multiverse-Core (recommandé)
+
+Utilisé pour :
+- Créer et charger les mondes (`mv create`, `mv load`)
+- Téléporter les joueurs (`mv tp`)
+- Gérer les mondes de lobby et de jeu
+
+> Le plugin peut fonctionner sans Multiverse si vous configurez une commande de TP alternative via `teleport-command`.
+
+### CyberWorldReset (optionnel)
+
+Utilisé pour :
+- Régénérer les mondes de jeu entre les parties (`cwr reset`)
+- Disponible depuis le bouton "Régénérer" dans le Dashboard Admin
+
+> Pas nécessaire pour les maps statiques (mettez `world-reset-commands: []`).
+
+### Configuration CyberWorldReset
+
+1. Installez le plugin CyberWorldReset
+2. Ajoutez le monde de jeu : `/cwr add DeathSwap_Game`
+3. La commande `cwr reset <monde>` sera utilisée automatiquement
+
+---
+
+## ❓ FAQ et Dépannage
+
+### Le plugin ne démarre pas
+
+- Vérifiez que Java 21+ est installé (`java -version`)
+- Vérifiez que **Paper 1.21.1** (ou un fork comme Purpur) est utilisé — Spigot/Bukkit ne sont **pas** supportés
+- Vérifiez les logs de la console pour les erreurs
+
+### Les mondes ne se chargent pas
+
+- Vérifiez que **Multiverse-Core** est installé et actif
+- Vérifiez les noms de mondes dans les fichiers `arenas/*.yml` correspondent à ceux créés dans Multiverse
+- Utilisez `/mv list` pour voir les mondes disponibles
+
+### Le swap ne fonctionne pas
+
+- Vérifiez que `timers.swap-mode` est bien `FIXED` ou `RANDOM`
+- En mode `RANDOM`, vérifiez que `swap-min` < `swap-max`
+- Vérifiez qu'il y a au moins 2 joueurs vivants
+
+### Les stats ne s'enregistrent pas
+
+- Vérifiez que `stats.enabled: true` dans `config.yml`
+- Vérifiez les permissions d'écriture du dossier `plugins/DeathSwap/stats/`
+
+### La régénération ne fonctionne pas
+
+- Vérifiez que **CyberWorldReset** est installé
+- Vérifiez que le monde est ajouté : `/cwr add <nom_monde>`
+- La régénération ne fonctionne pas si une partie est en cours
+
+### Les sons ne jouent pas
+
+- Vérifiez que `sounds.enabled: true`
+- Vérifiez que les noms de sons sont valides (voir doc Spigot)
+- Le volume du client Minecraft doit être activé
+
+### Je ne peux pas rejoindre une arène
+
+- L'arène est peut-être pleine (`max-players` atteint)
+- Tu es peut-être déjà dans une arène (`/ds leave` d'abord)
+- L'arène n'existe pas (vérifie le nom avec `/ds list`)
+
+### Les gamerules ne s'appliquent pas
+
+- Vérifiez que les clés utilisent le format **snake_case** (`keep_inventory`, pas `keepInventory`)
+- Les gamerules ne s'appliquent qu'au début de la partie
+
+---
+
+## 📂 Fichiers de Configuration de Référence
+
+### `config.yml` par défaut
+
+```yaml
+# =========================================
+#   Configuration Globale DeathSwap
+# =========================================
+
+hub-world: "MainLobby"
+
+teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+
+world-reset-commands:
+  - "cwr edit %world% setSeed %seed%"
+  - "cwr reset %world%"
+
+prefixes:
+  deathswap: "§8[§6DeathSwap§8]"
+  deathshuffle: "§8[§dDeathShuffle§8]"
+  blockshuffle: "§8[§bBlockShuffle§8]"
+
+stats:
+  enabled: true
+  auto-save-minutes: 5
 
 voting:
   enabled: true
-  vote-time: 30
+  vote-time: 15
   options-count: 3
+
+challenges:
+  enabled: false
+  list:
+    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft une table de craft" }
+    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 charbons" }
+    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Tue un zombie" }
+
+sounds:
+  enabled: true
+  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
+  countdown-tick: { type: "BLOCK_NOTE_BLOCK_HAT", volume: 1.0, pitch: 1.0 }
+  countdown-go: { type: "ENTITY_EXPERIENCE_ORB_PICKUP", volume: 1.0, pitch: 1.2 }
+  swap: { type: "ENTITY_ENDERMAN_TELEPORT", volume: 1.0, pitch: 1.0 }
+  shuffle: { type: "BLOCK_NOTE_BLOCK_CHIME", volume: 1.0, pitch: 1.5 }
+  death: { type: "ENTITY_WITHER_DEATH", volume: 0.5, pitch: 1.0 }
+  win: { type: "UI_TOAST_CHALLENGE_COMPLETE", volume: 1.0, pitch: 1.0 }
+  round-success: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
+  round-fail: { type: "ENTITY_VILLAGER_NO", volume: 1.0, pitch: 0.8 }
+  challenge-complete: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
+  vote-cast: { type: "ENTITY_UI_BUTTON_CLICK", volume: 1.0, pitch: 2.0 }
 ```
 
-### Exemple Arène (`arenas/example.yml`)
-> **Note :** Copiez ce fichier pour créer de nouvelles arènes (ex: `monarene.yml`). Le plugin ignore le fichier `example.yml` par défaut.
+### Arène exemple (`arenas/example.yml`)
+
+> **Note :** Copiez ce fichier pour créer de nouvelles arènes (ex: `default.yml`). Le plugin ignore `example.yml`.
 
 ```yaml
 game-type: DEATHSWAP
@@ -425,641 +675,73 @@ gamerules:
   send_command_feedback: "false"
   log_admin_commands: "false"
   spawn_radius: "0"
-  random_tick_speed: "3"        # Vitesse de pousse des plantes (3 = défaut)
-  announce_advancements: "true" # Afficher les succès dans le chat
+  random_tick_speed: "3"
+  announce_advancements: "true"
 
 seeds: []
 ```
 
-### `prefixes`
+### Modes de jeu
+
+#### `modes/deathshuffle.yml`
 
 ```yaml
-prefixes:
-  deathswap: "&8[&6DeathSwap&8]"
-  deathshuffle: "&8[&dDeathShuffle&8]"
-  blockshuffle: "&8[&bBlockShuffle&8]"
+name: "Death Shuffle"
+description: "Swap positions and try to kill your opponent!"
+authors: ["DualsFWShield"]
+version: "1.0"
+
+swap-time-min: 30
+swap-time-max: 120
+health: 20.0
+pvp: true
+kill-on-swap: false
+
+causes:
+  - DROWNING
+  - FALL
+  - FIRE
+  - CONTACT
+  - STARVATION
+  - SUFFOCATION
+  - LAVA
+  - EXPLOSION
+  - PROJECTILE
+  - MAGIC
+  - HOT_FLOOR
+  - FREEZE
+  - LIGHTNING
+  - FLY_INTO_WALL
+  - FALLING_BLOCK
+  - VOID
 ```
 
-Préfixes affichés dans le chat pour chaque mode de jeu. Supporte les codes couleur Minecraft (`&` notation).
-
-| Code | Couleur |
-|------|---------|
-| `&0` – `&9` | Noir → Bleu clair |
-| `&a` – `&f` | Vert clair → Blanc |
-| `&l` | **Gras** |
-| `&o` | *Italique* |
-| `&n` | Souligné |
-| `&r` | Reset |
-
-### `stats`
+#### `modes/blockshuffle.yml`
 
 ```yaml
-stats:
-  enabled: true           # true = activer les stats, false = désactiver
-  auto-save-minutes: 5    # Sauvegarde auto toutes les X minutes
+name: "Block Shuffle"
+description: "Stand on specific blocks to score points!"
+authors: ["DualsFWShield"]
+version: "1.0"
+
+swap-time: 300
+health: 20.0
+pvp: false
+
+blocks:
+  - STONE
+  - DIRT
+  - GRASS_BLOCK
+  - OAK_LOG
+  - SAND
+  - GRAVEL
+  - COBBLESTONE
+  - CRAFTING_TABLE
+  - FURNACE
+  - CHEST
+  - WATER
+  - LAVA
 ```
-
-- **`enabled`** : Active/désactive le système de statistiques complet
-- **`auto-save-minutes`** : Intervalle de sauvegarde automatique. Les stats sont aussi sauvegardées à l'arrêt du serveur
-
-### `voting`
-
-```yaml
-voting:
-  enabled: true           # Activer le vote de seed
-  vote-time: 15           # Durée du vote en secondes
-  options-count: 3        # Nombre de seeds proposées au vote
-```
-
-- **`vote-time`** : Combien de temps les joueurs ont pour voter (en secondes)
-- **`options-count`** : Nombre de seeds aléatoires proposées parmi la liste `seeds`
-
-### `challenges`
-
-```yaml
-challenges:
-  enabled: false
-  list:
-    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft une table de craft" }
-    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 charbons" }
-    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Tue un zombie" }
-```
-
-**Uniquement en mode DeathSwap.** Les challenges donnent des objectifs bonus avec des récompenses.
-
-| Paramètre | Valeurs possibles |
-|-----------|-------------------|
-| `type` | `CRAFT`, `MINE`, `KILL` |
-| `target` | Nom du Material/EntityType Bukkit (ex: `IRON_ORE`, `ZOMBIE`, `FURNACE`) |
-| `amount` | Nombre requis (entier) |
-| `reward` | Effet de potion : `SPEED`, `STRENGTH`, `NIGHT_VISION`, `RESISTANCE`, `FASTER_DIGGING` |
-| `description` | Texte affiché au joueur |
-
-### `sounds`
-
-```yaml
-sounds:
-  enabled: true
-  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
-  swap: { type: "ENTITY_ENDERMAN_TELEPORT", volume: 1.0, pitch: 1.0 }
-  # ... etc
-```
-
-Chaque événement sonore est configurable individuellement.
-
-| Clé | Quand il joue |
-|-----|--------------|
-| `game-start` | La partie démarre |
-| `countdown-tick` | Chaque seconde du countdown |
-| `countdown-go` | Fin du countdown, GO ! |
-| `swap` | Swap entre joueurs (DeathSwap) |
-| `shuffle` | Nouveau round (DeathShuffle/BlockShuffle) |
-| `death` | Un joueur meurt |
-| `win` | Un joueur gagne la partie |
-| `round-success` | Round réussi (Shuffle modes) |
-| `round-fail` | Round échoué (Shuffle modes) |
-| `challenge-complete` | Challenge terminé |
-| `vote-cast` | Vote enregistré |
-
-**Paramètres :**
-- `type` : Nom du son Bukkit (ex: `ENTITY_ENDERMAN_TELEPORT`). Voir [liste complète](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html)
-- `volume` : Volume (0.0 à 2.0)
-- `pitch` : Hauteur (0.5 à 2.0)
-
-Pour **désactiver tous les sons** : `sounds.enabled: false`
-
-### `arenas`
-
-Chaque bloc sous `arenas:` définit une arène indépendante.
-
-```yaml
-arenas:
-  default:              # ID unique de l'arène
-    game-type: DEATHSWAP
-    game-world: "DeathSwap_Game"
-    lobby-world: "DS_WaitingLobby"
-    min-players: 2
-    max-players: 20
-    ui-mode: RICH
-    timers: { ... }
-    round-timers: { ... }
-    game: { ... }
-    gamerules: { ... }
-    seeds: [ ... ]
-```
-
-#### Paramètres par arène
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `game-type` | Enum | `DEATHSWAP` | Mode de jeu : `DEATHSWAP`, `DEATHSHUFFLE`, `BLOCKSHUFFLE` |
-| `game-world` | String | `DeathSwap_Game` | Nom du monde Multiverse pour le jeu |
-| `lobby-world` | String | `DS_WaitingLobby` | Nom du monde Multiverse pour le lobby |
-| `min-players` | Int | `2` | Minimum de joueurs pour démarrer |
-| `max-players` | Int | `20` | Maximum de joueurs acceptés |
-| `ui-mode` | Enum | `RICH` | Mode d'affichage : `RICH` ou `CLEAN` |
-| `start-if-min-players-met` | Boolean | `false` | Si `true`, ignore les "Not Ready" si min-players atteint |
-| `prevent-cancel-after-countdown` | Boolean | `false` | Si `true`, le countdown continue même si quelqu'un quitte (tant que >= min) |
-
-#### `timers` (DeathSwap)
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `load-time` | Int (sec) | `40` | Temps de chargement du monde avant la partie |
-| `swap-mode` | Enum | `FIXED` | `FIXED` = intervalle fixe, `RANDOM` = aléatoire |
-| `swap-interval` | Int (sec) | `300` | Intervalle de swap en mode FIXED (5 min) |
-| `swap-min` | Int (sec) | `120` | Intervalle minimum en mode RANDOM (2 min) |
-| `swap-max` | Int (sec) | `420` | Intervalle maximum en mode RANDOM (7 min) |
-| `max-game-time` | Int (sec) | `1800` | Durée maximum de la partie (30 min) |
-| `spawn-protection` | Int (sec) | `30` | Invulnérabilité au début |
-
-#### `round-timers` (DeathShuffle / BlockShuffle)
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `easy` | Int (sec) | `90` | Durée d'un round facile |
-| `medium` | Int (sec) | `70` | Durée d'un round moyen |
-| `hard` | Int (sec) | `50` | Durée d'un round difficile |
-
-#### `game`
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `pvp-enabled` | Boolean | `true` | PvP activé entre joueurs |
-| `nether-enabled` | Boolean | `false` | Accès au Nether autorisé |
-| `end-enabled` | Boolean | `false` | Accès à l'End autorisé |
-
-#### `gamerules`
-
-```yaml
-gamerules:
-  keepInventory: "false"
-  immediateRespawn: "true"
-  doDaylightCycle: "true"
-  doWeatherCycle: "true"
-  mobGriefing: "true"
-  naturalRegeneration: "true"
-  doMobSpawning: "true"
-```
-
-Appliqués au monde de jeu au lancement de la partie. Toutes les gamerules Minecraft sont supportées. Valeurs entre guillemets (`"true"` / `"false"`).
-
-> 💡 Les gamerules sont aussi éditables **en jeu** via le GUI Gamerules (accessible depuis Settings).
-
-#### `seeds`
-
-```yaml
-seeds:
-  - { seed: "-3542283819777", name: "Temple & Village" }
-  - { seed: "123456789", name: "Île de survie" }
-```
-
-Liste de seeds prédéfinies pour le vote. Chaque entrée a :
-- `seed` : La graine Minecraft (en string)
-- `name` : Nom affiché au joueur pendant le vote
-
----
-
-## 🔐 Système de Permissions
-
-| Permission | Description | Défaut | Commandes associées |
-|------------|-------------|--------|---------------------|
-| `deathswap.play` | Accès joueur de base | `true` (tout le monde) | `join`, `leave`, `list`, `stats`, `top`, `vote`, `tp` |
-| `deathswap.admin` | Accès administrateur complet | `op` | `start`, `stop`, `swapnow`, `reload`, `settings`, `admin` |
-
-### Intégration avec LuckPerms (exemple)
-
-```
-/lp group moderator permission set deathswap.admin true
-/lp group default permission set deathswap.play true
-```
-
----
-
-## 🎨 Interface Utilisateur (UI Modes)
-
-### Mode RICH (défaut)
-
-| Élément | Affichage |
-|---------|-----------|
-| Timer de swap | **BossBar** en haut de l'écran (barre jaune animée) |
-| Infos round | **ActionBar** (texte au-dessus de la hotbar) |
-| Événements majeurs | **Titre** plein écran (swap, mort, victoire) |
-| Messages système | Chat |
-
-### Mode CLEAN
-
-| Élément | Affichage |
-|---------|-----------|
-| Timer de swap | Message chat périodique |
-| Infos round | Message chat |
-| Événements majeurs | Message chat coloré |
-| Messages système | Chat |
-
-### Comment changer le mode
-
-**Via config :**
-```yaml
-arenas:
-  default:
-    ui-mode: CLEAN    # ou RICH
-```
-
-**Via GUI en jeu :**
-Le GUI Settings (accessible depuis le Dashboard admin ou `/ds settings`) permet de basculer entre les deux modes.
-
----
-
-## 🎮 Gamerules Minecraft
-
-Les gamerules sont des règles Minecraft appliquées au monde de jeu. Elles sont configurables de deux façons :
-
-### Via config.yml
-
-```yaml
-arenas:
-  default:
-    gamerules:
-      keepInventory: "false"
-      naturalRegeneration: "true"
-      # Toute gamerule Minecraft valide
-```
-
-### Via GUI en jeu
-
-1. Ouvrir le Dashboard Admin (`/ds admin`)
-2. Clic molette sur l'arène → GUI Settings
-3. Naviguer vers "Gamerules"
-4. Cliquer pour basculer chaque règle
-
-### Gamerules par défaut
-
-| Gamerule | Défaut | Description |
-|----------|--------|-------------|
-| `keepInventory` | `false` | Garder son inventaire à la mort |
-| `immediateRespawn` | `true` | Réapparition instantanée |
-| `doDaylightCycle` | `true` | Cycle jour/nuit |
-| `doWeatherCycle` | `true` | Cycle météo |
-| `mobGriefing` | `true` | Mobs détruisent les blocs |
-| `naturalRegeneration` | `true` | Régénération naturelle de vie |
-| `doMobSpawning` | `true` | Spawn de mobs |
-
----
-
-## 🗳️ Système de Seeds et Votes
-
-### Fonctionnement
-
-1. Quand tous les joueurs sont prêts, un **vote** s'ouvre (si activé)
-2. Le système pioche `options-count` seeds aléatoires dans la liste
-3. Les joueurs voient les options en chat et cliquent pour voter
-4. Après `vote-time` secondes, le seed gagnant est appliqué
-5. Le monde est généré avec ce seed
-
-### Configuration
-
-```yaml
-voting:
-  enabled: true
-  vote-time: 15      # Durée du vote
-  options-count: 3    # Nombre d'options
-
-arenas:
-  default:
-    seeds:
-      - { seed: "12345", name: "Village + Temple" }
-      - { seed: "-99999", name: "Désert infini" }
-      # Ajoute autant de seeds que tu veux
-```
-
-### Ajouter des seeds
-
-Pour trouver de bons seeds :
-- [chunkbase.com](https://www.chunkbase.com/apps/seed-map) pour explorer des seeds
-- Utilise le seed de ta partie préférée !
-- Le seed peut être un nombre positif ou négatif
-
----
-
-## 📊 Statistiques et Leaderboards
-
-### Stats trackées par joueur
-
-| Stat | Description |
-|------|-------------|
-| **Victoires** (`wins`) | Nombre de parties gagnées |
-| **Kills** (`kills`) | Nombre de kills total |
-| **Morts** (`deaths`) | Nombre de morts |
-| **Temps de jeu** (`time`) | Temps total en jeu (secondes) |
-| **Parties** (`games`) | Nombre de parties jouées |
-
-### Voir ses stats
-
-```
-/ds stats           → Tes propres stats
-/ds stats Steve     → Stats de Steve
-```
-
-### Leaderboards
-
-```
-/ds top             → Top 10 victoires (défaut)
-/ds top kills       → Top 10 kills
-/ds top deaths      → Top 10 morts
-/ds top time        → Top 10 temps de jeu
-/ds top games       → Top 10 parties jouées
-```
-
-### Stockage
-
-Les stats sont sauvegardées en YAML dans `plugins/DeathSwap/stats/`. La sauvegarde automatique est configurable via `stats.auto-save-minutes`.
-
----
-
-## 🎯 Challenges
-
-> Mode DeathSwap uniquement. Désactivé par défaut.
-
-Les challenges sont des objectifs bonus qui donnent des **effets de potion** en récompense.
-
-### Types de challenges
-
-| Type | Objectif | Exemple |
-|------|----------|---------|
-| `CRAFT` | Fabriquer un objet | Craft une table de craft |
-| `MINE` | Miner un bloc | Mine 3 charbons |
-| `KILL` | Tuer un mob | Tue un zombie |
-
-### Récompenses disponibles
-
-| Reward | Effet |
-|--------|-------|
-| `SPEED` | Vitesse |
-| `STRENGTH` | Force |
-| `NIGHT_VISION` | Vision nocturne |
-| `RESISTANCE` | Résistance |
-| `FASTER_DIGGING` | Célérité |
-
-### Ajouter un challenge
-
-```yaml
-challenges:
-  enabled: true
-  list:
-    # Format : { type: TYPE, target: MATERIAL/ENTITY, amount: N, reward: EFFECT, description: "texte" }
-    - { type: CRAFT, target: DIAMOND_PICKAXE, amount: 1, reward: STRENGTH, description: "Craft une pioche en diamant" }
-    - { type: MINE, target: DIAMOND_ORE, amount: 5, reward: SPEED, description: "Mine 5 diamants" }
-    - { type: KILL, target: ENDERMAN, amount: 3, reward: NIGHT_VISION, description: "Tue 3 endermen" }
-```
-
----
-
-## 🔊 Sons Personnalisés
-
-Chaque événement du jeu peut avoir un son personnalisé. La liste complète des sons Bukkit est disponible sur la [documentation Spigot](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html).
-
-### Exemples populaires
-
-| Son | Utilisation suggérée |
-|-----|---------------------|
-| `ENTITY_ENDER_DRAGON_GROWL` | Début de partie épique |
-| `ENTITY_ENDERMAN_TELEPORT` | Swap |
-| `ENTITY_WITHER_DEATH` | Mort dramatique |
-| `UI_TOAST_CHALLENGE_COMPLETE` | Victoire |
-| `ENTITY_PLAYER_LEVELUP` | Round réussi |
-| `BLOCK_NOTE_BLOCK_CHIME` | Nouveau round |
-
-### Personnaliser un son
-
-```yaml
-sounds:
-  swap: { type: "ENTITY_GHAST_SCREAM", volume: 0.5, pitch: 1.5 }
-```
-
-- **`volume`** : de `0.0` (silencieux) à `2.0` (fort)
-- **`pitch`** : de `0.5` (grave) à `2.0` (aigu). `1.0` = normal
-
----
-
-## 🛠️ Dashboard Admin
-
-Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit une interface graphique complète pour gérer les arènes et les joueurs.
-
-### Accès
-
-- **Commande :** `/ds admin`
-- **Permission requise :** `deathswap.admin`
-- **Joueur uniquement** (pas console)
-
-### Pages du Dashboard
-
-#### 1. Page Principale (Liste des Arènes)
-
-| Élément | Action |
-|---------|--------|
-| **Item arène** (béton coloré) | Affiche le statut et nombre de joueurs |
-| **Clic gauche** sur arène | → Ouvre les détails de l'arène |
-| **Clic droit** sur arène | → Téléporte au lobby de l'arène (Shift+Clic Gauche) |
-| **Clic molette** sur arène | → Ouvre les settings GUI (Shift+Clic Droit) |
-| **Étoile du Nether** | Recharger toute la configuration |
-| **Barrier** | Fermer le GUI |
-
-### 🛠️ Configuration en jeu (Settings GUI)
-
-Accessible via le **Clic Molette** (ou Shift+Clic Droit) sur une arène dans le Dashboard, ou via `/ds settings`.
-Ce menu permet de modifier **tous** les aspects de l'arène sans toucher au fichier `config.yml` :
-
-- **Mondes** : Changer le monde Lobby et Game (saisie clavier dans le chat)
-- **Mode de Jeu** : Changer entre DeathSwap, DeathShuffle, BlockShuffle
-- **Gamerules** : Activer/Désactiver les règles (KeepInventory, etc.)
-- **Timers** : Ajuster les temps de swap, max game time, etc.
-- **Commandes** : Configurer la commande de TP (Multiverse/Vanilla) et de Reset (CWR/Multiverse)
-- **Résilience** : Activer les options de démarrage robuste
-
-**Couleurs de statut :**
-
-| Couleur | État |
-|---------|------|
-| 🟡 Jaune | `WAITING` — En attente de joueurs |
-| 🟢 Vert clair | `STARTING` — Le monde charge & les joueurs sont invulnérables |
-| 🟩 Vert | `RUNNING` — Partie en cours (après la protection de spawn) |
-| 🔴 Rouge | `ENDED` — Partie terminée |
-| ⬛ Barrier | `DISABLED` — Arène désactivée |
-
-#### 2. Détails de l'Arène
-
-| Bouton | Action |
-|--------|--------|
-| ⚔️ **Force Start** | Lance le jeu immédiatement (visible si WAITING/STARTING) |
-| 🛑 **Force Stop** | Arrête le jeu (visible si RUNNING) |
-| 💥 **Régénérer Monde** | Reset le monde via CyberWorldReset (uniquement si partie non en cours) → **⚠ Confirmation requise** |
-| 👥 **Gérer Joueurs** | → Ouvre la liste des joueurs |
-| ⬅️ **Retour** | → Retour à la page principale |
-
-#### 3. Liste des Joueurs
-
-Affiche tous les joueurs dans l'arène avec leur **tête**, leur **vie** (❤) et leur **faim** (🍗).
-
-| Action | Résultat |
-|--------|----------|
-| **Clic gauche** sur un joueur | → Ouvre les actions pour ce joueur |
-| **⬅️ Retour** | → Retour aux détails de l'arène |
-
-#### 4. Actions Joueur
-
-| Bouton | Action | Description |
-|--------|--------|-------------|
-| 🔮 **Téléporter** | `admin.teleport(target)` | TP l'admin vers le joueur |
-| 📦 **Voir Inventaire** | `admin.openInventory(target)` | Voir/modifier l'inventaire |
-| 👢 **Kick de l'Arène** | `arena.sendToHub(target)` | Renvoyer au hub |
-| ⛔ **Bannir** | `sendToHub` + `/ban` → **⚠ Confirmation requise** |
-| ⬅️ **Retour** | — | Retour à la liste des joueurs |
-
-#### 5. Écran de Confirmation
-
-Les actions destructives (**Régénérer Monde** et **Bannir**) passent par un écran de confirmation pour éviter les erreurs.
-
-| Slot | Item | Action |
-|------|------|--------|
-| 11 | 🟩 **Laine verte** | **Annuler** — retour à l'écran précédent |
-| 13 | 💥 **TNT** | Info : nom de l'action + description + ⚠ "Cette action est irréversible !" |
-| 15 | 🟥 **Laine rouge** | **Confirmer** — exécute l'action |
-
-**Sons :**
-- Confirmation → `BLOCK_ANVIL_USE` (son d'enclume)
-- Annulation → `BLOCK_NOTE_BLOCK_BASS` (note grave)
-
----
-
-## 🏟️ Multi-Arènes
-
-### Concept
-
-Chaque arène est une **instance indépendante** avec :
-- Son propre monde de jeu
-- Son propre lobby
-- Sa propre configuration (mode, timers, seeds, etc.)
-- Ses propres joueurs
-
-### Ajouter une arène
-
-1. **Créer les mondes** :
-   ```
-   /mv create MonArene_Game normal
-   /mv create MonArene_Lobby normal
-   /cwr add MonArene_Game
-   ```
-
-2. **Ajouter dans config.yml** :
-   ```yaml
-   arenas:
-     default:
-       # ... arène existante ...
-     
-     mon_arene:
-       game-type: DEATHSHUFFLE
-       game-world: "MonArene_Game"
-       lobby-world: "MonArene_Lobby"
-       min-players: 3
-       max-players: 8
-       ui-mode: CLEAN
-       timers:
-         load-time: 30
-         swap-mode: RANDOM
-         swap-min: 60
-         swap-max: 300
-       round-timers:
-         easy: 120
-         medium: 90
-         hard: 60
-       game:
-         pvp-enabled: false
-         nether-enabled: true
-         end-enabled: false
-       seeds:
-         - { seed: "42", name: "The Answer" }
-   ```
-
-3. **Recharger** : `/ds reload`
-
-4. **Rejoindre** : `/ds join mon_arene`
-
-### Supprimer une arène
-
-1. Supprimer le bloc dans `config.yml`
-2. `/ds reload`
-3. Optionnel : supprimer les mondes via Multiverse (`/mv delete MonArene_Game`)
-
----
-
-## 🔧 Dépendances
-
-### Multiverse-Core (requis)
-
-Utilisé pour :
-- Créer et charger les mondes (`mv create`, `mv load`)
-- Téléporter les joueurs (`mv tp`)
-- Gérer les mondes de lobby et de jeu
-
-### CyberWorldReset (requis)
-
-Utilisé pour :
-- Régénérer les mondes de jeu entre les parties (`cwr reset`)
-- Disponible depuis le bouton "Régénérer" dans le Dashboard Admin
-
-### Configuration CyberWorldReset
-
-1. Installez le plugin CyberWorldReset
-2. Ajoutez le monde de jeu :
-   ```
-   /cwr add DeathSwap_Game
-   ```
-3. La commande `cwr reset <monde>` sera utilisée automatiquement par le Dashboard Admin
-
----
-
-## ❓ FAQ et Dépannage
-
-### Le plugin ne démarre pas
-
-- Vérifiez que Java 21+ est installé (`java -version`)
-- Vérifiez que Paper 1.21+ est utilisé
-- Vérifiez les logs de la console pour les erreurs
-
-### Les mondes ne se chargent pas
-
-- Vérifiez que **Multiverse-Core** est installé et actif
-- Vérifiez les noms de mondes dans `config.yml` correspondent à ceux créés dans Multiverse
-- Utilisez `/mv list` pour voir les mondes disponibles
-
-### Le swap ne fonctionne pas
-
-- Vérifiez que `timers.swap-mode` est bien `FIXED` ou `RANDOM`
-- En mode `RANDOM`, vérifiez que `swap-min` < `swap-max`
-- Vérifiez qu'il y a au moins 2 joueurs vivants
-
-### Les stats ne s'enregistrent pas
-
-- Vérifiez que `stats.enabled: true` dans `config.yml`
-- Vérifiez les permissions d'écriture du dossier `plugins/DeathSwap/stats/`
-
-### La régénération ne fonctionne pas
-
-- Vérifiez que **CyberWorldReset** est installé
-- Vérifiez que le monde est ajouté : `/cwr add <nom_monde>`
-- La régénération ne fonctionne pas si une partie est en cours
-
-### Les sons ne jouent pas
-
-- Vérifiez que `sounds.enabled: true`
-- Vérifiez que les noms de sons sont valides (voir doc Spigot)
-- Le volume du client Minecraft doit être activé
-
-### Je ne peux pas rejoindre une arène
-
-- L'arène est peut-être pleine (`max-players` atteint)
-- Tu es peut-être déjà dans une arène (`/ds leave` d'abord)
-- L'arène n'existe pas (vérifie le nom avec `/ds list`)
 
 ---
 
@@ -1067,27 +749,28 @@ Utilisé pour :
 
 ### v1.0.0
 - 🎮 3 modes de jeu (DeathSwap, DeathShuffle, BlockShuffle)
-- 🏟️ Support multi-arènes
-- 🎛️ Dashboard Admin complet
+- 🏟️ Support multi-arènes (fichiers individuels dans `arenas/`)
+- 🎛️ Dashboard Admin complet avec GUI
 - 📊 Statistiques et leaderboards
 - 🗳️ Système de vote de seed
 - 🎯 Challenges avec récompenses
 - 🔊 Sons personnalisables
 - 🎨 Deux modes UI (RICH / CLEAN)
-- ⚙️ Gamerules configurables en jeu
-- 🌍 Régénération de monde via CyberWorldReset
-- ⚠️ Écran de confirmation pour les actions destructives (ban, regen)
+- ⚙️ Gamerules configurables en jeu (snake_case)
+- 🌍 Régénération de monde configurable
+- ⚠️ Écran de confirmation pour les actions destructives
+- 🌐 Support Français et Anglais
 
 ---
 
-*Documentation rédigée pour DeathSwap v1.0.0 — Plugin par [DualsFWShield](https://dualsfwshield.be)*
+*Documentation pour DeathSwap v1.0.0 — Plugin par [DualsFWShield](https://dualsfwshield.be)*
 
 ---
 
 ## 📜 Licence
 
 Ce projet est sous **licence personnalisée**.
-Voir le fichiers [LICENSE.md](LICENSE.md) pour les détails complets.
+Voir le fichier [LICENSE.md](LICENSE.md) pour les détails complets.
 
 * **Utilisation et modification** : Libres (privé ou public).
 * **Redistribution** : Autorisée avec crédit obligatoire.
