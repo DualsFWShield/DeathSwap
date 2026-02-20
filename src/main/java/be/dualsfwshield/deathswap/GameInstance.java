@@ -52,46 +52,47 @@ import java.util.stream.Stream;
  */
 public class GameInstance {
 
-    private static final Map<String, String> BEDROCK_TO_BUKKIT = new HashMap<>();
+    private static final Map<String, String> SNAKE_CASE_BUKKIT_GAMERULES = new HashMap<>();
 
     static {
-        BEDROCK_TO_BUKKIT.put("minecraft:advance_time", "doDaylightCycle");
-        BEDROCK_TO_BUKKIT.put("minecraft:advance_weather", "doWeatherCycle");
-        BEDROCK_TO_BUKKIT.put("minecraft:keep_inventory", "keepInventory");
-        BEDROCK_TO_BUKKIT.put("minecraft:mob_griefing", "mobGriefing");
-        BEDROCK_TO_BUKKIT.put("minecraft:spawn_mobs", "doMobSpawning");
-        BEDROCK_TO_BUKKIT.put("minecraft:mob_drops", "doMobLoot");
-        BEDROCK_TO_BUKKIT.put("minecraft:block_drops", "doTileDrops");
-        BEDROCK_TO_BUKKIT.put("minecraft:entity_drops", "doEntityDrops");
-        BEDROCK_TO_BUKKIT.put("minecraft:command_block_output", "commandBlockOutput");
-        BEDROCK_TO_BUKKIT.put("minecraft:natural_health_regeneration", "naturalRegeneration");
-        BEDROCK_TO_BUKKIT.put("minecraft:log_admin_commands", "logAdminCommands");
-        BEDROCK_TO_BUKKIT.put("minecraft:show_death_messages", "showDeathMessages");
-        BEDROCK_TO_BUKKIT.put("minecraft:random_tick_speed", "randomTickSpeed");
-        BEDROCK_TO_BUKKIT.put("minecraft:send_command_feedback", "sendCommandFeedback");
-        BEDROCK_TO_BUKKIT.put("minecraft:reduced_debug_info", "reducedDebugInfo");
-        BEDROCK_TO_BUKKIT.put("minecraft:spectators_generate_chunks", "spectatorsGenerateChunks");
-        BEDROCK_TO_BUKKIT.put("minecraft:respawn_radius", "spawnRadius");
-        BEDROCK_TO_BUKKIT.put("minecraft:max_entity_cramming", "maxEntityCramming");
-        BEDROCK_TO_BUKKIT.put("minecraft:limited_crafting", "doLimitedCrafting");
-        BEDROCK_TO_BUKKIT.put("minecraft:max_command_sequence_length", "maxCommandChainLength");
-        BEDROCK_TO_BUKKIT.put("minecraft:show_advancement_messages", "announceAdvancements");
-        BEDROCK_TO_BUKKIT.put("minecraft:raids", "disableRaids"); // Note: Inverted logic? Bukkit is disableRaids? No,
-                                                                  // disableRaids is a gamerule in Bukkit? Wait. Bukkit
-                                                                  // has 'disableRaids'. Bedrock has 'minecraft:raids'
-                                                                  // (enabled). Logic might be inverted. checking.
-        BEDROCK_TO_BUKKIT.put("minecraft:spawn_phantoms", "doInsomnia");
-        BEDROCK_TO_BUKKIT.put("minecraft:immediate_respawn", "doImmediateRespawn");
-        BEDROCK_TO_BUKKIT.put("minecraft:drowning_damage", "drowningDamage");
-        BEDROCK_TO_BUKKIT.put("minecraft:fall_damage", "fallDamage");
-        BEDROCK_TO_BUKKIT.put("minecraft:fire_damage", "fireDamage");
-        BEDROCK_TO_BUKKIT.put("minecraft:freeze_damage", "freezeDamage");
-        BEDROCK_TO_BUKKIT.put("minecraft:spawn_patrols", "doPatrolSpawning");
-        BEDROCK_TO_BUKKIT.put("minecraft:spawn_wandering_traders", "doTraderSpawning");
-        BEDROCK_TO_BUKKIT.put("minecraft:spawn_wardens", "doWardenSpawning");
-        BEDROCK_TO_BUKKIT.put("minecraft:forgive_dead_players", "forgiveDeadPlayers");
-        BEDROCK_TO_BUKKIT.put("minecraft:universal_anger", "universalAnger");
-        BEDROCK_TO_BUKKIT.put("minecraft:players_sleeping_percentage", "playersSleepingPercentage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:advance_time", "doDaylightCycle");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:advance_weather", "doWeatherCycle");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:keep_inventory", "keepInventory");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_griefing", "mobGriefing");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_mobs", "doMobSpawning");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_drops", "doMobLoot");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:block_drops", "doTileDrops");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:entity_drops", "doEntityDrops");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:command_block_output", "commandBlockOutput");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:natural_health_regeneration", "naturalRegeneration");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:log_admin_commands", "logAdminCommands");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_death_messages", "showDeathMessages");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:random_tick_speed", "randomTickSpeed");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:send_command_feedback", "sendCommandFeedback");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:reduced_debug_info", "reducedDebugInfo");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spectators_generate_chunks", "spectatorsGenerateChunks");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:respawn_radius", "spawnRadius");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_entity_cramming", "maxEntityCramming");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:limited_crafting", "doLimitedCrafting");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_command_sequence_length", "maxCommandChainLength");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_advancement_messages", "announceAdvancements");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:raids", "disableRaids"); // Note: Inverted logic? Bukkit is
+                                                                            // disableRaids? No,
+        // disableRaids is a gamerule in Bukkit? Wait. Bukkit
+        // has 'disableRaids'. Bedrock has 'minecraft:raids'
+        // (enabled). Logic might be inverted. checking.
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_phantoms", "doInsomnia");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:immediate_respawn", "doImmediateRespawn");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:drowning_damage", "drowningDamage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:fall_damage", "fallDamage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:fire_damage", "fireDamage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:freeze_damage", "freezeDamage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_patrols", "doPatrolSpawning");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_wandering_traders", "doTraderSpawning");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_wardens", "doWardenSpawning");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:forgive_dead_players", "forgiveDeadPlayers");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:universal_anger", "universalAnger");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:players_sleeping_percentage", "playersSleepingPercentage");
     }
 
     private final DeathSwapPlugin plugin;
@@ -671,8 +672,8 @@ public class GameInstance {
             String ruleName = entry.getKey();
 
             // Try explicit mapping first (Bedrock -> Bukkit)
-            if (BEDROCK_TO_BUKKIT.containsKey(ruleName)) {
-                ruleName = BEDROCK_TO_BUKKIT.get(ruleName);
+            if (SNAKE_CASE_BUKKIT_GAMERULES.containsKey(ruleName)) {
+                ruleName = SNAKE_CASE_BUKKIT_GAMERULES.get(ruleName);
             }
 
             GameRule<?> rule = GameRule.getByName(ruleName);
