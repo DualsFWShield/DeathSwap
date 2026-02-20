@@ -367,6 +367,14 @@ public class DeathShuffleGUI implements Listener {
                 return Material.ROTTEN_FLESH;
             case SUFFOCATION:
                 return Material.SAND;
+            case CAMPFIRE:
+                return Material.CAMPFIRE;
+            case ENTITY_ATTACK:
+                return Material.ZOMBIE_HEAD;
+            case FALLING_BLOCK:
+                return Material.ANVIL;
+            case FIRE_BLOCK:
+                return Material.FIRE_CHARGE;
             case LAVA:
                 return Material.LAVA_BUCKET;
             case EXPLOSION:
@@ -379,14 +387,32 @@ public class DeathShuffleGUI implements Listener {
                 return Material.MAGMA_BLOCK;
             case FREEZE:
                 return Material.POWDER_SNOW_BUCKET;
+            case POISON:
+                return Material.SPIDER_EYE;
+            case THORNS:
+                return Material.SWEET_BERRIES;
+            case ENTITY_SWEEP_ATTACK:
+                return Material.IRON_SWORD;
+            case BLOCK_EXPLOSION:
+                return Material.RED_BED;
             case LIGHTNING:
                 return Material.LIGHTNING_ROD;
             case FLY_INTO_WALL:
                 return Material.ELYTRA;
-            case FALLING_BLOCK:
-                return Material.ANVIL;
             case VOID:
-                return Material.ENDER_EYE;
+                return Material.ENDER_PEARL;
+            case WITHER:
+                return Material.WITHER_ROSE;
+            case DRAGON_BREATH:
+                return Material.DRAGON_BREATH;
+            case CRAMMING:
+                return Material.MINECART;
+            case SONIC_BOOM:
+                return Material.ECHO_SHARD;
+            case WORLD_BORDER:
+                return Material.BARRIER;
+            case SUICIDE:
+                return Material.BONE;
             default:
                 return Material.SKELETON_SKULL;
         }
