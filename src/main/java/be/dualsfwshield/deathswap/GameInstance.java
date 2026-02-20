@@ -1233,25 +1233,19 @@ public class GameInstance {
             bossBar = null;
         }
 
-        // Send all players to hub
-        String hubWorld = plugin.getConfigManager().getHubWorld();
-        World hub = Bukkit.getWorld(hubWorld);
-        if (hub == null) {
-            hub = Bukkit.createWorld(new WorldCreator(hubWorld));
-        }
+        // Save users to return
+        Set<Player> playersToReturn = new HashSet<>(gamePlayers);
 
-        Location hubSpawn = (hub != null) ? hub.getSpawnLocation() : null;
+        cleanup();
+        state = GameState.WAITING;
 
-        for (Player p : new HashSet<>(gamePlayers)) {
+        // Send all players back to the arena lobby
+        for (Player p : playersToReturn) {
             p.setGameMode(GameMode.ADVENTURE);
             p.getInventory().clear();
-            plugin.getArenaManager().removePlayer(p);
 
-            if (hubSpawn != null) {
-                mvtp(p, hubWorld, hubSpawn);
-            } else {
-                p.sendMessage(Component.text("Erreur: Monde Hub introuvable (" + hubWorld + ")", NamedTextColor.RED));
-            }
+            // Re-join the lobby automatically
+            joinLobby(p);
         }
 
         cleanup();

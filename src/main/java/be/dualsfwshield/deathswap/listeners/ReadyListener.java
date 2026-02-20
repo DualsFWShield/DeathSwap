@@ -10,6 +10,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import be.dualsfwshield.deathswap.GameState;
+import be.dualsfwshield.deathswap.util.Lang;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -78,6 +80,9 @@ public class ReadyListener implements Listener {
         Player player = event.getPlayer();
         GameInstance arena = plugin.getArenaManager().getPlayerArena(player);
         if (arena != null) {
+            if (arena.getState() == GameState.RUNNING && arena.getAlivePlayers().contains(player)) {
+                arena.broadcastGame(Lang.get("game-quit-forfeit", "%player%", player.getName()));
+            }
             arena.removePlayer(player);
         }
         interactionCooldowns.remove(player.getUniqueId());

@@ -28,6 +28,7 @@ game-pvp-on: "&ePvP ENABLED! &7(Invulnerability %time%s)"
 game-pvp-off: "&ePvP DISABLED (Mobs OK)! &7(Invulnerability %time%s)"
 game-nether-end-disabled: "&cNether and End disabled."
 game-timeout: "&cTime's up! Draw!"
+game-quit-forfeit: "&c%player% disconnected and forfeited the match!"
 game-death: "&c%player% eliminated!"
 error-lobby-world-not-found: "&cError: Lobby world '%world%' not found!"
 

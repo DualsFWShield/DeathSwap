@@ -66,6 +66,45 @@ public class ArenaManager {
     }
 
     /**
+     * Reload a specific arena. Stops the running game if any, kicks players,
+     * re-instantiates the correct GameInstance subclass based on config,
+     * and updates the arena map.
+     */
+    public void reloadArena(String arenaId) {
+        GameInstance existing = arenas.get(arenaId);
+        if (existing != null) {
+            if (existing.getState() == GameState.RUNNING || existing.getState() == GameState.STARTING) {
+                existing.stopGame();
+            }
+            // Kick all players in lobby too from map
+            for (Player p : existing.getAllPlayers()) {
+                playerArenaMap.remove(p);
+            }
+        }
+
+        ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
+        if (config == null)
+            return; // Arena was deleted
+
+        GameInstance instance;
+        switch (config.gameType) {
+            case DEATHSHUFFLE:
+                instance = new DeathShuffleInstance(plugin, arenaId, config);
+                break;
+            case BLOCKSHUFFLE:
+                instance = new BlockShuffleInstance(plugin, arenaId, config);
+                break;
+            case DEATHSWAP:
+            default:
+                instance = new GameInstance(plugin, arenaId, config);
+                break;
+        }
+
+        arenas.put(arenaId, instance);
+        plugin.getLogger().info("Reloaded arena " + arenaId + ".");
+    }
+
+    /**
      * Get a game instance by arena ID.
      */
     public GameInstance getArena(String arenaId) {

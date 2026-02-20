@@ -14,8 +14,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import be.dualsfwshield.deathswap.util.Lang;
 
 /**
  * Handles in-game events: death, portal blocking, PvP control, fall protection,
@@ -148,6 +150,29 @@ public class GameListener implements Listener {
 
         if (player.getGameMode() == GameMode.SPECTATOR) {
             event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Handle when a player leaves the game world or lobby world via commands like
+     * /lobby or /hub.
+     */
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+        GameInstance arena = plugin.getArenaManager().getPlayerArena(player);
+        if (arena == null)
+            return;
+
+        // If they moved to a world that is NEITHER the game world NOR the lobby world,
+        // they left.
+        String newWorld = player.getWorld().getName();
+        if (!newWorld.equals(arena.getConfig().gameWorld) && !newWorld.equals(arena.getConfig().lobbyWorld)) {
+            // Player left the arena context entirely
+            if (arena.getState() == GameState.RUNNING && arena.getAlivePlayers().contains(player)) {
+                arena.broadcastGame(Lang.get("game-quit-forfeit", "%player%", player.getName()));
+            }
+            arena.removePlayer(player);
         }
     }
 }

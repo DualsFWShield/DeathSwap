@@ -320,6 +320,7 @@ public class SettingsGUI implements Listener {
                 int ordinal = config.gameType.ordinal();
                 config.gameType = types[(ordinal + 1) % types.length];
                 plugin.getConfigManager().saveArena(config);
+                plugin.getArenaManager().reloadArena(arenaId);
                 open(player, arenaId);
             }
             case SLOT_LOBBY_WORLD -> { // Lobby World
