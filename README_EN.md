@@ -22,8 +22,8 @@
 | Mode                   | Description                                                                                               |
 | ---------------------- | --------------------------------------------------------------------------------------------------------- |
 | **DeathSwap**    | Players are randomly swapped. Trap the area before the swap!                                          |
-| **DeathShuffle** | Each round, a death type is assigned. Die the right way to survive! (Causes configurable in `modes/deathshuffle.yml`) |
-| **BlockShuffle** | Find and stand on the correct block before the timer runs out! (Blocks configurable in `modes/blockshuffle.yml`) |
+| **DeathShuffle** | Die the right way to survive! (Causes editable in-game via GUI, includes "Death Run" & "Unique Causes" sub-modes) |
+| **BlockShuffle** | Find and stand or craft the correct block! (Blocks editable in-game via GUI, includes "Item Race" & "Unique Targets" sub-modes) |
 
 ### 🏟️ Multi-Arenas
 
@@ -45,6 +45,7 @@
 - **Gamerules**: Configurable in-game via GUI or commands
 - **Sounds**: Every sound event is configurable
 - **Seeds**: Voting system with predefined seeds
+- **Advanced Shuffle Modes**: In-game GUI to toggle blocks/causes, sub-modes "Item Race", "Unique Targets", etc.
 - **Challenges**: Craft, mine, kill with rewards (DeathSwap)
 - **Configurable Commands**: Teleportation and World Reset fully configurable (Vanilla/other plugins support)
 - **Localization**: Messages in French and English

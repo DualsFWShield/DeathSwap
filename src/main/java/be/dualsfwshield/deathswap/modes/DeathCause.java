@@ -17,6 +17,10 @@ public enum DeathCause {
     CONTACT(1, EntityDamageEvent.DamageCause.CONTACT),
     STARVATION(1, EntityDamageEvent.DamageCause.STARVATION),
     SUFFOCATION(1, EntityDamageEvent.DamageCause.SUFFOCATION),
+    CAMPFIRE(1, EntityDamageEvent.DamageCause.CAMPFIRE),
+    ENTITY_ATTACK(1, EntityDamageEvent.DamageCause.ENTITY_ATTACK),
+    FALLING_BLOCK(1, EntityDamageEvent.DamageCause.FALLING_BLOCK),
+    FIRE_BLOCK(1, EntityDamageEvent.DamageCause.FIRE),
 
     // Difficulty 2 — Medium
     LAVA(2, EntityDamageEvent.DamageCause.LAVA),
@@ -25,12 +29,21 @@ public enum DeathCause {
     MAGIC(2, EntityDamageEvent.DamageCause.MAGIC),
     HOT_FLOOR(2, EntityDamageEvent.DamageCause.HOT_FLOOR),
     FREEZE(2, EntityDamageEvent.DamageCause.FREEZE),
+    POISON(2, EntityDamageEvent.DamageCause.POISON),
+    THORNS(2, EntityDamageEvent.DamageCause.THORNS),
+    ENTITY_SWEEP_ATTACK(2, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK),
+    BLOCK_EXPLOSION(2, EntityDamageEvent.DamageCause.BLOCK_EXPLOSION),
 
     // Difficulty 3 — Hard
     LIGHTNING(3, EntityDamageEvent.DamageCause.LIGHTNING),
     FLY_INTO_WALL(3, EntityDamageEvent.DamageCause.FLY_INTO_WALL),
-    FALLING_BLOCK(3, EntityDamageEvent.DamageCause.FALLING_BLOCK),
-    VOID(3, EntityDamageEvent.DamageCause.VOID);
+    VOID(3, EntityDamageEvent.DamageCause.VOID),
+    WITHER(3, EntityDamageEvent.DamageCause.WITHER),
+    DRAGON_BREATH(3, EntityDamageEvent.DamageCause.DRAGON_BREATH),
+    CRAMMING(3, EntityDamageEvent.DamageCause.CRAMMING),
+    SONIC_BOOM(3, EntityDamageEvent.DamageCause.SONIC_BOOM),
+    WORLD_BORDER(3, EntityDamageEvent.DamageCause.WORLD_BORDER),
+    SUICIDE(3, EntityDamageEvent.DamageCause.SUICIDE);
 
     private final int difficulty;
     private final EntityDamageEvent.DamageCause damageCause;

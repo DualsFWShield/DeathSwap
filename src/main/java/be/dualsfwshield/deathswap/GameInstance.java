@@ -296,6 +296,12 @@ public class GameInstance {
             player.hideBossBar(bossBar);
         }
 
+        // Ensure inventory and effects are cleared when a player leaves the arena
+        player.getInventory().clear();
+        for (org.bukkit.potion.PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
+        }
+
         // If game is running, check win condition
         if (state == GameState.RUNNING) {
             checkWinCondition();
@@ -834,6 +840,7 @@ public class GameInstance {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (loc != null) {
                     player.teleport(loc);
+                    player.setBedSpawnLocation(loc, true);
                     future.complete(true);
                 } else {
                     future.complete(false);
@@ -865,10 +872,21 @@ public class GameInstance {
 
         // Load chunk async
         world.getChunkAtAsync(x >> 4, z >> 4).thenAccept(chunk -> {
-            int y = world.getHighestBlockYAt(x, z);
-            Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
+            int y;
+            if (world.getEnvironment() == World.Environment.NETHER) {
+                y = getNetherSafeY(chunk, x, z);
+            } else {
+                y = world.getHighestBlockYAt(x, z);
+            }
 
-            Material block = loc.getBlock().getRelative(BlockFace.DOWN).getType();
+            if (y == -1) {
+                findSafeLocationRecursive(world, radius, attempts - 1, existingSpawns, minDistance, future);
+                return;
+            }
+
+            Location loc = new Location(world, x + 0.5, y + 1, z + 0.5);
+            Material block = loc.getBlock().getRelative(org.bukkit.block.BlockFace.DOWN).getType();
+
             if (isSafeBlock(block) && isDistanceSafe(loc, existingSpawns, minDistance)) {
                 future.complete(loc);
             } else {
@@ -880,6 +898,23 @@ public class GameInstance {
             future.complete(world.getSpawnLocation());
             return null;
         });
+    }
+
+    private int getNetherSafeY(org.bukkit.Chunk chunk, int x, int z) {
+        int lx = x & 15;
+        int lz = z & 15;
+        for (int y = 118; y > 31; y--) {
+            Material block = chunk.getBlock(lx, y, lz).getType();
+            if (isSafeBlock(block)) {
+                Material above1 = chunk.getBlock(lx, y + 1, lz).getType();
+                Material above2 = chunk.getBlock(lx, y + 2, lz).getType();
+                if ((above1 == Material.AIR || above1 == Material.CAVE_AIR) &&
+                        (above2 == Material.AIR || above2 == Material.CAVE_AIR)) {
+                    return y;
+                }
+            }
+        }
+        return -1;
     }
 
     /**

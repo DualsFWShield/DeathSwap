@@ -22,8 +22,8 @@
 | Mode                   | Description                                                                                                 |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------- |
 | **DeathSwap**    | Les joueurs sont échangés aléatoirement. Piège la zone avant le swap !                                  |
-| **DeathShuffle** | Chaque round, un type de mort est assigné. Meurt de la bonne façon pour survivre ! (Causes configurables dans `modes/deathshuffle.yml`) |
-| **BlockShuffle** | Trouve et tiens-toi sur le bon bloc avant la fin du timer ! (Blocs configurables dans `modes/blockshuffle.yml`) |
+| **DeathShuffle** | Meurs de la bonne façon pour survivre ! (Causes éditables en jeu via GUI, inclut sous-mode "Death Run" & "Morts Uniques") |
+| **BlockShuffle** | Trouve et tiens-toi ou craft le bon bloc ! (Blocs éditables en jeu via GUI, inclut sous-mode "Item Race" & "Cibles Uniques") |
 
 ### 🏟️ Multi-Arènes
 
@@ -45,6 +45,7 @@
 - **Gamerules** : Configurable en jeu via GUI ou commandes.
 - **Sons** : Chaque événement sonore est configurable
 - **Seeds** : Système de vote avec seeds prédéfinies
+- **Modes Shuffle Avancés** : GUI en jeu pour (dés)activer les blocs/causes, sous-modes "Course d'Item", "Cibles uniques", etc.
 - **Challenges** : Craft, mine, kill avec récompenses (DeathSwap)
 - **Commandes Configurables** : Téléportation et Reset de monde 100% configurables (support Vanilla/autres plugins)
 - **Localisation** : Messages en Français et Anglais

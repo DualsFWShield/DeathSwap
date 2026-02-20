@@ -15,14 +15,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class DeathShuffleGUI implements Listener {
+
+    public enum FilterMode {
+        ALL, ENABLED_ONLY, DISABLED_ONLY
+    }
 
     private final DeathSwapPlugin plugin;
     private static final int INV_SIZE = 54;
     private static final int ITEMS_PER_PAGE = 45;
+
+    // State management per player
+    private final Map<UUID, FilterMode> playerFilters = new HashMap<>();
+    private final Map<UUID, String> playerSearches = new HashMap<>();
 
     public DeathShuffleGUI(DeathSwapPlugin plugin) {
         this.plugin = plugin;
@@ -33,7 +47,31 @@ public class DeathShuffleGUI implements Listener {
         ConfigManager.ArenaConfig arenaConfig = plugin.getConfigManager().getArenaConfig(arenaId);
         List<ConfigManager.DeathShuffleEntry> entries = globalConfig.getEntries();
 
-        int totalPages = (int) Math.ceil((double) entries.size() / ITEMS_PER_PAGE);
+        FilterMode filter = playerFilters.getOrDefault(player.getUniqueId(), FilterMode.ALL);
+        String searchQuery = playerSearches.getOrDefault(player.getUniqueId(), "");
+
+        // Filter the entries based on search and status
+        List<ConfigManager.DeathShuffleEntry> filteredEntries = entries.stream().filter(e -> {
+            if (filter == FilterMode.ENABLED_ONLY && !e.enabled())
+                return false;
+            if (filter == FilterMode.DISABLED_ONLY && e.enabled())
+                return false;
+
+            DeathCause dc;
+            try {
+                dc = DeathCause.valueOf(e.cause());
+            } catch (IllegalArgumentException ex) {
+                return false;
+            }
+
+            if (!searchQuery.isEmpty() && !dc.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())
+                    && !e.cause().toLowerCase().contains(searchQuery.toLowerCase()))
+                return false;
+
+            return true;
+        }).collect(Collectors.toList());
+
+        int totalPages = (int) Math.ceil((double) filteredEntries.size() / ITEMS_PER_PAGE);
         if (page < 1)
             page = 1;
         if (page > totalPages && totalPages > 0)
@@ -43,11 +81,17 @@ public class DeathShuffleGUI implements Listener {
                 + (totalPages > 0 ? totalPages : 1) + ")";
         Inventory inv = Bukkit.createInventory(null, INV_SIZE, GuiUtils.colorize(title));
 
+        // Fill empty background slots
+        ItemStack filler = GuiUtils.createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
+        for (int i = 0; i < ITEMS_PER_PAGE; i++) {
+            inv.setItem(i, filler);
+        }
+
         int startIndex = (page - 1) * ITEMS_PER_PAGE;
-        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, entries.size());
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredEntries.size());
 
         for (int i = startIndex; i < endIndex; i++) {
-            ConfigManager.DeathShuffleEntry entry = entries.get(i);
+            ConfigManager.DeathShuffleEntry entry = filteredEntries.get(i);
             DeathCause dc;
             try {
                 dc = DeathCause.valueOf(entry.cause());
@@ -70,13 +114,30 @@ public class DeathShuffleGUI implements Listener {
                     Lang.get("gui-shuffle-click-difficulty")));
         }
 
-        // Navigation
+        // New Navigation & Tools
         if (page > 1) {
             inv.setItem(45, GuiUtils.createItem(Material.ARROW, Lang.get("gui-shuffle-prev-page")));
         }
+
+        String currentSearch = searchQuery.isEmpty() ? Lang.get("none") : searchQuery;
+        inv.setItem(46, GuiUtils.createItem(Material.COMPASS,
+                Lang.get("gui-shuffle-search-name"),
+                Lang.get("gui-shuffle-search-lore"),
+                Lang.get("gui-shuffle-search-current", "%query%", currentSearch)));
+
+        String filterName = filter == FilterMode.ALL ? Lang.get("gui-shuffle-filter-all")
+                : filter == FilterMode.ENABLED_ONLY ? Lang.get("gui-shuffle-filter-enabled")
+                        : Lang.get("gui-shuffle-filter-disabled");
+        inv.setItem(47, GuiUtils.createItem(Material.HOPPER,
+                Lang.get("gui-shuffle-filter-name"),
+                Lang.get("gui-settings-status", "%status%", filterName)));
+
         if (page < totalPages) {
             inv.setItem(53, GuiUtils.createItem(Material.ARROW, Lang.get("gui-shuffle-next-page")));
         }
+
+        inv.setItem(51, GuiUtils.createItem(Material.REDSTONE_BLOCK, Lang.get("gui-shuffle-disable-all-name")));
+        inv.setItem(52, GuiUtils.createItem(Material.EMERALD_BLOCK, Lang.get("gui-shuffle-enable-all-name")));
 
         // Toggles
         if (arenaConfig != null) {
@@ -124,7 +185,30 @@ public class DeathShuffleGUI implements Listener {
 
         ConfigManager.DeathShuffleConfig config = plugin.getConfigManager().getDeathShuffleConfig();
         List<ConfigManager.DeathShuffleEntry> entries = config.getEntries();
-        int totalPages = (int) Math.ceil((double) entries.size() / ITEMS_PER_PAGE);
+        FilterMode filter = playerFilters.getOrDefault(player.getUniqueId(), FilterMode.ALL);
+        String searchQuery = playerSearches.getOrDefault(player.getUniqueId(), "");
+
+        List<ConfigManager.DeathShuffleEntry> filteredEntries = entries.stream().filter(e -> {
+            if (filter == FilterMode.ENABLED_ONLY && !e.enabled())
+                return false;
+            if (filter == FilterMode.DISABLED_ONLY && e.enabled())
+                return false;
+
+            DeathCause dc;
+            try {
+                dc = DeathCause.valueOf(e.cause());
+            } catch (IllegalArgumentException ex) {
+                return false;
+            }
+
+            if (!searchQuery.isEmpty() && !dc.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())
+                    && !e.cause().toLowerCase().contains(searchQuery.toLowerCase()))
+                return false;
+
+            return true;
+        }).collect(Collectors.toList());
+
+        int totalPages = (int) Math.ceil((double) filteredEntries.size() / ITEMS_PER_PAGE);
 
         // Parse page from title
         String title = event.getView().getTitle();
@@ -173,6 +257,31 @@ public class DeathShuffleGUI implements Listener {
             return;
         }
 
+        // Search
+        if (slot == 46) {
+            String finalArenaId = arenaId;
+            plugin.getChatInputListener().requestInput(player, Lang.get("gui-shuffle-search-prompt"), (input) -> {
+                if (input.equalsIgnoreCase("clear") || input.isEmpty()) {
+                    playerSearches.put(player.getUniqueId(), "");
+                } else {
+                    playerSearches.put(player.getUniqueId(), input);
+                }
+                open(player, finalArenaId, 1);
+            });
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+            return;
+        }
+
+        // Filter
+        if (slot == 47) {
+            FilterMode nextMode = filter == FilterMode.ALL ? FilterMode.ENABLED_ONLY
+                    : filter == FilterMode.ENABLED_ONLY ? FilterMode.DISABLED_ONLY : FilterMode.ALL;
+            playerFilters.put(player.getUniqueId(), nextMode);
+            open(player, arenaId, 1);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1.2f);
+            return;
+        }
+
         // Toggles
         if (slot == 48 && arenaConfig != null) {
             arenaConfig.deathShuffleRaceMode = !arenaConfig.deathShuffleRaceMode;
@@ -189,20 +298,42 @@ public class DeathShuffleGUI implements Listener {
             return;
         }
 
+        // Mass Actions
+        if (slot == 51) {
+            for (ConfigManager.DeathShuffleEntry e : filteredEntries) {
+                config.setEnabled(e.cause(), false);
+            }
+            config.save();
+            open(player, arenaId, page);
+            player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1, 0.8f);
+            return;
+        }
+        if (slot == 52) {
+            for (ConfigManager.DeathShuffleEntry e : filteredEntries) {
+                config.setEnabled(e.cause(), true);
+            }
+            config.save();
+            open(player, arenaId, page);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2f);
+            return;
+        }
+
         // Click on item
-        if (slot < ITEMS_PER_PAGE) {
+        if (slot < ITEMS_PER_PAGE && current.getType() != Material.BLACK_STAINED_GLASS_PANE) {
             int index = (page - 1) * ITEMS_PER_PAGE + slot;
-            if (index >= entries.size())
+            if (index >= filteredEntries.size())
                 return;
 
-            ConfigManager.DeathShuffleEntry entry = entries.get(index);
+            ConfigManager.DeathShuffleEntry entry = filteredEntries.get(index);
             boolean changed = false;
 
             if (event.getClick().isLeftClick()) {
                 // Toggle enable
-                config.setEnabled(entry.cause(), !entry.enabled());
+                boolean newState = !entry.enabled();
+                config.setEnabled(entry.cause(), newState);
                 changed = true;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                player.playSound(player.getLocation(),
+                        newState ? Sound.ENTITY_EXPERIENCE_ORB_PICKUP : Sound.BLOCK_WOOD_BREAK, 1, 1);
             } else if (event.getClick().isRightClick()) {
                 // Cycle difficulty 1->2->3->1
                 int newDiff = entry.difficulty() + 1;
@@ -210,7 +341,9 @@ public class DeathShuffleGUI implements Listener {
                     newDiff = 1;
                 config.setDifficulty(entry.cause(), newDiff);
                 changed = true;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+
+                float pitch = newDiff == 1 ? 1.0f : newDiff == 2 ? 1.3f : 1.6f;
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, pitch);
             }
 
             if (changed) {

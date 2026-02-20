@@ -13,7 +13,10 @@ causes:
   FALL:
     enabled: true
     difficulty: 1
-  FIRE:
+  FIRE_TICK:
+    enabled: true
+    difficulty: 1
+  FIRE_BLOCK:
     enabled: true
     difficulty: 1
   CONTACT:
@@ -23,6 +26,15 @@ causes:
     enabled: true
     difficulty: 1
   SUFFOCATION:
+    enabled: true
+    difficulty: 1
+  CAMPFIRE:
+    enabled: true
+    difficulty: 1
+  ENTITY_ATTACK:
+    enabled: true
+    difficulty: 1
+  FALLING_BLOCK:
     enabled: true
     difficulty: 1
 
@@ -45,17 +57,44 @@ causes:
   FREEZE:
     enabled: true
     difficulty: 2
+  POISON:
+    enabled: false
+    difficulty: 2
+  THORNS:
+    enabled: false
+    difficulty: 2
+  ENTITY_SWEEP_ATTACK:
+    enabled: true
+    difficulty: 2
+  BLOCK_EXPLOSION:
+    enabled: true
+    difficulty: 2
 
   # ─── Hard (Difficulty 3) ───
   LIGHTNING:
-    enabled: true
+    enabled: false
     difficulty: 3
   FLY_INTO_WALL:
-    enabled: true
-    difficulty: 3
-  FALLING_BLOCK:
-    enabled: true
+    enabled: false
     difficulty: 3
   VOID:
     enabled: true
+    difficulty: 3
+  WITHER:
+    enabled: false
+    difficulty: 3
+  DRAGON_BREATH:
+    enabled: false
+    difficulty: 3
+  CRAMMING:
+    enabled: false
+    difficulty: 3
+  SONIC_BOOM:
+    enabled: false
+    difficulty: 3
+  WORLD_BORDER:
+    enabled: false
+    difficulty: 3
+  SUICIDE:
+    enabled: false
     difficulty: 3

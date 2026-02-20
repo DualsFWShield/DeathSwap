@@ -698,22 +698,13 @@ pvp: true
 kill-on-swap: false
 
 causes:
-  - DROWNING
-  - FALL
-  - FIRE
-  - CONTACT
-  - STARVATION
-  - SUFFOCATION
-  - LAVA
-  - EXPLOSION
-  - PROJECTILE
-  - MAGIC
-  - HOT_FLOOR
-  - FREEZE
-  - LIGHTNING
-  - FLY_INTO_WALL
-  - FALLING_BLOCK
-  - VOID
+  DROWNING:
+    enabled: true
+    difficulty: 1
+  FALL:
+    enabled: true
+    difficulty: 1
+  # ... etc (Up to 29 configurable causes)
 ```
 
 #### `modes/blockshuffle.yml`
@@ -729,18 +720,25 @@ health: 20.0
 pvp: false
 
 blocks:
-  - STONE
-  - DIRT
-  - GRASS_BLOCK
-  - OAK_LOG
-  - SAND
-  - GRAVEL
-  - COBBLESTONE
-  - CRAFTING_TABLE
-  - FURNACE
-  - CHEST
-  - WATER
-  - LAVA
+  STONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CRAFTING_TABLE:
+    enabled: true
+    difficulty: 1
+    type: CRAFT
+  # ... etc (Around 80 configurable items by default)
+```
+
+### ⚙️ Configuration Interfaces (GUIs)
+
+*Shuffles* modes now feature advanced options available via the **"Configure Mode"** button inside the `/ds settings` GUI:
+
+1. **Item Race** (BlockShuffle only): The first player to find/craft the item wins the round (others fail).
+2. **Death Run** (DeathShuffle only): The first player to die from the specified cause wins the round (others fail).
+3. **Unique Targets/Causes**: Assigns a different block/cause to each player for the current round.
+4. **Pool Configuration**: Edit targets (Blocks/Causes) directly in-game using the paginated menu (Left click to toggle ON/OFF, Right click to change difficulty).
 ```
 
 ---

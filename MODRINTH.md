@@ -26,8 +26,8 @@
 | Mode | How it works |
 |------|-------------|
 | **DeathSwap** | Players trappers are randomly swapped — trap your area and survive your opponent's trap! |
-| **DeathShuffle** | Each round assigns a death type. Die the right way to survive! Configurable causes. |
-| **BlockShuffle** | Find and stand on the target block before time runs out! Configurable block list. |
+| **DeathShuffle** | Each round assigns a death type. Die the right way to survive! Configurable causes via in-game GUI, includes "Death Run". |
+| **BlockShuffle** | Find and stand on the target block before time runs out! Configurable blocks via in-game GUI, includes "Item Race". |
 
 ---
 

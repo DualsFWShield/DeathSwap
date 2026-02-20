@@ -334,15 +334,6 @@ public class DeathShuffleInstance extends GameInstance {
         }
     }
 
-    @Override
-    public void checkWinCondition() {
-        // Override to prevent early ending on 1 player
-        // Game only ends on 0 players or Time Limit
-        if (getAlivePlayers().isEmpty()) {
-            stopGame();
-        }
-    }
-
     /**
      * Called by DeathShuffleListener when a player dies.
      * Check if the death cause matches the current challenge.

@@ -64,10 +64,17 @@ public class GameListener implements Listener {
         if (arena == null)
             return;
 
-        if (!arena.getConfig().netherEnabled || !arena.getConfig().endEnabled) {
+        if (event.getCause() == org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
+                && !arena.getConfig().netherEnabled) {
             event.setCancelled(true);
             player.sendMessage(Component.text("[DeathSwap] ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("Le Nether et l'End sont désactivés pour cette partie !",
+                    .append(Component.text("Le Nether est désactivé pour cette partie !",
+                            NamedTextColor.RED)));
+        } else if (event.getCause() == org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
+                && !arena.getConfig().endEnabled) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text("[DeathSwap] ", NamedTextColor.DARK_GRAY)
+                    .append(Component.text("L'End est désactivé pour cette partie !",
                             NamedTextColor.RED)));
         }
     }
