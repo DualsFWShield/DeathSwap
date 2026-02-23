@@ -61,23 +61,26 @@ public class GameInstance {
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:keep_inventory", "minecraft:keep_inventory");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_griefing", "minecraft:mob_griefing");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_mobs", "minecraft:spawn_mobs");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_drops", "minecraft:mob_drops"); 
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:block_drops", "minecraft:block_drops"); 
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_drops", "minecraft:mob_drops");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:block_drops", "minecraft:block_drops");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:entity_drops", "minecraft:entity_drops");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:command_block_output", "minecraft:command_block_output");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:natural_health_regeneration", "minecraft:natural_regeneration"); // Java utilise 'natural_regeneration'
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:natural_health_regeneration", "minecraft:natural_regeneration"); // Java
+                                                                                                                    // utilise
+                                                                                                                    // 'natural_regeneration'
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:log_admin_commands", "minecraft:log_admin_commands");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_death_messages", "minecraft:show_death_messages");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:random_tick_speed", "minecraft:random_tick_speed");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:send_command_feedback", "minecraft:send_command_feedback");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:reduced_debug_info", "minecraft:reduced_debug_info");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spectators_generate_chunks", "minecraft:spectators_generate_chunks");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:respawn_radius", "minecraft:spawn_radius"); // Java utilise 'spawn_radius'
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:respawn_radius", "minecraft:spawn_radius"); // Java utilise
+                                                                                               // 'spawn_radius'
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_entity_cramming", "minecraft:max_entity_cramming");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:limited_crafting", "minecraft:limited_crafting");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_command_sequence_length", "minecraft:max_command_chain_length");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_advancement_messages", "minecraft:show_advancement_messages");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:raids", "minecraft:disable_raids"); 
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:raids", "minecraft:disable_raids");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_phantoms", "minecraft:spawn_phantoms");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:immediate_respawn", "minecraft:immediate_respawn");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:drowning_damage", "minecraft:drowning_damage");
@@ -89,9 +92,9 @@ public class GameInstance {
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_wardens", "minecraft:spawn_wardens");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:forgive_dead_players", "minecraft:forgive_dead_players");
         SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:universal_anger", "minecraft:universal_anger");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:players_sleeping_percentage", "minecraft:players_sleeping_percentage");
+        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:players_sleeping_percentage",
+                "minecraft:players_sleeping_percentage");
     }
-}
 
     private final DeathSwapPlugin plugin;
     private final String arenaId;
