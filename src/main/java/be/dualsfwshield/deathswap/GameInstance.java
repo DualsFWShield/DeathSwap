@@ -630,8 +630,17 @@ public class GameInstance {
         // Apply gamerules dynamically
         for (Map.Entry<String, String> entry : config.gamerules.entrySet()) {
             String ruleName = entry.getKey();
-            GameRule<?> rule = org.bukkit.Registry.GAME_RULE
-                    .get(org.bukkit.NamespacedKey.minecraft(ruleName.toLowerCase()));
+            org.bukkit.NamespacedKey nsKey;
+
+            if (ruleName.contains(":")) {
+                nsKey = org.bukkit.NamespacedKey.fromString(ruleName.toLowerCase());
+            } else {
+                // Convert camelCase to snake_case for legacy config support
+                String snakeCase = ruleName.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+                nsKey = org.bukkit.NamespacedKey.minecraft(snakeCase);
+            }
+
+            GameRule<?> rule = nsKey != null ? org.bukkit.Registry.GAME_RULE.get(nsKey) : null;
 
             if (rule != null) {
                 if (rule.getType() == Boolean.class) {
