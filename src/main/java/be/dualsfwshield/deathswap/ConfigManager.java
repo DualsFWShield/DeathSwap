@@ -46,6 +46,13 @@ public class ConfigManager {
     // Challenges config
     private final List<ChallengeConfig> challengeList = new ArrayList<>();
 
+    // Global Seeds
+    private final List<SeedEntry> globalSeeds = new ArrayList<>();
+
+    public List<SeedEntry> getGlobalSeeds() {
+        return globalSeeds;
+    }
+
     // Per-arena settings
     private final Map<String, ArenaConfig> arenaConfigs = new HashMap<>();
 
@@ -168,6 +175,7 @@ public class ConfigManager {
         // --- Load Mode Configs ---
         loadBlockShuffleConfig();
         loadDeathShuffleConfig();
+        loadGlobalSeeds();
 
         // --- Arena Migration Logic ---
         File arenasFolder = new File(plugin.getDataFolder(), "arenas");
@@ -239,6 +247,28 @@ public class ConfigManager {
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         this.deathShuffleConfig = new DeathShuffleConfig(config, file);
+    }
+
+    private void loadGlobalSeeds() {
+        globalSeeds.clear();
+        File file = new File(plugin.getDataFolder(), "seeds.yml");
+        if (!file.exists()) {
+            plugin.saveResource("seeds.yml", false);
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        List<?> seedList = config.getList("seeds");
+        if (seedList != null) {
+            for (Object obj : seedList) {
+                if (obj instanceof Map<?, ?> map) {
+                    Object seedVal = map.get("seed");
+                    String seedStr = seedVal != null ? String.valueOf(seedVal) : "";
+                    Object nameVal = map.get("name");
+                    String name = nameVal != null ? String.valueOf(nameVal) : "Unknown";
+                    globalSeeds.add(new SeedEntry(seedStr, name));
+                }
+            }
+        }
+        plugin.getLogger().info("Loaded " + globalSeeds.size() + " global seeds from seeds.yml.");
     }
 
     public void createArena(String id) {
@@ -850,8 +880,21 @@ public class ConfigManager {
                     if (sec != null) {
                         boolean enabled = sec.getBoolean("enabled", true);
                         int difficulty = sec.getInt("difficulty", 1);
-                        entries.add(new DeathShuffleEntry(key, enabled, difficulty));
+                        entries.add(new DeathShuffleEntry(key.toUpperCase(), enabled, difficulty));
                     }
+                }
+            }
+
+            // Sync with Bukkit's current DamageCause enum to catch new version causes
+            java.util.Set<String> existing = entries.stream()
+                    .map(e -> e.cause().toUpperCase())
+                    .collect(java.util.stream.Collectors.toSet());
+
+            for (org.bukkit.event.entity.EntityDamageEvent.DamageCause dc : org.bukkit.event.entity.EntityDamageEvent.DamageCause
+                    .values()) {
+                if (!existing.contains(dc.name())) {
+                    // Default missing causes to difficulty 1 & disabled
+                    entries.add(new DeathShuffleEntry(dc.name(), false, 1));
                 }
             }
         }

@@ -2,7 +2,6 @@ package be.dualsfwshield.deathswap.gui;
 
 import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
-import be.dualsfwshield.deathswap.modes.DeathCause;
 import be.dualsfwshield.deathswap.util.Lang;
 
 import org.bukkit.Bukkit;
@@ -57,14 +56,16 @@ public class DeathShuffleGUI implements Listener {
             if (filter == FilterMode.DISABLED_ONLY && e.enabled())
                 return false;
 
-            DeathCause dc;
+            org.bukkit.event.entity.EntityDamageEvent.DamageCause dc;
             try {
-                dc = DeathCause.valueOf(e.cause());
+                dc = org.bukkit.event.entity.EntityDamageEvent.DamageCause.valueOf(e.cause());
             } catch (IllegalArgumentException ex) {
                 return false;
             }
 
-            if (!searchQuery.isEmpty() && !dc.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())
+            if (!searchQuery.isEmpty()
+                    && !be.dualsfwshield.deathswap.modes.DeathShuffleInstance.getCauseDisplayName(dc).toLowerCase()
+                            .contains(searchQuery.toLowerCase())
                     && !e.cause().toLowerCase().contains(searchQuery.toLowerCase()))
                 return false;
 
@@ -92,9 +93,9 @@ public class DeathShuffleGUI implements Listener {
 
         for (int i = startIndex; i < endIndex; i++) {
             ConfigManager.DeathShuffleEntry entry = filteredEntries.get(i);
-            DeathCause dc;
+            org.bukkit.event.entity.EntityDamageEvent.DamageCause dc;
             try {
-                dc = DeathCause.valueOf(entry.cause());
+                dc = org.bukkit.event.entity.EntityDamageEvent.DamageCause.valueOf(entry.cause());
             } catch (IllegalArgumentException e) {
                 // Should not happen if config is managed correctly, but fallback
                 continue;
@@ -106,7 +107,7 @@ public class DeathShuffleGUI implements Listener {
             Material icon = getIcon(dc);
 
             inv.setItem(i - startIndex, GuiUtils.createItem(icon,
-                    "&e" + dc.getDisplayName(),
+                    "&e" + be.dualsfwshield.deathswap.modes.DeathShuffleInstance.getCauseDisplayName(dc),
                     status,
                     Lang.get("gui-shuffle-difficulty", "%difficulty%", difficultyName),
                     "",
@@ -194,14 +195,16 @@ public class DeathShuffleGUI implements Listener {
             if (filter == FilterMode.DISABLED_ONLY && e.enabled())
                 return false;
 
-            DeathCause dc;
+            org.bukkit.event.entity.EntityDamageEvent.DamageCause dc;
             try {
-                dc = DeathCause.valueOf(e.cause());
+                dc = org.bukkit.event.entity.EntityDamageEvent.DamageCause.valueOf(e.cause());
             } catch (IllegalArgumentException ex) {
                 return false;
             }
 
-            if (!searchQuery.isEmpty() && !dc.getDisplayName().toLowerCase().contains(searchQuery.toLowerCase())
+            if (!searchQuery.isEmpty()
+                    && !be.dualsfwshield.deathswap.modes.DeathShuffleInstance.getCauseDisplayName(dc).toLowerCase()
+                            .contains(searchQuery.toLowerCase())
                     && !e.cause().toLowerCase().contains(searchQuery.toLowerCase()))
                 return false;
 
@@ -353,65 +356,63 @@ public class DeathShuffleGUI implements Listener {
         }
     }
 
-    private Material getIcon(DeathCause dc) {
-        switch (dc) {
-            case DROWNING:
+    private Material getIcon(org.bukkit.event.entity.EntityDamageEvent.DamageCause dc) {
+        switch (dc.name().toUpperCase()) {
+            case "DROWNING":
                 return Material.WATER_BUCKET;
-            case FALL:
+            case "FALL":
                 return Material.FEATHER;
-            case FIRE:
+            case "FIRE":
+            case "FIRE_TICK":
                 return Material.FLINT_AND_STEEL;
-            case CONTACT:
+            case "CONTACT":
                 return Material.CACTUS;
-            case STARVATION:
+            case "STARVATION":
                 return Material.ROTTEN_FLESH;
-            case SUFFOCATION:
+            case "SUFFOCATION":
                 return Material.SAND;
-            case CAMPFIRE:
+            case "CAMPFIRE":
                 return Material.CAMPFIRE;
-            case ENTITY_ATTACK:
+            case "ENTITY_ATTACK":
                 return Material.ZOMBIE_HEAD;
-            case FALLING_BLOCK:
+            case "FALLING_BLOCK":
                 return Material.ANVIL;
-            case FIRE_BLOCK:
-                return Material.FIRE_CHARGE;
-            case LAVA:
+            case "LAVA":
                 return Material.LAVA_BUCKET;
-            case EXPLOSION:
+            case "ENTITY_EXPLOSION":
+            case "BLOCK_EXPLOSION":
                 return Material.TNT;
-            case PROJECTILE:
+            case "PROJECTILE":
                 return Material.ARROW;
-            case MAGIC:
+            case "MAGIC":
                 return Material.POTION;
-            case HOT_FLOOR:
+            case "HOT_FLOOR":
                 return Material.MAGMA_BLOCK;
-            case FREEZE:
+            case "FREEZE":
                 return Material.POWDER_SNOW_BUCKET;
-            case POISON:
+            case "POISON":
                 return Material.SPIDER_EYE;
-            case THORNS:
+            case "THORNS":
                 return Material.SWEET_BERRIES;
-            case ENTITY_SWEEP_ATTACK:
+            case "ENTITY_SWEEP_ATTACK":
                 return Material.IRON_SWORD;
-            case BLOCK_EXPLOSION:
-                return Material.RED_BED;
-            case LIGHTNING:
+            case "LIGHTNING":
                 return Material.LIGHTNING_ROD;
-            case FLY_INTO_WALL:
+            case "FLY_INTO_WALL":
                 return Material.ELYTRA;
-            case VOID:
+            case "VOID":
                 return Material.ENDER_PEARL;
-            case WITHER:
+            case "WITHER":
                 return Material.WITHER_ROSE;
-            case DRAGON_BREATH:
+            case "DRAGON_BREATH":
                 return Material.DRAGON_BREATH;
-            case CRAMMING:
+            case "CRAMMING":
                 return Material.MINECART;
-            case SONIC_BOOM:
+            case "SONIC_BOOM":
                 return Material.ECHO_SHARD;
-            case WORLD_BORDER:
+            case "WORLD_BORDER":
                 return Material.BARRIER;
-            case SUICIDE:
+            case "SUICIDE":
                 return Material.BONE;
             default:
                 return Material.SKELETON_SKULL;

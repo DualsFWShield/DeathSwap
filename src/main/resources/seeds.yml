@@ -1,0 +1,879 @@
+# Default seeds list for DeathSwap
+# You can override this in each arena's configuration file (arenas/<arena>.yml)
+seeds:
+- seed: '8214184745'
+  name: Portail en ruine & Temple Jungle 001
+- seed: '8216099190'
+  name: Portail en ruine & Temple Jungle 002
+- seed: '8218886617'
+  name: Portail en ruine & Temple Jungle 003
+- seed: '8227795184'
+  name: Portail en ruine & Temple Jungle 004
+- seed: '8231064414'
+  name: Portail en ruine & Temple Jungle 005
+- seed: '8237341058'
+  name: Portail en ruine & Temple Jungle 006
+- seed: '8242608216'
+  name: Portail en ruine & Temple Jungle 007
+- seed: '8246836685'
+  name: Portail en ruine & Temple Jungle 008
+- seed: '8258825771'
+  name: Portail en ruine & Temple Jungle 009
+- seed: '8266692556'
+  name: Portail en ruine & Temple Jungle 010
+- seed: '8271167074'
+  name: Portail en ruine & Temple Jungle 011
+- seed: '8276161173'
+  name: Portail en ruine & Temple Jungle 012
+- seed: '8313084166'
+  name: Portail en ruine & Temple Jungle 013
+- seed: '8315098272'
+  name: Portail en ruine & Temple Jungle 014
+- seed: '8333265788'
+  name: Portail en ruine & Temple Jungle 015
+- seed: '8370826306'
+  name: Portail en ruine & Temple Jungle 016
+- seed: '8379697745'
+  name: Portail en ruine & Temple Jungle 017
+- seed: '8380112742'
+  name: Portail en ruine & Temple Jungle 018
+- seed: '8384385171'
+  name: Portail en ruine & Temple Jungle 019
+- seed: '8464288974'
+  name: Portail en ruine & Temple Jungle 020
+- seed: '8466761168'
+  name: Portail en ruine & Temple Jungle 021
+- seed: '8473415314'
+  name: Portail en ruine & Temple Jungle 022
+- seed: '8476323047'
+  name: Portail en ruine & Temple Jungle 023
+- seed: '8477144782'
+  name: Portail en ruine & Temple Jungle 024
+- seed: '8492118884'
+  name: Portail en ruine & Temple Jungle 025
+- seed: '8495342241'
+  name: Portail en ruine & Temple Jungle 026
+- seed: '8501848234'
+  name: Portail en ruine & Temple Jungle 027
+- seed: '8518656554'
+  name: Portail en ruine & Temple Jungle 028
+- seed: '8529606531'
+  name: Portail en ruine & Temple Jungle 029
+- seed: '8549772998'
+  name: Portail en ruine & Temple Jungle 030
+- seed: '8554217320'
+  name: Bateau & Portail 001
+- seed: '8555477378'
+  name: Bateau & Portail 002
+- seed: '8598838898'
+  name: Bateau & Portail 003
+- seed: '8602969179'
+  name: Bateau & Portail 004
+- seed: '101795'
+  name: Bateau & Portail 005
+- seed: '933729'
+  name: Bateau & Portail 006
+- seed: '3152775'
+  name: Bateau & Portail 007
+- seed: '5715096'
+  name: Bateau & Portail 008
+- seed: '6829846'
+  name: Bateau & Portail 009
+- seed: '7076162'
+  name: Bateau & Portail 010
+- seed: '8107097'
+  name: Bateau & Portail 011
+- seed: '8873765'
+  name: Bateau & Portail 012
+- seed: '9520556'
+  name: Bateau & Portail 013
+- seed: '9989463'
+  name: Bateau & Portail 014
+- seed: '12181650'
+  name: Bateau & Portail 015
+- seed: '12249745'
+  name: Bateau & Portail 016
+- seed: '12810616'
+  name: Bateau & Portail 017
+- seed: '12848007'
+  name: Bateau & Portail 018
+- seed: '13580269'
+  name: Bateau & Portail 019
+- seed: '13692306'
+  name: Bateau & Portail 020
+- seed: '13756769'
+  name: Bateau & Portail 021
+- seed: '15134353'
+  name: Bateau & Portail 022
+- seed: '15181505'
+  name: Bateau & Portail 023
+- seed: '15658980'
+  name: Bateau & Portail 024
+- seed: '15790472'
+  name: Bateau & Portail 025
+- seed: '15910484'
+  name: Bateau & Portail 026
+- seed: '17957872'
+  name: Bateau & Portail 027
+- seed: '20468487'
+  name: Bateau & Portail 028
+- seed: '20614595'
+  name: Bateau & Portail 029
+- seed: '21950414'
+  name: Bateau & Portail 030
+- seed: '22018509'
+  name: Bateau & Portail 031
+- seed: '22272836'
+  name: Bateau & Portail 032
+- seed: '22314899'
+  name: Bateau & Portail 033
+- seed: '22596309'
+  name: Bateau & Portail 034
+- seed: '22885192'
+  name: Bateau & Portail 035
+- seed: '23497503'
+  name: Bateau & Portail 036
+- seed: '23703665'
+  name: Bateau & Portail 037
+- seed: '24667348'
+  name: Bateau & Portail 038
+- seed: '25023810'
+  name: Bateau & Portail 039
+- seed: '25927026'
+  name: Bateau & Portail 040
+- seed: '26724516'
+  name: Bateau & Portail 041
+- seed: '26780874'
+  name: Bateau & Portail 042
+- seed: '27034808'
+  name: Bateau & Portail 043
+- seed: '27098807'
+  name: Bateau & Portail 044
+- seed: '27796210'
+  name: Bateau & Portail 045
+- seed: '28202507'
+  name: Bateau & Portail 046
+- seed: '29151301'
+  name: Bateau & Portail 047
+- seed: '30959767'
+  name: Bateau & Portail 048
+- seed: '31275336'
+  name: Bateau & Portail 049
+- seed: '31530216'
+  name: Bateau & Portail 050
+- seed: '31560920'
+  name: Bateau & Portail 051
+- seed: '32592249'
+  name: Bateau & Portail 052
+- seed: '33197849'
+  name: Bateau & Portail 053
+- seed: '33947563'
+  name: Bateau & Portail 054
+- seed: '34433994'
+  name: Bateau & Portail 055
+- seed: '36217658'
+  name: Bateau & Portail 056
+- seed: '37149222'
+  name: Bateau & Portail 057
+- seed: '37497173'
+  name: Bateau & Portail 058
+- seed: '37536931'
+  name: Bateau & Portail 059
+- seed: '37676037'
+  name: Bateau & Portail 060
+- seed: '39993646'
+  name: Bateau & Portail 061
+- seed: '40188142'
+  name: Bateau & Portail 062
+- seed: '40623159'
+  name: Bateau & Portail 063
+- seed: '41063182'
+  name: Bateau & Portail 064
+- seed: '41245058'
+  name: Bateau & Portail 065
+- seed: '41430610'
+  name: Bateau & Portail 066
+- seed: '41655400'
+  name: Bateau & Portail 067
+- seed: '41753716'
+  name: Bateau & Portail 068
+- seed: '41784484'
+  name: Bateau & Portail 069
+- seed: '44537257'
+  name: Bateau & Portail 070
+- seed: '45880616'
+  name: Bateau & Portail 071
+- seed: '45940202'
+  name: Bateau & Portail 072
+- seed: '46012277'
+  name: Bateau & Portail 073
+- seed: '46718436'
+  name: Bateau & Portail 074
+- seed: '47036553'
+  name: Bateau & Portail 075
+- seed: '48074636'
+  name: Bateau & Portail 076
+- seed: '48405347'
+  name: Bateau & Portail 077
+- seed: '49154045'
+  name: Bateau & Portail 078
+- seed: '50023392'
+  name: Bateau & Portail 079
+- seed: '51427553'
+  name: Bateau & Portail 080
+- seed: '51559045'
+  name: Bateau & Portail 081
+- seed: '51650751'
+  name: Bateau & Portail 082
+- seed: '52220248'
+  name: Bateau & Portail 083
+- seed: '53323062'
+  name: Bateau & Portail 084
+- seed: '55020361'
+  name: Bateau & Portail 085
+- seed: '57154113'
+  name: Bateau & Portail 086
+- seed: '58098267'
+  name: Bateau & Portail 087
+- seed: '59924879'
+  name: Bateau & Portail 088
+- seed: '61280949'
+  name: Bateau & Portail 089
+- seed: '63949799'
+  name: Bateau & Portail 090
+- seed: '67111978'
+  name: Bateau & Portail 091
+- seed: '67175977'
+  name: Bateau & Portail 092
+- seed: '67384902'
+  name: Bateau & Portail 093
+- seed: '67500145'
+  name: Bateau & Portail 094
+- seed: '67997219'
+  name: Bateau & Portail 095
+- seed: '69158851'
+  name: Bateau & Portail 096
+- seed: '69667850'
+  name: Bateau & Portail 097
+- seed: '70288350'
+  name: Bateau & Portail 098
+- seed: '72887379'
+  name: Bateau & Portail 099
+- seed: '74373419'
+  name: Bateau & Portail 100
+- seed: '74742163'
+  name: Bateau & Portail 101
+- seed: '76100225'
+  name: Bateau & Portail 102
+- seed: '79495367'
+  name: Bateau & Portail 103
+- seed: '79780951'
+  name: Bateau & Portail 104
+- seed: '80179928'
+  name: Bateau & Portail 105
+- seed: '80546118'
+  name: Bateau & Portail 106
+- seed: '80576822'
+  name: Bateau & Portail 107
+- seed: '81362136'
+  name: Bateau & Portail 108
+- seed: '81834935'
+  name: Bateau & Portail 109
+- seed: '82532938'
+  name: Bateau & Portail 110
+- seed: '82635911'
+  name: Bateau & Portail 111
+- seed: '83074427'
+  name: Bateau & Portail 112
+- seed: '83257710'
+  name: Bateau & Portail 113
+- seed: '83997468'
+  name: Bateau & Portail 114
+- seed: '84464793'
+  name: Bateau & Portail 115
+- seed: '84574668'
+  name: Bateau & Portail 116
+- seed: '85053729'
+  name: Bateau & Portail 117
+- seed: '87520618'
+  name: Bateau & Portail 118
+- seed: '89701458'
+  name: Bateau & Portail 119
+- seed: '90266093'
+  name: Bateau & Portail 120
+- seed: '90623463'
+  name: Bateau & Portail 121
+- seed: '91502452'
+  name: Bateau & Portail 122
+- seed: '91757176'
+  name: Bateau & Portail 123
+- seed: '91803091'
+  name: Bateau & Portail 124
+- seed: '92228835'
+  name: Bateau & Portail 125
+- seed: '93049859'
+  name: Bateau & Portail 126
+- seed: '94173252'
+  name: Bateau & Portail 127
+- seed: '94221232'
+  name: Bateau & Portail 128
+- seed: '96019177'
+  name: Bateau & Portail 129
+- seed: '96020484'
+  name: Bateau & Portail 130
+- seed: '98007251'
+  name: Bateau & Portail 131
+- seed: '99392026'
+  name: Bateau & Portail 132
+- seed: '99929892'
+  name: Bateau & Portail 133
+- seed: '100993010'
+  name: Bateau & Portail 134
+- seed: '101643557'
+  name: Bateau & Portail 135
+- seed: '101623126'
+  name: Bateau & Portail 136
+- seed: '101762545'
+  name: Bateau & Portail 137
+- seed: '104566190'
+  name: Bateau & Portail 138
+- seed: '104922205'
+  name: Bateau & Portail 139
+- seed: '105314103'
+  name: Bateau & Portail 140
+- seed: '105612155'
+  name: Bateau & Portail 141
+- seed: '106335710'
+  name: Bateau & Portail 142
+- seed: '106758408'
+  name: Bateau & Portail 143
+- seed: '107478406'
+  name: Bateau & Portail 144
+- seed: '108829526'
+  name: Bateau & Portail 145
+- seed: '108840932'
+  name: Bateau & Portail 146
+- seed: '109158989'
+  name: Bateau & Portail 147
+- seed: '109495548'
+  name: Bateau & Portail 148
+- seed: '109720592'
+  name: Bateau & Portail 149
+- seed: '110117298'
+  name: Bateau & Portail 150
+- seed: '110485538'
+  name: Bateau & Portail 151
+- seed: '113203605'
+  name: Bateau & Portail 152
+- seed: '115040403'
+  name: Bateau & Portail 153
+- seed: '115028037'
+  name: Bateau & Portail 154
+- seed: '116155560'
+  name: Bateau & Portail 155
+- seed: '117843823'
+  name: Bateau & Portail 156
+- seed: '120820664'
+  name: Bateau & Portail 157
+- seed: '121074759'
+  name: Bateau & Portail 158
+- seed: '121446968'
+  name: Bateau & Portail 159
+- seed: '123391633'
+  name: Bateau & Portail 160
+- seed: '123989895'
+  name: Bateau & Portail 161
+- seed: '125338696'
+  name: Bateau & Portail 162
+- seed: '125307928'
+  name: Bateau & Portail 163
+- seed: '126511373'
+  name: Bateau & Portail 164
+- seed: '127284315'
+  name: Bateau & Portail 165
+- seed: '128402482'
+  name: Bateau & Portail 166
+- seed: '130405959'
+  name: Bateau & Portail 167
+- seed: '131651625'
+  name: Bateau & Portail 168
+- seed: '132617303'
+  name: Bateau & Portail 169
+- seed: '137228302'
+  name: Bateau & Portail 170
+- seed: '137921489'
+  name: Bateau & Portail 171
+- seed: '139177497'
+  name: Bateau & Portail 172
+- seed: '139568540'
+  name: Bateau & Portail 173
+- seed: '140987638'
+  name: Bateau & Portail 174
+- seed: '141328657'
+  name: Bateau & Portail 175
+- seed: '142712727'
+  name: Bateau & Portail 176
+- seed: '143494650'
+  name: Bateau & Portail 177
+- seed: '144044909'
+  name: Bateau & Portail 178
+- seed: '144184440'
+  name: Bateau & Portail 179
+- seed: '144284808'
+  name: Bateau & Portail 180
+- seed: '145357996'
+  name: Bateau & Portail 181
+- seed: '145461953'
+  name: Bateau & Portail 182
+- seed: '146243538'
+  name: Bateau & Portail 183
+- seed: '146600516'
+  name: Bateau & Portail 184
+- seed: '146867684'
+  name: Bateau & Portail 185
+- seed: '147756160'
+  name: Bateau & Portail 186
+- seed: '148675139'
+  name: Bateau & Portail 187
+- seed: '151981782'
+  name: Bateau & Portail 188
+- seed: '152925181'
+  name: Bateau & Portail 189
+- seed: '154039325'
+  name: Bateau & Portail 190
+- seed: '154706150'
+  name: Bateau & Portail 191
+- seed: '156685350'
+  name: Bateau & Portail 192
+- seed: '157113379'
+  name: Bateau & Portail 193
+- seed: '158394258'
+  name: Bateau & Portail 194
+- seed: '158832986'
+  name: Bateau & Portail 195
+- seed: '158802282'
+  name: Bateau & Portail 196
+- seed: '159465334'
+  name: Bateau & Portail 197
+- seed: '160615694'
+  name: Bateau & Portail 198
+- seed: '161156295'
+  name: Bateau & Portail 199
+- seed: '161332900'
+  name: Bateau & Portail 200
+- seed: '161682351'
+  name: Bateau & Portail 201
+- seed: '163382866'
+  name: Bateau & Portail 202
+- seed: '164964726'
+  name: Bateau & Portail 203
+- seed: '165503523'
+  name: Bateau & Portail 204
+- seed: '165655492'
+  name: Bateau & Portail 205
+- seed: '166024931'
+  name: Bateau & Portail 206
+- seed: '167705743'
+  name: Bateau & Portail 207
+- seed: '168259400'
+  name: Bateau & Portail 208
+- seed: '168540118'
+  name: Bateau & Portail 209
+- seed: '168574325'
+  name: Bateau & Portail 210
+- seed: '168861298'
+  name: Bateau & Portail 211
+- seed: '168830594'
+  name: Bateau & Portail 212
+- seed: '169529619'
+  name: Bateau & Portail 213
+- seed: '170040125'
+  name: Bateau & Portail 214
+- seed: '171681637'
+  name: Bateau & Portail 215
+- seed: '174125016'
+  name: Bateau & Portail 216
+- seed: '174199053'
+  name: Bateau & Portail 217
+- seed: '174409933'
+  name: Bateau & Portail 218
+- seed: '176006275'
+  name: Bateau & Portail 219
+- seed: '177978594'
+  name: Bateau & Portail 220
+- seed: '178042593'
+  name: Bateau & Portail 221
+- seed: '179766789'
+  name: Bateau & Portail 222
+- seed: '180133111'
+  name: Bateau & Portail 223
+- seed: '181159737'
+  name: Bateau & Portail 224
+- seed: '182119705'
+  name: Bateau & Portail 225
+- seed: '182434893'
+  name: Bateau & Portail 226
+- seed: '184660140'
+  name: Bateau & Portail 227
+- seed: '185297362'
+  name: Bateau & Portail 228
+- seed: '186627903'
+  name: Bateau & Portail 229
+- seed: '187407158'
+  name: Bateau & Portail 230
+- seed: '187376454'
+  name: Bateau & Portail 231
+- seed: '188783546'
+  name: Bateau & Portail 232
+- seed: '190481264'
+  name: Bateau & Portail 233
+- seed: '192067556'
+  name: Bateau & Portail 234
+- seed: '192419411'
+  name: Bateau & Portail 235
+- seed: '193933176'
+  name: Bateau & Portail 236
+- seed: '194590248'
+  name: Bateau & Portail 237
+- seed: '195062463'
+  name: Bateau & Portail 238
+- seed: '196556176'
+  name: Bateau & Portail 239
+- seed: '196916486'
+  name: Bateau & Portail 240
+- seed: '197323721'
+  name: Bateau & Portail 241
+- seed: '199464301'
+  name: Bateau & Portail 242
+- seed: '199533901'
+  name: Bateau & Portail 243
+- seed: '199772131'
+  name: Bateau & Portail 244
+- seed: '200292743'
+  name: Bateau & Portail 245
+- seed: '200493760'
+  name: Bateau & Portail 246
+- seed: '201296378'
+  name: Bateau & Portail 247
+- seed: '202010213'
+  name: Bateau & Portail 248
+- seed: '202941843'
+  name: Bateau & Portail 249
+- seed: '203858079'
+  name: Bateau & Portail 250
+- seed: '205193273'
+  name: Bateau & Portail 251
+- seed: '205516782'
+  name: Bateau & Portail 252
+- seed: '206778108'
+  name: Bateau & Portail 253
+- seed: '206986224'
+  name: Bateau & Portail 254
+- seed: '207685052'
+  name: Bateau & Portail 255
+- seed: '207712115'
+  name: Bateau & Portail 256
+- seed: '208156097'
+  name: Bateau & Portail 257
+- seed: '208895859'
+  name: Bateau & Portail 258
+- seed: '209135058'
+  name: Bateau & Portail 259
+- seed: '209552931'
+  name: Bateau & Portail 260
+- seed: '209781371'
+  name: Bateau & Portail 261
+- seed: '210230995'
+  name: Bateau & Portail 262
+- seed: '211400938'
+  name: Bateau & Portail 263
+- seed: '211668769'
+  name: Bateau & Portail 264
+- seed: '214086424'
+  name: Bateau & Portail 265
+- seed: '214207412'
+  name: Bateau & Portail 266
+- seed: '214324747'
+  name: Bateau & Portail 267
+- seed: '1777224685'
+  name: Village & Portail 001
+- seed: '1778891088'
+  name: Village & Portail 002
+- seed: '1781640313'
+  name: Village & Portail 003
+- seed: '1784193441'
+  name: Village & Portail 004
+- seed: '1788147002'
+  name: Village & Portail 005
+- seed: '1791934079'
+  name: Village & Portail 006
+- seed: '1792202475'
+  name: Village & Portail 007
+- seed: '1794585595'
+  name: Village & Portail 008
+- seed: '1795037551'
+  name: Village & Portail 009
+- seed: '1797231410'
+  name: Village & Portail 010
+- seed: '1797894481'
+  name: Village & Portail 011
+- seed: '1803863203'
+  name: Village & Portail 012
+- seed: '1804014262'
+  name: Village & Portail 013
+- seed: '1808831711'
+  name: Village & Portail 014
+- seed: '1809831337'
+  name: Village & Portail 015
+- seed: '1810266083'
+  name: Village & Portail 016
+- seed: '1811111090'
+  name: Village & Portail 017
+- seed: '1814937188'
+  name: Village & Portail 018
+- seed: '1815307235'
+  name: Village & Portail 019
+- seed: '1817127263'
+  name: Village & Portail 020
+- seed: '1820586859'
+  name: Village & Portail 021
+- seed: '1820799334'
+  name: Village & Portail 022
+- seed: '1822098059'
+  name: Village & Portail 023
+- seed: '1822351301'
+  name: Village & Portail 024
+- seed: '1822406693'
+  name: Village & Portail 025
+- seed: '1825425965'
+  name: Village & Portail 026
+- seed: '1825728658'
+  name: Village & Portail 027
+- seed: '1828728875'
+  name: Village & Portail 028
+- seed: '1830272365'
+  name: Village & Portail 029
+- seed: '1831646075'
+  name: Village & Portail 030
+- seed: '1832745827'
+  name: Village & Portail 031
+- seed: '1836000251'
+  name: Village & Portail 032
+- seed: '1838625708'
+  name: Village & Portail 033
+- seed: '1839277434'
+  name: Village & Portail 034
+- seed: '1841403943'
+  name: Village & Portail 035
+- seed: '1841367975'
+  name: Village & Portail 036
+- seed: '1841439590'
+  name: Village & Portail 037
+- seed: '1841941827'
+  name: Village & Portail 038
+- seed: '1845110528'
+  name: Village & Portail 039
+- seed: '1845775345'
+  name: Village & Portail 040
+- seed: '1845878336'
+  name: Village & Portail 041
+- seed: '1848465279'
+  name: Village & Portail 042
+- seed: '1851824918'
+  name: Village & Portail 043
+- seed: '1852219764'
+  name: Village & Portail 044
+- seed: '1455056164'
+  name: Village & Pyramide 001
+- seed: '1476581053'
+  name: Village & Pyramide 002
+- seed: '1487038291'
+  name: Village & Pyramide 003
+- seed: '1518207415'
+  name: Village & Pyramide 004
+- seed: '1535023667'
+  name: Village & Pyramide 005
+- seed: '1543880898'
+  name: Village & Pyramide 006
+- seed: '1585930770'
+  name: Village & Pyramide 007
+- seed: '1591741548'
+  name: Village & Pyramide 008
+- seed: '1594983349'
+  name: Village & Pyramide 009
+- seed: '1609144986'
+  name: Village & Pyramide 010
+- seed: '1611816569'
+  name: Village & Pyramide 011
+- seed: '1620086653'
+  name: Village & Pyramide 012
+- seed: '1637769021'
+  name: Village & Pyramide 013
+- seed: '1647535008'
+  name: Village & Pyramide 014
+- seed: '1650935678'
+  name: Village & Pyramide 015
+- seed: '1657057161'
+  name: Village & Pyramide 016
+- seed: '1665882601'
+  name: Village & Pyramide 017
+- seed: '1680090508'
+  name: Village & Pyramide 018
+- seed: '1714852634'
+  name: Village & Pyramide 019
+- seed: '1717109316'
+  name: Village & Pyramide 020
+- seed: '1773929163'
+  name: Village & Pyramide 021
+- seed: '1777390026'
+  name: Village & Pyramide 022
+- seed: '1798548615'
+  name: Village & Pyramide 023
+- seed: '1799899367'
+  name: Village & Pyramide 024
+- seed: '1842164447'
+  name: Village & Pyramide 025
+- seed: '1864970152'
+  name: Village & Pyramide 026
+- seed: '1870592052'
+  name: Village & Pyramide 027
+- seed: '1880823767'
+  name: Village & Pyramide 028
+- seed: '1881437589'
+  name: Village & Pyramide 029
+- seed: '1882028828'
+  name: Village & Pyramide 030
+- seed: '1909379429'
+  name: Village & Pyramide 031
+- seed: '1920037906'
+  name: Village & Pyramide 032
+- seed: '1929991696'
+  name: Village & Pyramide 033
+- seed: '1943683196'
+  name: Village & Pyramide 034
+- seed: '1944329754'
+  name: Village & Pyramide 035
+- seed: '1946433093'
+  name: Village & Pyramide 036
+- seed: '2013962462'
+  name: Village & Pyramide 037
+- seed: '2026532315'
+  name: Village & Pyramide 038
+- seed: '2036622855'
+  name: Village & Pyramide 039
+- seed: '2085022485'
+  name: Village & Pyramide 040
+- seed: '2091527819'
+  name: Village & Pyramide 041
+- seed: '2107176088'
+  name: Village & Pyramide 042
+- seed: '1328518102'
+  name: Portail & Pyramide 001
+- seed: '1339370190'
+  name: Portail & Pyramide 002
+- seed: '1340188037'
+  name: Portail & Pyramide 003
+- seed: '1354683013'
+  name: Portail & Pyramide 004
+- seed: '1403297479'
+  name: Portail & Pyramide 005
+- seed: '1406681257'
+  name: Portail & Pyramide 006
+- seed: '1414165258'
+  name: Portail & Pyramide 007
+- seed: '1427215440'
+  name: Portail & Pyramide 008
+- seed: '1448285558'
+  name: Portail & Pyramide 009
+- seed: '1448784239'
+  name: Portail & Pyramide 010
+- seed: '1464403718'
+  name: Portail & Pyramide 011
+- seed: '1465815779'
+  name: Portail & Pyramide 012
+- seed: '1535444278'
+  name: Portail & Pyramide 013
+- seed: '1582531548'
+  name: Portail & Pyramide 014
+- seed: '1613980956'
+  name: Portail & Pyramide 015
+- seed: '1614592502'
+  name: Portail & Pyramide 016
+- seed: '1629528510'
+  name: Portail & Pyramide 017
+- seed: '1655758916'
+  name: Portail & Pyramide 018
+- seed: '1674680067'
+  name: Portail & Pyramide 019
+- seed: '1696177370'
+  name: Portail & Pyramide 020
+- seed: '1770706544'
+  name: Portail & Pyramide 021
+- seed: '1785056944'
+  name: Portail & Pyramide 022
+- seed: '1809211541'
+  name: Village & Temple 001
+- seed: '92269280'
+  name: Manoir 001
+- seed: '144326593'
+  name: Manoir 002
+- seed: '153222881'
+  name: Manoir 003
+- seed: '156868280'
+  name: Manoir 004
+- seed: '227976640'
+  name: Manoir 005
+- seed: '523533362'
+  name: Manoir 006
+- seed: '554212050'
+  name: Manoir 007
+- seed: '660436919'
+  name: Manoir 008
+- seed: '718584236'
+  name: Manoir 009
+- seed: '718709831'
+  name: Manoir 010
+- seed: '731641633'
+  name: Manoir 011
+- seed: '759086197'
+  name: Manoir 012
+- seed: '796809864'
+  name: Manoir 013
+- seed: '928794171'
+  name: Manoir 014
+- seed: '980673120'
+  name: Manoir 015
+- seed: '1023937812'
+  name: Manoir 016
+- seed: '1068468713'
+  name: Manoir 017
+- seed: '1102083383'
+  name: Manoir 018
+- seed: '1115305725'
+  name: Manoir 019
+- seed: '1132165831'
+  name: Manoir 020
+- seed: '1246817110'
+  name: Manoir 021
+- seed: '1519001532'
+  name: Manoir 022
+- seed: '1657215185'
+  name: Manoir 023
+- seed: '1657224110'
+  name: Manoir 024
+- seed: '1742256349'
+  name: Manoir 025
+- seed: '1750512626'
+  name: Manoir 026
+- seed: '1790052233'
+  name: Manoir 027
+- seed: '1794983060'
+  name: Manoir 028
+- seed: '1861068726'
+  name: Manoir 029
+- seed: '1902218103'
+  name: Manoir 030
+- seed: '2052896615'
+  name: Manoir 031
+- seed: '2100218908'
+  name: Manoir 032

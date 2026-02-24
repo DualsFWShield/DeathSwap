@@ -50,25 +50,30 @@ public class GamerulesGUI implements Listener {
         }
 
         String title = Lang.get("gui-gamerules-title", "%arena%", arenaName);
-        Inventory inv = Bukkit.createInventory(null, INV_SIZE, Component.text(title));
+        // Dynamically fetch all boolean gamerules by reading them from a default world
+        List<String> rules = new ArrayList<>();
+        for (org.bukkit.GameRule<?> rule : org.bukkit.Registry.GAME_RULE) {
+            if (rule != null && rule.getType() == Boolean.class) {
+                rules.add(rule.getKey().getKey());
+            }
+        }
 
-        // Define boolean rules to manage (Using new 1.21.11 format)
-        List<String> rules = Arrays.asList(
-                "minecraft:keep_inventory",
-                "minecraft:immediate_respawn",
-                "minecraft:advance_time",
-                "minecraft:advance_weather",
-                "minecraft:mob_griefing",
-                "minecraft:natural_health_regeneration",
-                "minecraft:spawn_mobs",
-                "minecraft:send_command_feedback",
-                "minecraft:log_admin_commands",
-                "minecraft:show_advancement_messages",
-                "minecraft:reduced_debug_info");
+        // We could sort alphabetically
+        rules.sort(String::compareToIgnoreCase);
+
+        // Adjust GUI size if too many rules. 54 slots handles ~45 rules safely.
+        int requiredSize = Math.max(27, ((rules.size() / 9) + 2) * 9);
+        if (requiredSize > 54)
+            requiredSize = 54;
+
+        Inventory inv = Bukkit.createInventory(null, requiredSize, Component.text(title));
 
         int slot = 0;
         for (String rule : rules) {
-            // Config might still have snake_case from old default, check both
+            if (slot >= requiredSize - 9)
+                break; // Leave bottom row for back button
+
+            // Config might still have snake_case from old default
             String valueStr = config.gamerules.getOrDefault(rule, "false");
             boolean enabled = Boolean.parseBoolean(valueStr);
 
@@ -77,7 +82,7 @@ public class GamerulesGUI implements Listener {
             meta.displayName(Component.text(rule, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
             lore.add(Lang.getComponent("gui-gamerules-current", "%value%", "")
-                    .append(Component.text(enabled ? "ON" : "OFF",
+                    .append(Component.text(enabled ? "True" : "False",
                             enabled ? NamedTextColor.GREEN : NamedTextColor.RED)));
             lore.add(Component.empty());
             lore.add(Lang.getComponent("gui-gamerules-click-toggle")

@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.bukkit.event.entity.EntityDamageEvent;
+
 /**
  * DeathShuffle game mode.
  * Each round, a random death cause is assigned. Players must die that way
@@ -38,8 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DeathShuffleInstance extends GameInstance {
 
     private int currentRound = 0;
-    // private DeathCause currentDeathCause; // REMOVED
-    private final Map<UUID, DeathCause> playerCauses = new HashMap<>();
+    private final Map<UUID, EntityDamageEvent.DamageCause> playerCauses = new HashMap<>();
     private int roundTimer;
     private int roundDuration;
     private BukkitTask roundTask;
@@ -50,9 +51,10 @@ public class DeathShuffleInstance extends GameInstance {
     private final Map<UUID, Boolean> pendingRespawn = new HashMap<>();
 
     // Allowed causes from config
-    private final Set<DeathCause> allowedCauses = new HashSet<>();
+    private final Set<EntityDamageEvent.DamageCause> allowedCauses = new HashSet<>();
     // Custom difficulty overrides from config
-    private final Map<DeathCause, Integer> customDifficulties = new EnumMap<>(DeathCause.class);
+    private final Map<EntityDamageEvent.DamageCause, Integer> customDifficulties = new EnumMap<>(
+            EntityDamageEvent.DamageCause.class);
 
     public DeathShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
@@ -68,7 +70,8 @@ public class DeathShuffleInstance extends GameInstance {
                 if (!entry.enabled())
                     continue;
                 try {
-                    DeathCause dc = DeathCause.valueOf(entry.cause().toUpperCase());
+                    EntityDamageEvent.DamageCause dc = EntityDamageEvent.DamageCause
+                            .valueOf(entry.cause().toUpperCase());
                     allowedCauses.add(dc);
                     // Store custom difficulty override
                     customDifficulties.put(dc, entry.difficulty());
@@ -80,17 +83,27 @@ public class DeathShuffleInstance extends GameInstance {
 
         // Fallback
         if (allowedCauses.isEmpty()) {
-            for (DeathCause dc : DeathCause.values()) {
+            for (EntityDamageEvent.DamageCause dc : EntityDamageEvent.DamageCause.values()) {
                 allowedCauses.add(dc);
             }
         }
     }
 
     /**
-     * Get the effective difficulty for a death cause (from config or default).
+     * Get the effective difficulty for a death cause (from config or default 1).
      */
-    private int getEffectiveDifficulty(DeathCause dc) {
-        return customDifficulties.getOrDefault(dc, dc.getDifficulty());
+    private int getEffectiveDifficulty(EntityDamageEvent.DamageCause dc) {
+        return customDifficulties.getOrDefault(dc, 1);
+    }
+
+    public static String getCauseDisplayName(EntityDamageEvent.DamageCause cause) {
+        return be.dualsfwshield.deathswap.util.Lang
+                .get("death-cause-" + cause.name().toLowerCase().replace("_", "-") + "-name");
+    }
+
+    public static String getCauseChallenge(EntityDamageEvent.DamageCause cause) {
+        return be.dualsfwshield.deathswap.util.Lang
+                .get("death-cause-" + cause.name().toLowerCase().replace("_", "-") + "-challenge");
     }
 
     @Override
@@ -132,19 +145,19 @@ public class DeathShuffleInstance extends GameInstance {
             difficulty = 3; // Rounds 7+: Hard
 
         // Pick random death cause matching difficulty tier (using config overrides)
-        DeathCause[] causes = allowedCauses.stream()
+        EntityDamageEvent.DamageCause[] causes = allowedCauses.stream()
                 .filter(dc -> getEffectiveDifficulty(dc) == difficulty)
-                .toArray(DeathCause[]::new);
+                .toArray(EntityDamageEvent.DamageCause[]::new);
 
         if (causes.length == 0) {
             // Fallback to all allowed causes
-            causes = allowedCauses.toArray(new DeathCause[0]);
+            causes = allowedCauses.toArray(new EntityDamageEvent.DamageCause[0]);
         }
 
         // Assign causes and duration
         if (getConfig().deathShuffleRaceMode) {
             // Race Mode: Infinite time
-            DeathCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+            EntityDamageEvent.DamageCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
             for (Player p : getAlivePlayers()) {
                 playerCauses.put(p.getUniqueId(), sharedCause);
             }
@@ -152,17 +165,17 @@ public class DeathShuffleInstance extends GameInstance {
         } else if (getConfig().deathShuffleUniqueCauses) {
             // Unique causes per player
             for (Player p : getAlivePlayers()) {
-                DeathCause dc = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+                EntityDamageEvent.DamageCause dc = causes[ThreadLocalRandom.current().nextInt(causes.length)];
                 playerCauses.put(p.getUniqueId(), dc);
             }
-            roundDuration = getConfig().getRoundTime(difficulty);
+            roundDuration = getConfig().getNextSwapInterval();
         } else {
             // Classic Mode: Shared cause
-            DeathCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
+            EntityDamageEvent.DamageCause sharedCause = causes[ThreadLocalRandom.current().nextInt(causes.length)];
             for (Player p : getAlivePlayers()) {
                 playerCauses.put(p.getUniqueId(), sharedCause);
             }
-            roundDuration = getConfig().getRoundTime(difficulty);
+            roundDuration = getConfig().getNextSwapInterval();
         }
 
         roundTimer = roundDuration;
@@ -172,21 +185,21 @@ public class DeathShuffleInstance extends GameInstance {
             broadcastGame("&d&lROUND " + currentRound + " &7— &eObjectifs individuels assignés !");
         } else {
             if (!getAlivePlayers().isEmpty()) {
-                DeathCause display = playerCauses.values().iterator().next();
-                broadcastGame("&d&lROUND " + currentRound + " &7— &e" + display.getChallenge());
+                EntityDamageEvent.DamageCause display = playerCauses.values().iterator().next();
+                broadcastGame("&d&lROUND " + currentRound + " &7— &e" + getCauseChallenge(display));
             }
         }
         broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e"
                 + (roundDuration == Integer.MAX_VALUE ? "∞" : roundDuration + "s"));
 
         for (Player p : getAlivePlayers()) {
-            DeathCause dc = playerCauses.get(p.getUniqueId());
+            EntityDamageEvent.DamageCause dc = playerCauses.get(p.getUniqueId());
             if (dc == null)
                 continue;
 
             p.showTitle(Title.title(
                     Component.text("ROUND " + currentRound, NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
-                    Component.text(dc.getChallenge(), NamedTextColor.YELLOW),
+                    Component.text(getCauseChallenge(dc), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
             if (getPlugin().getSoundManager() != null) {
@@ -201,9 +214,9 @@ public class DeathShuffleInstance extends GameInstance {
                         .append(Component.text("Objectif personnel", NamedTextColor.YELLOW)));
             } else {
                 if (!playerCauses.isEmpty()) {
-                    DeathCause dc = playerCauses.values().iterator().next();
+                    EntityDamageEvent.DamageCause dc = playerCauses.values().iterator().next();
                     getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
-                            .append(Component.text(dc.getDisplayName(), NamedTextColor.YELLOW)));
+                            .append(Component.text(getCauseDisplayName(dc), NamedTextColor.YELLOW)));
                 }
             }
             getBossBar().color(BossBar.Color.PURPLE);
@@ -216,6 +229,15 @@ public class DeathShuffleInstance extends GameInstance {
             public void run() {
                 if (getState() != GameState.RUNNING) {
                     cancel();
+                    return;
+                }
+
+                globalTimer--; // Decrease the max game time
+
+                if (globalTimer <= 0) {
+                    cancel();
+                    broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-timeout"));
+                    stopGame();
                     return;
                 }
 
@@ -236,23 +258,23 @@ public class DeathShuffleInstance extends GameInstance {
                 if (getConfig().uiMode == UIMode.RICH) {
                     // Action bar countdown
                     for (Player p : getAlivePlayers()) {
-                        DeathCause dc = playerCauses.get(p.getUniqueId());
+                        EntityDamageEvent.DamageCause dc = playerCauses.get(p.getUniqueId());
                         if (dc == null)
                             continue;
 
                         if (!completedRound.contains(p.getUniqueId())) {
                             if (getConfig().deathShuffleRaceMode) {
-                                p.sendActionBar(Component.text("🏁 RACE: " + dc.getChallenge(), NamedTextColor.GOLD,
+                                p.sendActionBar(Component.text("🏁 RACE: " + getCauseChallenge(dc), NamedTextColor.GOLD,
                                         TextDecoration.BOLD));
                             } else {
                                 if (roundTimer <= 10) {
                                     p.sendActionBar(
                                             Component.text(
-                                                    "⚠ " + roundTimer + "s — " + dc.getChallenge() + " ⚠",
+                                                    "⚠ " + roundTimer + "s — " + getCauseChallenge(dc) + " ⚠",
                                                     NamedTextColor.RED, TextDecoration.BOLD));
                                 } else {
                                     p.sendActionBar(
-                                            Component.text(dc.getChallenge() + " — " + roundTimer + "s",
+                                            Component.text(getCauseChallenge(dc) + " — " + roundTimer + "s",
                                                     NamedTextColor.YELLOW));
                                 }
                             }
@@ -273,10 +295,10 @@ public class DeathShuffleInstance extends GameInstance {
                         }
                         if (roundTimer % 60 == 0 && roundTimer > 0) {
                             for (Player p : getAlivePlayers()) {
-                                DeathCause dc = playerCauses.get(p.getUniqueId());
+                                EntityDamageEvent.DamageCause dc = playerCauses.get(p.getUniqueId());
                                 if (dc != null) {
                                     p.sendMessage(be.dualsfwshield.deathswap.util.Lang.get("game-prefix")
-                                            + Component.text("Rappel: Vous devez mourir par " + dc.getDisplayName(),
+                                            + Component.text("Rappel: Vous devez mourir par " + getCauseDisplayName(dc),
                                                     NamedTextColor.YELLOW));
                                 }
                             }
@@ -348,9 +370,9 @@ public class DeathShuffleInstance extends GameInstance {
         if (completedRound.contains(player.getUniqueId()))
             return false;
 
-        DeathCause dc = playerCauses.get(player.getUniqueId());
+        EntityDamageEvent.DamageCause dc = playerCauses.get(player.getUniqueId());
 
-        if (dc != null && dc.getDamageCause() == cause) {
+        if (dc != null && dc == cause) {
             // Correct death!
             completedRound.add(player.getUniqueId());
             pendingRespawn.put(player.getUniqueId(), true);
@@ -388,7 +410,7 @@ public class DeathShuffleInstance extends GameInstance {
         // Wrong death: respawn but don't mark as complete
         pendingRespawn.put(player.getUniqueId(), false);
         if (dc != null) {
-            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + dc.getChallenge(),
+            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + getCauseChallenge(dc),
                     NamedTextColor.RED));
         } else {
             player.sendMessage(Component.text("❌ Mauvaise mort !", NamedTextColor.RED));
@@ -464,7 +486,7 @@ public class DeathShuffleInstance extends GameInstance {
      * Get the current death cause for a specific player.
      * Replaces getCurrentDeathCause.
      */
-    public DeathCause getPlayerDeathCause(Player player) {
+    public EntityDamageEvent.DamageCause getPlayerDeathCause(Player player) {
         return playerCauses.get(player.getUniqueId());
     }
 
@@ -472,7 +494,7 @@ public class DeathShuffleInstance extends GameInstance {
      * Deprecated, kept for safety.
      * Returns the cause for the first player found.
      */
-    public DeathCause getCurrentDeathCause() {
+    public EntityDamageEvent.DamageCause getCurrentDeathCause() {
         if (playerCauses.isEmpty())
             return null;
         return playerCauses.values().iterator().next();

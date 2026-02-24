@@ -198,14 +198,14 @@ public class BlockShuffleInstance extends GameInstance {
                 ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
                 playerTargets.put(p.getUniqueId(), t);
             }
-            roundDuration = getConfig().getRoundTime(difficulty);
+            roundDuration = getConfig().getNextSwapInterval();
         } else {
             // Classic mode: Same target for everyone
             ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
             for (Player p : getAlivePlayers()) {
                 playerTargets.put(p.getUniqueId(), sharedTarget);
             }
-            roundDuration = getConfig().getRoundTime(difficulty);
+            roundDuration = getConfig().getNextSwapInterval();
         }
 
         roundTimer = roundDuration;
@@ -270,6 +270,15 @@ public class BlockShuffleInstance extends GameInstance {
             public void run() {
                 if (getState() != GameState.RUNNING) {
                     cancel();
+                    return;
+                }
+
+                globalTimer--; // Decrease the max game time
+
+                if (globalTimer <= 0) {
+                    cancel();
+                    broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("game-timeout"));
+                    stopGame();
                     return;
                 }
 

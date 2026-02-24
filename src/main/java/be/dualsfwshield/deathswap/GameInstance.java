@@ -52,50 +52,6 @@ import java.util.stream.Stream;
  */
 public class GameInstance {
 
-    private static final Map<String, String> SNAKE_CASE_BUKKIT_GAMERULES = new HashMap<>();
-
-    static {
-        // On mappe directement vers les nouvelles GameRules natives de la 1.21.11
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:advance_time", "minecraft:advance_time");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:advance_weather", "minecraft:advance_weather");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:keep_inventory", "minecraft:keep_inventory");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_griefing", "minecraft:mob_griefing");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_mobs", "minecraft:spawn_mobs");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:mob_drops", "minecraft:mob_drops");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:block_drops", "minecraft:block_drops");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:entity_drops", "minecraft:entity_drops");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:command_block_output", "minecraft:command_block_output");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:natural_health_regeneration", "minecraft:natural_regeneration"); // Java
-                                                                                                                    // utilise
-                                                                                                                    // 'natural_regeneration'
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:log_admin_commands", "minecraft:log_admin_commands");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_death_messages", "minecraft:show_death_messages");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:random_tick_speed", "minecraft:random_tick_speed");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:send_command_feedback", "minecraft:send_command_feedback");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:reduced_debug_info", "minecraft:reduced_debug_info");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spectators_generate_chunks", "minecraft:spectators_generate_chunks");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:respawn_radius", "minecraft:spawn_radius"); // Java utilise
-                                                                                               // 'spawn_radius'
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_entity_cramming", "minecraft:max_entity_cramming");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:limited_crafting", "minecraft:limited_crafting");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:max_command_sequence_length", "minecraft:max_command_chain_length");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:show_advancement_messages", "minecraft:show_advancement_messages");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:raids", "minecraft:disable_raids");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_phantoms", "minecraft:spawn_phantoms");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:immediate_respawn", "minecraft:immediate_respawn");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:drowning_damage", "minecraft:drowning_damage");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:fall_damage", "minecraft:fall_damage");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:fire_damage", "minecraft:fire_damage");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:freeze_damage", "minecraft:freeze_damage");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_patrols", "minecraft:spawn_patrols");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_wandering_traders", "minecraft:spawn_wandering_traders");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:spawn_wardens", "minecraft:spawn_wardens");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:forgive_dead_players", "minecraft:forgive_dead_players");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:universal_anger", "minecraft:universal_anger");
-        SNAKE_CASE_BUKKIT_GAMERULES.put("minecraft:players_sleeping_percentage",
-                "minecraft:players_sleeping_percentage");
-    }
-
     private final DeathSwapPlugin plugin;
     private final String arenaId;
     private final ConfigManager.ArenaConfig config;
@@ -111,7 +67,7 @@ public class GameInstance {
     private final Set<Player> spectators = new HashSet<>();
 
     // Timers
-    private int globalTimer;
+    protected int globalTimer;
     private int swapTimer;
     private int currentSwapInterval;
 
@@ -534,20 +490,23 @@ public class GameInstance {
         state = GameState.STARTING;
 
         // --- Seed Voting or Random Pick ---
+        List<SeedEntry> viableSeeds = config.seeds.isEmpty() ? plugin.getConfigManager().getGlobalSeeds()
+                : config.seeds;
+
         if (plugin.getConfigManager().isVotingEnabled() && plugin.getVoteManager() != null
-                && !config.seeds.isEmpty() && lobbyPlayers.size() >= 2) {
+                && !viableSeeds.isEmpty() && lobbyPlayers.size() >= 2) {
             // Start a vote, then continue with the winner
-            plugin.getVoteManager().startVote(this, config.seeds, lobbyPlayers, (seed) -> {
+            plugin.getVoteManager().startVote(this, viableSeeds, lobbyPlayers, (seed) -> {
                 broadcastLobby(Lang.get("vote-result", "%seed%", seed.name()));
                 continueStartWithSeed(seed);
             });
         } else {
             // No voting — pick random seed
             SeedEntry seed;
-            if (config.seeds.isEmpty()) {
+            if (viableSeeds.isEmpty()) {
                 seed = new SeedEntry("0", "Random World");
             } else {
-                seed = config.seeds.get(ThreadLocalRandom.current().nextInt(config.seeds.size()));
+                seed = viableSeeds.get(ThreadLocalRandom.current().nextInt(viableSeeds.size()));
             }
             broadcastLobby(Lang.get("vote-random", "%seed%", seed.name()));
             continueStartWithSeed(seed);
@@ -668,23 +627,11 @@ public class GameInstance {
         // Apply specialized settings
         world.setPVP(config.pvpEnabled);
 
-        // Apply gamerules from map
+        // Apply gamerules dynamically
         for (Map.Entry<String, String> entry : config.gamerules.entrySet()) {
             String ruleName = entry.getKey();
-
-            // Try explicit mapping first (Bedrock -> Bukkit)
-            if (SNAKE_CASE_BUKKIT_GAMERULES.containsKey(ruleName)) {
-                ruleName = SNAKE_CASE_BUKKIT_GAMERULES.get(ruleName);
-            }
-
-            GameRule<?> rule = GameRule.getByName(ruleName);
-
-            // Retry with camelCase conversion if failed (fallback for snake_case)
-            if (rule == null && ruleName.contains("_") && !ruleName.startsWith("minecraft:")) {
-                // only try camelcase if it's not a namespaced key we failed to map
-                String camel = be.dualsfwshield.deathswap.util.Lang.toCamelCase(ruleName);
-                rule = GameRule.getByName(camel);
-            }
+            GameRule<?> rule = org.bukkit.Registry.GAME_RULE
+                    .get(org.bukkit.NamespacedKey.minecraft(ruleName.toLowerCase()));
 
             if (rule != null) {
                 if (rule.getType() == Boolean.class) {
@@ -698,7 +645,8 @@ public class GameInstance {
                     }
                 }
             } else {
-                // Fallback to Multiverse command for unknown/modded rules
+                // Fallback to Multiverse command for unknown/modded rules or deprecated
+                // snake_case mappings
                 plugin.getLogger().warning("Unknown GameRule '" + entry.getKey() + "', trying via Multiverse...");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         "mv gamerule set " + entry.getKey() + " " + entry.getValue() + " " + world.getName());
@@ -1203,8 +1151,8 @@ public class GameInstance {
         if (state != GameState.RUNNING)
             return;
 
-        if (testMode && alivePlayers.size() == 1) {
-            return; // Solo test mode, don't end
+        if (config.debugMode && alivePlayers.size() == 1) {
+            return; // Debug mode, don't end
         }
 
         if (alivePlayers.size() <= 1) {

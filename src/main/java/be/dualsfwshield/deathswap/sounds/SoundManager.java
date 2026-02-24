@@ -36,7 +36,9 @@ public class SoundManager {
             return;
 
         try {
-            Sound sound = Sound.valueOf(sc.type());
+            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(sc.type().toLowerCase()));
+            if (sound == null)
+                throw new IllegalArgumentException("Sound not found");
             player.playSound(player.getLocation(), sound, sc.volume(), sc.pitch());
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Invalid sound type: " + sc.type() + " for event: " + eventName);
@@ -59,7 +61,9 @@ public class SoundManager {
             return;
 
         try {
-            Sound sound = Sound.valueOf(sc.type());
+            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(sc.type().toLowerCase()));
+            if (sound == null)
+                throw new IllegalArgumentException("Sound not found");
             for (Player player : players) {
                 player.playSound(player.getLocation(), sound, sc.volume(), sc.pitch());
             }
