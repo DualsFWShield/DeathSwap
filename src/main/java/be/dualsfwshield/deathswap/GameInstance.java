@@ -656,17 +656,33 @@ public class GameInstance {
         // Apply gamerules dynamically
         for (Map.Entry<String, String> entry : config.gamerules.entrySet()) {
             String ruleName = entry.getKey();
-            org.bukkit.NamespacedKey nsKey;
 
-            if (ruleName.contains(":")) {
-                nsKey = org.bukkit.NamespacedKey.fromString(ruleName.toLowerCase());
+            // Convert to camelCase to try Bukkit's built-in getByName
+            String camelCaseRule;
+            if (ruleName.contains("_")) {
+                String[] parts = ruleName.split("_");
+                StringBuilder sb = new StringBuilder(parts[0]);
+                for (int i = 1; i < parts.length; i++) {
+                    sb.append(parts[i].substring(0, 1).toUpperCase()).append(parts[i].substring(1).toLowerCase());
+                }
+                camelCaseRule = sb.toString();
             } else {
-                // Convert camelCase to snake_case for legacy config support
-                String snakeCase = ruleName.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
-                nsKey = org.bukkit.NamespacedKey.minecraft(snakeCase);
+                camelCaseRule = ruleName;
             }
 
-            GameRule<?> rule = nsKey != null ? org.bukkit.Registry.GAME_RULE.get(nsKey) : null;
+            GameRule<?> rule = GameRule.getByName(camelCaseRule);
+
+            if (rule == null) {
+                org.bukkit.NamespacedKey nsKey;
+                if (ruleName.contains(":")) {
+                    nsKey = org.bukkit.NamespacedKey.fromString(ruleName.toLowerCase());
+                } else {
+                    // Convert camelCase to snake_case for legacy config support if not customized
+                    String snakeCase = ruleName.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+                    nsKey = org.bukkit.NamespacedKey.minecraft(snakeCase);
+                }
+                rule = nsKey != null ? org.bukkit.Registry.GAME_RULE.get(nsKey) : null;
+            }
 
             if (rule != null) {
                 if (rule.getType() == Boolean.class) {

@@ -406,9 +406,9 @@ public class BlockShuffleInstance extends GameInstance {
             }
         }
 
-        if (getAlivePlayers().size() == 0) {
-            stopGame(); // No winner
-        } else {
+        checkWinCondition();
+
+        if (getState() == GameState.RUNNING) {
             // Context: User wants game to continue until global time OR "Everyone loses"
             // logic.
             // If we have survivors, continue.

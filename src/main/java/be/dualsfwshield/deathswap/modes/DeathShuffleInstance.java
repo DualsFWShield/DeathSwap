@@ -338,7 +338,7 @@ public class DeathShuffleInstance extends GameInstance {
         }
 
         if (failed.size() == getAlivePlayers().size() && !failed.isEmpty()) {
-            // Mercy Rule
+            // Mercy Rule: Everyone failed
             broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-mercy"));
         } else {
             // Normal elimination
@@ -348,9 +348,9 @@ public class DeathShuffleInstance extends GameInstance {
             }
         }
 
-        if (getAlivePlayers().size() == 0) {
-            stopGame(); // No winner
-        } else {
+        checkWinCondition();
+
+        if (getState() == GameState.RUNNING) {
             // Continue as long as survivors exist (or until global time ends)
             Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
         }

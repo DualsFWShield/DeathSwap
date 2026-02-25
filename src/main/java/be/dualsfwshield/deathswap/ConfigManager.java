@@ -723,21 +723,20 @@ public class ConfigManager {
             // Default gamerules (1.21.11 snake_case names)
             gamerules.put("keep_inventory", "false");
             gamerules.put("immediate_respawn", "true");
-            gamerules.put("spawn_radius", "0");
+            gamerules.put("respawn_radius", "0");
             gamerules.put("send_command_feedback", "false");
             gamerules.put("log_admin_commands", "false");
             gamerules.put("random_tick_speed", "3");
-            gamerules.put("announce_advancements", "true");
-            gamerules.put("do_daylight_cycle", "true");
-            gamerules.put("do_weather_cycle", "true");
+            gamerules.put("show_advancement_messages", "true");
+            gamerules.put("advance_time", "true");
+            gamerules.put("advance_weather", "true");
             gamerules.put("mob_griefing", "true");
-            gamerules.put("natural_regeneration", "true");
+            gamerules.put("natural_health_regeneration", "true");
             gamerules.put("reduced_debug_info", "true");
-            gamerules.put("do_mob_spawning", "true");
-            gamerules.put("do_fire_tick", "true");
-            gamerules.put("do_entity_drops", "true");
-            gamerules.put("do_mob_loot", "true");
-            gamerules.put("do_tile_drops", "true");
+            gamerules.put("spawn_mobs", "true");
+            gamerules.put("entity_drops", "true");
+            gamerules.put("mob_drops", "true");
+            gamerules.put("block_drops", "true");
             gamerules.put("show_death_messages", "true");
         }
 
