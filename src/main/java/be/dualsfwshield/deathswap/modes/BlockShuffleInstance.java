@@ -220,9 +220,9 @@ public class BlockShuffleInstance extends GameInstance {
             if (!getAlivePlayers().isEmpty()) {
                 // Get ANY target
                 ShuffleTarget display = playerTargets.values().iterator().next();
-                String emoji = display.type() == AssignmentType.STAND ? "🧱" : "🔨";
-                String action = display.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
-                broadcastGame("&b&lROUND " + currentRound + " &7— " + emoji + " &e" + action + display.displayName());
+                String emoji = display.material().isBlock() ? "🧱" : "🎯";
+                broadcastGame("&b&lROUND " + currentRound + " &7— " + emoji + " &eObtiens ou tiens-toi sur : "
+                        + display.displayName());
             }
         }
         broadcastGame("&7Difficulté : " + getDifficultyStars(difficulty) + " &7| Temps : &e"
@@ -234,11 +234,9 @@ public class BlockShuffleInstance extends GameInstance {
             if (t == null)
                 continue; // Should not happen
 
-            String action = t.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
-
             p.showTitle(Title.title(
                     Component.text("ROUND " + currentRound, NamedTextColor.AQUA, TextDecoration.BOLD),
-                    Component.text(action + t.displayName(), NamedTextColor.YELLOW),
+                    Component.text(t.displayName(), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
             if (getPlugin().getSoundManager() != null) {
@@ -255,7 +253,7 @@ public class BlockShuffleInstance extends GameInstance {
                 // Shared
                 if (!playerTargets.isEmpty()) {
                     ShuffleTarget t = playerTargets.values().iterator().next();
-                    String emoji = t.type() == AssignmentType.STAND ? "🧱" : "🔨";
+                    String emoji = t.material().isBlock() ? "🧱" : "🎯";
                     getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
                             .append(Component.text(emoji + " " + t.displayName(), NamedTextColor.YELLOW)));
                 }
@@ -296,19 +294,36 @@ public class BlockShuffleInstance extends GameInstance {
                 }
 
                 if (getConfig().uiMode == UIMode.RICH) {
-                    // Action bar for players
+                    // Active scan and action bar for players
                     for (Player p : getAlivePlayers()) {
                         ShuffleTarget t = playerTargets.get(p.getUniqueId());
+                        if (t == null)
+                            continue;
+
+                        if (!completedRound.contains(p.getUniqueId())) {
+                            // Active Scan to see if they hold it, have it, or stand on it
+                            boolean hasCompleted = false;
+                            if (p.getInventory().contains(t.material())) {
+                                hasCompleted = true; // In inventory (or held)
+                            } else if (t.material().isBlock()) {
+                                org.bukkit.block.Block below = p.getLocation().subtract(0, 1, 0).getBlock();
+                                if (below.getType() == t.material()) {
+                                    hasCompleted = true; // Standing on it
+                                }
+                            }
+                            if (hasCompleted) {
+                                completeRound(p); // Mark as completed instantly this tick
+                            }
+                        }
+
                         if (getConfig().blockShuffleRaceMode) {
                             // RACE MODE ACTION BAR
-                            if (t != null) {
-                                p.sendActionBar(Component.text("🏁 RACE: " + t.displayName(), NamedTextColor.GOLD,
-                                        TextDecoration.BOLD));
-                            }
+                            p.sendActionBar(Component.text("🏁 RACE: " + t.displayName(), NamedTextColor.GOLD,
+                                    TextDecoration.BOLD));
                             continue;
                         }
 
-                        if (!completedRound.contains(p.getUniqueId()) && t != null) {
+                        if (!completedRound.contains(p.getUniqueId())) {
                             if (roundTimer <= 10) {
                                 p.sendActionBar(
                                         Component.text("⚠ " + roundTimer + "s — " + t.displayName() + " ⚠",
@@ -339,10 +354,11 @@ public class BlockShuffleInstance extends GameInstance {
                             for (Player p : getAlivePlayers()) {
                                 ShuffleTarget t = playerTargets.get(p.getUniqueId());
                                 if (t != null) {
-                                    String emoji = t.type() == AssignmentType.STAND ? "🧱" : "🔨";
-                                    String action = t.type() == AssignmentType.STAND ? "Tiens-toi sur : " : "Craft : ";
+                                    String emoji = t.material().isBlock() ? "🧱" : "🎯";
                                     p.sendMessage(Lang.get("game-prefix")
-                                            + Component.text("Rappel: " + emoji + " " + action + t.displayName(),
+                                            + Component.text(
+                                                    "Rappel: " + emoji + " Obtiens ou tiens-toi sur : "
+                                                            + t.displayName(),
                                                     NamedTextColor.YELLOW));
                                 }
                             }
@@ -414,8 +430,6 @@ public class BlockShuffleInstance extends GameInstance {
         ShuffleTarget t = playerTargets.get(player.getUniqueId());
         if (t == null)
             return false;
-        if (t.type() != AssignmentType.STAND)
-            return false;
         if (blockType != t.material())
             return false;
 
@@ -436,8 +450,6 @@ public class BlockShuffleInstance extends GameInstance {
 
         ShuffleTarget t = playerTargets.get(player.getUniqueId());
         if (t == null)
-            return false;
-        if (t.type() != AssignmentType.CRAFT)
             return false;
         if (itemType != t.material())
             return false;

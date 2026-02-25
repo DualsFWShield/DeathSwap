@@ -260,10 +260,19 @@ public class GameInstance {
             player.removePotionEffect(effect.getType());
         }
 
-        // If game is running, check win condition
         if (state == GameState.RUNNING) {
             checkWinCondition();
         }
+    }
+
+    /**
+     * Handles the logic of a player disconnecting or leaving the game voluntarily.
+     */
+    public void handleDisconnectForfeit(Player player) {
+        if (state == GameState.RUNNING && alivePlayers.contains(player)) {
+            broadcastGame(Lang.get("game-quit-forfeit", "%player%", player.getName()));
+        }
+        removePlayer(player);
     }
 
     /**
@@ -487,11 +496,20 @@ public class GameInstance {
             return;
 
         this.testMode = debug;
+
+        // Verify player count if not debug
+        if (!this.testMode && !config.debugMode && lobbyPlayers.size() < 2) {
+            state = GameState.WAITING;
+            broadcastLobby(
+                    Lang.get("game-not-enough-players", "%count%", String.valueOf(lobbyPlayers.size()), "%min%", "2"));
+            return;
+        }
+
         state = GameState.STARTING;
 
         // --- Seed Voting or Random Pick ---
-        List<SeedEntry> viableSeeds = config.seeds.isEmpty() ? plugin.getConfigManager().getGlobalSeeds()
-                : config.seeds;
+        List<SeedEntry> viableSeeds = config.customArenaSeedOnly ? config.seeds
+                : plugin.getConfigManager().getGlobalSeeds();
 
         if (plugin.getConfigManager().isVotingEnabled() && plugin.getVoteManager() != null
                 && !viableSeeds.isEmpty() && lobbyPlayers.size() >= 2) {
@@ -551,6 +569,14 @@ public class GameInstance {
             public void run() {
                 if (state != GameState.STARTING) {
                     cancel();
+                    return;
+                }
+
+                if (!testMode && !config.debugMode && lobbyPlayers.size() < 2) {
+                    cancel();
+                    state = GameState.WAITING;
+                    broadcastLobby(Lang.get("game-not-enough-players", "%count%", String.valueOf(lobbyPlayers.size()),
+                            "%min%", "2"));
                     return;
                 }
 
@@ -1160,7 +1186,7 @@ public class GameInstance {
         if (state != GameState.RUNNING)
             return;
 
-        if (config.debugMode && alivePlayers.size() == 1) {
+        if ((this.testMode || config.debugMode) && alivePlayers.size() == 1) {
             return; // Debug mode, don't end
         }
 

@@ -207,8 +207,10 @@ public class SettingsGUI implements Listener {
         inv.setItem(SLOT_SEEDS, createItem(Material.WHEAT_SEEDS, Lang.get("gui-settings-seeds-name"),
                 Lang.get("gui-settings-seeds-total", "%count%", String.valueOf(config.seeds.size())),
                 "",
-                Lang.get("gui-settings-seeds-lore-1"),
-                Lang.get("gui-settings-seeds-lore-2", "%arena%", arenaId)));
+                config.customArenaSeedOnly ? Lang.get("gui-settings-seeds-custom-only")
+                        : Lang.get("gui-settings-seeds-global"),
+                "",
+                Lang.get("gui-settings-click-toggle-seeds")));
 
         inv.setItem(SLOT_MIN_PLAYER_DIST, createItem(Material.LEAD, Lang.get("gui-settings-minplayerdist-name"),
                 Lang.get("gui-settings-minplayerdist-current", "%distance%",
@@ -478,6 +480,11 @@ public class SettingsGUI implements Listener {
                                 Bukkit.getScheduler().runTask(plugin, () -> open(player, arenaId));
                             });
                 }
+            }
+            case SLOT_SEEDS -> { // Toggle Custom Seeds Only
+                config.customArenaSeedOnly = !config.customArenaSeedOnly;
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
             }
             case SLOT_RESILIENCE -> { // Launch Mode
                 config.launchMode = (config.launchMode == ConfigManager.LaunchMode.MINIMUM)

@@ -29,7 +29,7 @@ public class ConfigManager {
 
     private String teleportCommand;
     private List<String> worldResetCommands;
-    private final Map<GameType, String> prefixes = new EnumMap<>(GameType.class);
+    private final Map<GameType, String> prefixes = new java.util.HashMap<>();
 
     // Feature toggles
     private boolean statsEnabled;
@@ -443,6 +443,7 @@ public class ConfigManager {
             ac.launchMode = LaunchMode.MINIMUM;
         }
         ac.debugMode = section.getBoolean("debug-mode", false);
+        ac.customArenaSeedOnly = section.getBoolean("custom-arena-seed-only", false);
 
         ac.blockShuffleRaceMode = section.getBoolean("game.blockshuffle-race-mode", false);
         ac.blockShuffleUniqueTargets = section.getBoolean("game.blockshuffle-unique-targets", true);
@@ -555,6 +556,7 @@ public class ConfigManager {
         config.set("prevent-cancel-after-countdown", ac.preventCancelAfterCountdown);
         config.set("launch-mode", ac.launchMode.name());
         config.set("debug-mode", ac.debugMode);
+        config.set("custom-arena-seed-only", ac.customArenaSeedOnly);
 
         if (ac.teleportCommand != null) {
             config.set("teleport-command", ac.teleportCommand);
@@ -703,6 +705,7 @@ public class ConfigManager {
         public boolean preventCancelAfterCountdown = false;
         public LaunchMode launchMode = LaunchMode.MINIMUM;
         public boolean debugMode = false;
+        public boolean customArenaSeedOnly = false;
 
         // Block Shuffle
         public boolean blockShuffleRaceMode = false;
@@ -731,6 +734,11 @@ public class ConfigManager {
             gamerules.put("natural_regeneration", "true");
             gamerules.put("reduced_debug_info", "true");
             gamerules.put("do_mob_spawning", "true");
+            gamerules.put("do_fire_tick", "true");
+            gamerules.put("do_entity_drops", "true");
+            gamerules.put("do_mob_loot", "true");
+            gamerules.put("do_tile_drops", "true");
+            gamerules.put("show_death_messages", "true");
         }
 
         /**
@@ -792,10 +800,13 @@ public class ConfigManager {
         public BlockShuffleConfig(FileConfiguration config, File file) {
             this.config = config;
             this.file = file;
-            load();
+            if (load()) {
+                save();
+            }
         }
 
-        private void load() {
+        private boolean load() {
+            boolean changed = false;
             entries.clear();
             ConfigurationSection blocks = config.getConfigurationSection("blocks");
             if (blocks != null) {
@@ -809,6 +820,38 @@ public class ConfigManager {
                     }
                 }
             }
+
+            // Sync with Bukkit's current Material enum to catch new version blocks/items
+            java.util.Set<String> existing = entries.stream()
+                    .map(e -> e.material().toUpperCase())
+                    .collect(java.util.stream.Collectors.toSet());
+
+            for (org.bukkit.Material mat : org.bukkit.Material.values()) {
+                if (mat.isLegacy() || mat.isAir() || !mat.isItem())
+                    continue; // Skip unobtainable/technical
+
+                String name = mat.name();
+                // Filter out obviously unobtainable survival items
+                if (name.contains("COMMAND_BLOCK") || name.contains("SPAWN_EGG") ||
+                        name.endsWith("_SPAWNER") || name.equals("SPAWNER") ||
+                        name.equals("BARRIER") || name.equals("STRUCTURE_BLOCK") ||
+                        name.equals("STRUCTURE_VOID") || name.equals("JIGSAW") ||
+                        name.equals("LIGHT") || name.equals("BEDROCK") ||
+                        name.equals("KNOWLEDGE_BOOK") || name.equals("DEBUG_STICK") ||
+                        name.equals("DRAGON_EGG") || name.equals("END_PORTAL_FRAME")) {
+                    continue;
+                }
+
+                if (!existing.contains(mat.name())) {
+                    // Randomize difficulty 1 or 2 as default for new discovered items
+                    int diff = java.util.concurrent.ThreadLocalRandom.current().nextBoolean() ? 1 : 2;
+                    // Only enable easy/medium by default
+                    boolean enable = (diff <= 2);
+                    entries.add(new BlockShuffleEntry(mat.name(), enable, diff, "STAND"));
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
         public List<BlockShuffleEntry> getEntries() {
@@ -868,10 +911,13 @@ public class ConfigManager {
         public DeathShuffleConfig(FileConfiguration config, File file) {
             this.config = config;
             this.file = file;
-            load();
+            if (load()) {
+                save();
+            }
         }
 
-        private void load() {
+        private boolean load() {
+            boolean changed = false;
             entries.clear();
             ConfigurationSection causes = config.getConfigurationSection("causes");
             if (causes != null) {
@@ -895,8 +941,10 @@ public class ConfigManager {
                 if (!existing.contains(dc.name())) {
                     // Default missing causes to difficulty 1 & disabled
                     entries.add(new DeathShuffleEntry(dc.name(), false, 1));
+                    changed = true;
                 }
             }
+            return changed;
         }
 
         public List<DeathShuffleEntry> getEntries() {

@@ -23,6 +23,8 @@
 - [Multi-Arènes](#️-multi-arènes)
 - [Propriétés Admin Set](#-propriétés-admin-set)
 - [Dépendances](#-dépendances)
+- [Protection Anti-Solo](#️-protection-anti-solo)
+- [API Développeur](#️-api-développeur-custom-game-modes)
 - [FAQ et Dépannage](#-faq-et-dépannage)
 - [Configuration de Référence](#-fichiers-de-configuration-de-référence)
 - [Licence](#-licence)
@@ -163,6 +165,8 @@ gamerules:                   # Format snake_case
 # Options avancées (optionnel)
 start-if-min-players-met: false
 prevent-cancel-after-countdown: false
+debug-mode: false
+custom-arena-seed-only: false
 
 # Surcharge de commandes par arène (optionnel, null = utilise global)
 # teleport-command: "..."
@@ -255,7 +259,9 @@ Quand `voting.enabled: true` dans `config.yml` :
 2. Les joueurs votent via GUI (clic) pendant `vote-time` secondes
 3. Le seed gagnant est utilisé pour la génération du monde
 
-Si aucun seed n'est défini, un seed aléatoire est utilisé.
+Si aucun seed n'est défini dans l'arène ou en global (ou si désactivé), un seed aléatoire classique est généré.
+
+> **Note :** Il est possible d'isoler une arène pour qu'elle n'utilise **que** ses propres seeds locaux en activant l'option `custom-arena-seed-only` dans `/ds settings`.
 
 ---
 
@@ -740,6 +746,49 @@ Les modes *Shuffles* disposent désormais d'options avancées accessibles via le
 3. **Cibles/Morts Uniques** : Donne une cible/cause différente à chaque joueur pour ce round.
 4. **Configuration du Pool** : Éditez les cibles (Blocks/Causes) directement en jeu grâce au menu paginé (clic gauche pour activer/désactiver, clic droit pour changer la difficulté).
 ```
+
+---
+
+## 🛡️ Protection Anti-Solo
+
+Pour éviter qu'une partie ne tourne indéfiniment lorsqu'un joueur se retrouve seul (abandon de l'adversaire ou déconnexion), une protection logicielle a été implémentée :
+
+1. Au démarrage, si l'arène contient **moins de 2 joueurs**, le compte à rebours est annulé automatiquement.
+2. En cours de partie, si le nombre de joueurs en vie tombe à `1`, le joueur restant remporte instantanément la victoire et la partie s'achève proprement pour retourner au Hub.
+3. *Exception :* L'activation du **`debug-mode`** dans les paramètres de l'arène (GUI `/ds settings`) permet de contourner cette sécurité et de lancer ou jouer à une partie tout seul (pratique pour tester les blocs du Shuffle).
+
+---
+
+## 🛠️ API Développeur (Custom Game Modes)
+
+DeathSwap offre désormais une API qui permet à n'importe quel développeur tiers de créer et d'enregistrer ses propres mini-jeux ! Vous pouvez y accéder via la classe `DeathSwapAPI`.
+
+### Comment enregistrer un nouveau mode de jeu ?
+
+1. Assurez-vous d'avoir `DeathSwap` comme dépendance (depend ou softdepend) dans votre `plugin.yml`.
+2. Créez une classe étendant `GameInstance` contenant la logique de votre jeu.
+3. Enregistrez votre Factory auprès de l'API au démarrage du serveur :
+
+```java
+import be.dualsfwshield.deathswap.api.DeathSwapAPI;
+
+public class MonPlugin extends JavaPlugin {
+    @Override
+    public void onEnable() {
+        // Enregistrement du nouveau mode de jeu
+        DeathSwapAPI.registerMode(
+            "MON_MODE",             // ID Interne
+            "Mon Super Mode",       // Nom d'affichage GUI
+            "&8[&aMonMode&8]",      // Préfixe de chat par défaut
+            
+            // Factory pour retourner votre instance de classe
+            (plugin, arenaId, config) -> new MonSuperModeInstance(plugin, arenaId, config)
+        );
+    }
+}
+```
+
+Une fois cette ligne appelée, les joueurs pourront utiliser votre mode comme n'importe quel mode intégré, les administrateurs le verront dans les GUIs de configuration, et `/ds start` fonctionnera de manière native.
 
 ---
 

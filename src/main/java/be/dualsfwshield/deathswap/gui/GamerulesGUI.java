@@ -54,17 +54,19 @@ public class GamerulesGUI implements Listener {
         List<String> rules = new ArrayList<>();
         for (org.bukkit.GameRule<?> rule : org.bukkit.Registry.GAME_RULE) {
             if (rule != null && rule.getType() == Boolean.class) {
-                rules.add(rule.getKey().getKey());
+                String key = rule.getKey().getKey();
+                if (!key.equalsIgnoreCase("pvp")) {
+                    rules.add(key);
+                }
             }
         }
 
         // We could sort alphabetically
         rules.sort(String::compareToIgnoreCase);
 
-        // Adjust GUI size if too many rules. 54 slots handles ~45 rules safely.
-        int requiredSize = Math.max(27, ((rules.size() / 9) + 2) * 9);
-        if (requiredSize > 54)
-            requiredSize = 54;
+        // Adjust GUI size if too many rules.
+        int totalRows = (int) Math.ceil((double) rules.size() / 9.0) + 1;
+        int requiredSize = Math.min(54, totalRows * 9); // Max 6 rows (54 slots)
 
         Inventory inv = Bukkit.createInventory(null, requiredSize, Component.text(title));
 
@@ -93,13 +95,14 @@ public class GamerulesGUI implements Listener {
             inv.setItem(slot++, item);
         }
 
-        // Back button
+        // Back button - bottom center
+        int backSlot = requiredSize - 5;
         ItemStack back = new ItemStack(Material.ARROW);
         ItemMeta backMeta = back.getItemMeta();
         backMeta.displayName(Lang.getComponent("gui-gamerules-back")
                 .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         back.setItemMeta(backMeta);
-        inv.setItem(SLOT_BACK, back); // Bottom middle
+        inv.setItem(backSlot, back);
 
         player.openInventory(inv);
     }

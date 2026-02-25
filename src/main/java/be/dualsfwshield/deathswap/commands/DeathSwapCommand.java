@@ -771,7 +771,8 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 if (adminSub.equals("set")) {
                     String prop = args[3].toLowerCase();
                     if (prop.equals("gametype"))
-                        return filter(Arrays.stream(be.dualsfwshield.deathswap.GameType.values()).map(Enum::name)
+                        return filter(Arrays.stream(be.dualsfwshield.deathswap.GameType.values())
+                                .map(be.dualsfwshield.deathswap.GameType::name)
                                 .collect(Collectors.toList()), args[4]);
                     if (prop.equals("uimode"))
                         return filter(Arrays.stream(be.dualsfwshield.deathswap.UIMode.values()).map(Enum::name)

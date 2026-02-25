@@ -23,6 +23,8 @@
 - [Multi-Arenas](#️-multi-arenas)
 - [Admin Set Properties](#-admin-set-properties)
 - [Dependencies](#-dependencies)
+- [Anti-Solo Protection](#️-anti-solo-protection)
+- [Developer API](#️-developer-api-custom-game-modes)
 - [FAQ and Troubleshooting](#-faq-and-troubleshooting)
 - [Reference Configuration Files](#-reference-configuration-files)
 - [License](#-license)
@@ -163,6 +165,8 @@ gamerules:                   # snake_case format
 # Advanced options (optional)
 start-if-min-players-met: false
 prevent-cancel-after-countdown: false
+debug-mode: false
+custom-arena-seed-only: false
 
 # Per-arena command overrides (optional, null = use global)
 # teleport-command: "..."
@@ -255,7 +259,9 @@ When `voting.enabled: true` in `config.yml`:
 2. Players vote via GUI (click) during `vote-time` seconds
 3. The winning seed is used for world generation
 
-If no seeds are defined, a random seed is used.
+If no seeds are defined in the arena or globally (or if disabled), a classic random seed is generated.
+
+> **Note:** It is possible to isolate an arena so that it **only** uses its own local seeds by enabling the `custom-arena-seed-only` option in `/ds settings`.
 
 ---
 
@@ -740,6 +746,49 @@ blocks:
 3. **Unique Targets/Causes**: Assigns a different block/cause to each player for the current round.
 4. **Pool Configuration**: Edit targets (Blocks/Causes) directly in-game using the paginated menu (Left click to toggle ON/OFF, Right click to change difficulty).
 ```
+
+---
+
+## 🛡️ Anti-Solo Protection
+
+To prevent a game from running indefinitely when a player is left alone (opponent forfeit or disconnect), a software protection has been implemented:
+
+1. At startup, if the arena contains **less than 2 players**, the countdown is automatically cancelled.
+2. Mid-game, if the number of alive players drops to `1`, the remaining player instantly wins and the game gracefully ends, returning them to the Hub.
+3. *Exception:* Activating **`debug-mode`** in the arena settings (`/ds settings` GUI) bypasses this security and allows starting or playing a game alone (useful for testing Shuffle blocks).
+
+---
+
+## 🛠️ Developer API (Custom Game Modes)
+
+DeathSwap now offers an API that allows any third-party developer to create and register their own minigames! You can access it via the `DeathSwapAPI` class.
+
+### How to register a new game mode?
+
+1. Ensure you have `DeathSwap` as a dependency (depend or softdepend) in your `plugin.yml`.
+2. Create a class extending `GameInstance` containing your game logic.
+3. Register your Factory with the API during server startup:
+
+```java
+import be.dualsfwshield.deathswap.api.DeathSwapAPI;
+
+public class MyAddon extends JavaPlugin {
+    @Override
+    public void onEnable() {
+        // Registering the new game mode
+        DeathSwapAPI.registerMode(
+            "MY_MODE",            // Internal ID
+            "My Awesome Mode",    // Display name in GUIs
+            "&8[&aMyMode&8]",     // Default chat prefix
+            
+            // Factory returning your class instance
+            (plugin, arenaId, config) -> new MyAwesomeModeInstance(plugin, arenaId, config)
+        );
+    }
+}
+```
+
+Once this is called, players will be able to use your mode exactly like any built-in mode, server admins will see it inside config GUIs, and `/ds start` will work natively.
 
 ---
 

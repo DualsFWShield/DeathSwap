@@ -42,10 +42,12 @@
 ### 🔧 Personnalisation Profonde
 
 - **UI Mode** : RICH (BossBar + ActionBar) ou CLEAN (chat uniquement)
-- **Gamerules** : Configurable en jeu via GUI ou commandes.
+- **Gamerules** : Configurable en jeu via GUI ou commandes (dynamique et centré).
 - **Sons** : Chaque événement sonore est configurable
-- **Seeds** : Système de vote avec seeds prédéfinies
-- **Modes Shuffle Avancés** : GUI en jeu pour (dés)activer les blocs/causes, sous-modes "Course d'Item", "Cibles uniques", etc.
+- **Seeds** : Système de vote avec seeds prédéfinies et configuration par arène via le toggle custom-arena-seed-only.
+- **Modes Shuffle Avancés** : GUI en jeu pour (dés)activer les blocs/causes, sous-modes "Course d'Item", "Cibles uniques", etc. Auto-découverte des nouveaux Blocs/Causes au lancement.
+- **Anti-Solo Protection**: Prévention logicielle interdisant qu'un seul joueur soit bloqué indéfiniment. Fin automatique ou blocage de la partie.
+- **API Custom Modes** : Intégration de `DeathSwapAPI.registerMode()` permettant aux développeurs tiers d'ajouter leurs propres modes de jeux via un plugin addon.
 - **Challenges** : Craft, mine, kill avec récompenses (DeathSwap)
 - **Commandes Configurables** : Téléportation et Reset de monde 100% configurables (support Vanilla/autres plugins)
 - **Localisation** : Messages en Français et Anglais

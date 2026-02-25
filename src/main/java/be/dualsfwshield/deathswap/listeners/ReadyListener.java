@@ -80,10 +80,7 @@ public class ReadyListener implements Listener {
         Player player = event.getPlayer();
         GameInstance arena = plugin.getArenaManager().getPlayerArena(player);
         if (arena != null) {
-            if (arena.getState() == GameState.RUNNING && arena.getAlivePlayers().contains(player)) {
-                arena.broadcastGame(Lang.get("game-quit-forfeit", "%player%", player.getName()));
-            }
-            arena.removePlayer(player);
+            arena.handleDisconnectForfeit(player);
         }
         interactionCooldowns.remove(player.getUniqueId());
     }

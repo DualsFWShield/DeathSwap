@@ -33,18 +33,17 @@ public class ArenaManager {
         for (String arenaId : plugin.getConfigManager().getArenaIds()) {
             ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
             GameInstance instance;
+            be.dualsfwshield.deathswap.api.DeathSwapAPI.GameInstanceFactory factory = be.dualsfwshield.deathswap.api.DeathSwapAPI
+                    .getFactory(config.gameType.name());
 
-            switch (config.gameType) {
-                case DEATHSHUFFLE:
-                    instance = new DeathShuffleInstance(plugin, arenaId, config);
-                    break;
-                case BLOCKSHUFFLE:
-                    instance = new BlockShuffleInstance(plugin, arenaId, config);
-                    break;
-                case DEATHSWAP:
-                default:
-                    instance = new GameInstance(plugin, arenaId, config);
-                    break;
+            if (factory != null) {
+                instance = factory.create(plugin, arenaId, config);
+            } else if (config.gameType.equals(GameType.DEATHSHUFFLE)) {
+                instance = new DeathShuffleInstance(plugin, arenaId, config);
+            } else if (config.gameType.equals(GameType.BLOCKSHUFFLE)) {
+                instance = new BlockShuffleInstance(plugin, arenaId, config);
+            } else {
+                instance = new GameInstance(plugin, arenaId, config);
             }
 
             arenas.put(arenaId, instance);
@@ -83,21 +82,23 @@ public class ArenaManager {
         }
 
         ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
-        if (config == null)
+        if (config == null) {
+            arenas.remove(arenaId);
             return; // Arena was deleted
+        }
 
         GameInstance instance;
-        switch (config.gameType) {
-            case DEATHSHUFFLE:
-                instance = new DeathShuffleInstance(plugin, arenaId, config);
-                break;
-            case BLOCKSHUFFLE:
-                instance = new BlockShuffleInstance(plugin, arenaId, config);
-                break;
-            case DEATHSWAP:
-            default:
-                instance = new GameInstance(plugin, arenaId, config);
-                break;
+        be.dualsfwshield.deathswap.api.DeathSwapAPI.GameInstanceFactory factory = be.dualsfwshield.deathswap.api.DeathSwapAPI
+                .getFactory(config.gameType.name());
+
+        if (factory != null) {
+            instance = factory.create(plugin, arenaId, config);
+        } else if (config.gameType.equals(GameType.DEATHSHUFFLE)) {
+            instance = new DeathShuffleInstance(plugin, arenaId, config);
+        } else if (config.gameType.equals(GameType.BLOCKSHUFFLE)) {
+            instance = new BlockShuffleInstance(plugin, arenaId, config);
+        } else {
+            instance = new GameInstance(plugin, arenaId, config);
         }
 
         arenas.put(arenaId, instance);

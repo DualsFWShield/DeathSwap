@@ -17,6 +17,7 @@
 🔊 **Custom Sounds** — Every event sound is fully configurable
 🎨 **Two UI Modes** — RICH (BossBar + ActionBar) or CLEAN (chat only)
 ⚙️ **In-Game Config** — Modify everything via GUI or commands, no file editing needed
+🛠️ **Custom GameMode API** — Developers can register their own modes using the DeathSwapAPI
 🌐 **Bilingual** — French and English support
 
 ---

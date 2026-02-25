@@ -42,10 +42,12 @@
 ### 🔧 Deep Customization
 
 - **UI Mode**: RICH (BossBar + ActionBar) or CLEAN (chat only)
-- **Gamerules**: Configurable in-game via GUI or commands
+- **Gamerules**: Configurable in-game via GUI or commands (dynamic and centered)
 - **Sounds**: Every sound event is configurable
-- **Seeds**: Voting system with predefined seeds
-- **Advanced Shuffle Modes**: In-game GUI to toggle blocks/causes, sub-modes "Item Race", "Unique Targets", etc.
+- **Seeds**: Voting system with predefined seeds and exclusive arena configuration with custom-arena-seed-only
+- **Advanced Shuffle Modes**: In-game GUI to toggle blocks/causes, sub-modes "Item Race", "Unique Targets", etc. Auto-discovery of new Blocks/Causes on launch.
+- **Anti-Solo Protection**: Software prevention stopping one player from getting stuck alone forever. Aborts or forces win.
+- **API Custom Modes**: Integration of `DeathSwapAPI.registerMode()` allowing third-party developers to add their own game modes via an addon plugin.
 - **Challenges**: Craft, mine, kill with rewards (DeathSwap)
 - **Configurable Commands**: Teleportation and World Reset fully configurable (Vanilla/other plugins support)
 - **Localization**: Messages in French and English

@@ -136,14 +136,7 @@ public class PlayerActionGUI implements Listener {
             if (target != null) {
                 GameInstance arena = plugin.getArenaManager().getArena(arenaId);
                 if (arena != null) {
-                    arena.removePlayer(target);
-                    plugin.getArenaManager().removePlayer(target); // Force remove from manager tracking
-                    // TP to Hub
-                    if (plugin.getConfigManager().getHubWorld() != null) {
-                        org.bukkit.World hub = Bukkit.getWorld(plugin.getConfigManager().getHubWorld());
-                        if (hub != null)
-                            target.teleport(hub.getSpawnLocation());
-                    }
+                    arena.sendToHub(target);
                     Lang.send(target, "gui-player-action-kick-message");
                     Lang.send(admin, "gui-player-action-kick-success", "%player%", targetName);
                 }

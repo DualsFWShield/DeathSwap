@@ -176,10 +176,7 @@ public class GameListener implements Listener {
         String newWorld = player.getWorld().getName();
         if (!newWorld.equals(arena.getConfig().gameWorld) && !newWorld.equals(arena.getConfig().lobbyWorld)) {
             // Player left the arena context entirely
-            if (arena.getState() == GameState.RUNNING && arena.getAlivePlayers().contains(player)) {
-                arena.broadcastGame(Lang.get("game-quit-forfeit", "%player%", player.getName()));
-            }
-            arena.removePlayer(player);
+            arena.handleDisconnectForfeit(player);
         }
     }
 }
