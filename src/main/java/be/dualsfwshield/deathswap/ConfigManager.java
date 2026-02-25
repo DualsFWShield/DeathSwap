@@ -738,6 +738,10 @@ public class ConfigManager {
             gamerules.put("mob_drops", "true");
             gamerules.put("block_drops", "true");
             gamerules.put("show_death_messages", "true");
+            gamerules.put("drowning_damage", "true");
+            gamerules.put("fall_damage", "true");
+            gamerules.put("fire_damage", "true");
+            gamerules.put("freeze_damage", "true");
         }
 
         /**
