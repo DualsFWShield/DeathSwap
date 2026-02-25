@@ -81,22 +81,27 @@
 Le `config.yml` contient **uniquement** les paramètres globaux. Les arènes sont dans `arenas/<id>.yml`.
 
 ```yaml
+# =========================================
+#   DeathSwap Configuration
+# =========================================
+
 # Monde de retour après partie/kick
 hub-world: "MainLobby"
 
-# Commande de TP. Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%
+# Commande de téléportation.
 teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
 
-# Commandes de reset. Placeholders: %world%, %seed%. Vide [] = pas de reset.
+# Commandes de reset du monde avant la partie.
+# Liste vide [] = pas de reset (map statique).
 world-reset-commands:
   - "cwr edit %world% setSeed %seed%"
   - "cwr reset %world%"
 
-# Préfixes chat
+# Préfixes chat par mode de jeu
 prefixes:
-  deathswap: "§8[§6DeathSwap§8]"
-  deathshuffle: "§8[§dDeathShuffle§8]"
-  blockshuffle: "§8[§bBlockShuffle§8]"
+  deathswap: "&8[&6DeathSwap&8]"
+  deathshuffle: "&8[&dDeathShuffle&8]"
+  blockshuffle: "&8[&bBlockShuffle&8]"
 
 stats:
   enabled: true
@@ -108,14 +113,18 @@ voting:
   options-count: 3
 
 challenges:
-  enabled: false
+  enabled: false # Par défaut
   list:
-    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "..." }
+    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft une table de craft" }
+    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 charbons" }
+    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Tue un zombie" }
+    - { type: CRAFT, target: FURNACE, amount: 1, reward: FASTER_DIGGING, description: "Craft un four" }
+    - { type: MINE, target: IRON_ORE, amount: 1, reward: RESISTANCE, description: "Trouve du fer" }
 
 sounds:
   enabled: true
   game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
-  # ... (voir README pour la liste complète)
+  # ... (voir le fichier complet pour la liste des sons)
 ```
 
 ### Structure des arènes
@@ -147,7 +156,7 @@ timers:
   max-game-time: 1800        # 0 = illimité
   spawn-protection: 30
 
-round-timers:                # DeathShuffle/BlockShuffle
+round-timers:                # Pour DeathShuffle/BlockShuffle
   easy: 90
   medium: 70
   hard: 50
@@ -157,18 +166,21 @@ game:
   nether-enabled: true
   end-enabled: true
 
-gamerules:                   # Format snake_case
+gamerules:                   # Format snake_case 1.21.11+
   keep_inventory: "false"
+  natural_health_regeneration: "true"
+  mob_griefing: "true"
+  do_fire_tick: "true"
+  show_death_messages: "true"
+  announce_advancements: "true"
   immediate_respawn: "true"
-  # ... (voir README pour la liste complète)
+  random_tick_speed: "3"
 
-# Options avancées (optionnel)
+# Options avancées de démarrage
 start-if-min-players-met: false
 prevent-cancel-after-countdown: false
-debug-mode: false
-custom-arena-seed-only: false
 
-# Surcharge de commandes par arène (optionnel, null = utilise global)
+# Surcharge de commandes par arène (optionnel)
 # teleport-command: "..."
 # world-reset-commands: [...]
 
@@ -215,18 +227,18 @@ Les gamerules Minecraft sont configurables **par arène**, en format **snake_cas
 
 ### Gamerules par défaut
 
-| Gamerule                | Valeur | Description                    |
-| ----------------------- | ------ | ------------------------------ |
-| `keep_inventory`      | false  | Garder l'inventaire à la mort |
-| `immediate_respawn`   | true   | Réapparition immédiate       |
-| `do_daylight_cycle`   | true   | Cycle jour/nuit                |
-| `do_weather_cycle`    | true   | Cycle météo                  |
-| `mob_griefing`        | true   | Griefing des mobs              |
-| `natural_regeneration`| true   | Régénération naturelle        |
-| `do_mob_spawning`     | true   | Spawn des mobs                 |
-| `send_command_feedback`| false | Feedback des commandes         |
-| `log_admin_commands`  | false  | Log des commandes admin        |
-| `spawn_radius`        | 0      | Rayon de spawn                 |
+| Gamerule | Valeur | Description |
+| --- | --- | --- |
+| `keep_inventory` | false | Garder l'inventaire à la mort |
+| `natural_health_regeneration` | true | Régénération naturelle |
+| `mob_griefing` | true | Griefing des mobs |
+| `do_fire_tick` | true | Propagation du feu |
+| `show_death_messages` | true | Affichage des messages de mort |
+| `announce_advancements` | true | Annonce des progrès |
+| `immediate_respawn` | true | Réapparition immédiate |
+| `random_tick_speed` | 3 | Vitesse de random tick |
+| `advance_time` | true | Cycle jour/nuit (1.21.0+) |
+| `advance_weather` | true | Cycle de pluie (1.21.0+) |
 
 ### Modifier en jeu
 
@@ -249,6 +261,19 @@ seeds:
   - { seed: "-3542283819777", name: "Temple & Village" }
   - { seed: "8490605437877207559", name: "Village & Ice Spikes" }
   - { seed: "-13377777", name: "Désert & Pyramide" }
+```
+
+### Seeds Globaux (`seeds.yml`)
+
+Si une arène n'a pas de seeds ou pour enrichir vos parties, vous pouvez configurer une grande liste de seeds globaux dans `seeds.yml`.
+Ceux-ci seront ajoutés au pool de choix au démarrage.
+
+```yaml
+seeds:
+  - seed: "8214184745"
+    name: "Portail en ruine & Temple Jungle 001"
+  - seed: "8554217320"
+    name: "Bateau & Portail 001"
 ```
 
 ### Système de vote
@@ -782,7 +807,7 @@ public class MonPlugin extends JavaPlugin {
             "&8[&aMonMode&8]",      // Préfixe de chat par défaut
             
             // Factory pour retourner votre instance de classe
-            (plugin, arenaId, config) -> new MonSuperModeInstance(plugin, arenaId, config)
+            MonSuperModeInstance::new
         );
     }
 }

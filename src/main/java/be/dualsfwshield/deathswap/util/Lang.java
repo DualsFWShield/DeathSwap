@@ -44,13 +44,28 @@ public class Lang {
 
         // Save default resource if not exists
         if (!file.exists()) {
-            plugin.saveResource(fileName, false);
+            if (plugin.getResource(fileName) != null) {
+                plugin.saveResource(fileName, false);
+            } else {
+                plugin.getLogger().warning("Language file " + fileName
+                        + " not found internally! Creating an empty file. Falling back to English defaults.");
+                try {
+                    file.createNewFile();
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.SEVERE, "Could not create language file", e);
+                }
+            }
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         // Load defaults from internal resource to fallback
         InputStream defStream = plugin.getResource(fileName);
+        if (defStream == null) {
+            // Fallback to English for missing keys in custom languages
+            defStream = plugin.getResource("messages_en.yml");
+        }
+
         if (defStream != null) {
             YamlConfiguration defConfig = YamlConfiguration
                     .loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8));
@@ -59,6 +74,7 @@ public class Lang {
 
         for (String key : config.getKeys(true)) {
             if (config.isString(key)) {
+                // Determine value: from custom config if present, otherwise from defaults
                 messages.put(key, config.getString(key));
             }
         }

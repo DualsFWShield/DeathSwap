@@ -159,55 +159,40 @@ plugins/DeathSwap/
 
 ```yaml
 # =========================================
-#   DeathSwap Global Configuration
+#   DeathSwap Configuration
 # =========================================
 
-# World players are sent to after game/kick
+# World players are sent to when leaving / after game ends
 hub-world: "MainLobby"
-
-# Teleport command.
-# Placeholders: %player%, %world%, %x%, %y%, %z%, %yaw%, %pitch%
-# Default (Multiverse): "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-# Vanilla: "execute in %world% run tp %player% %x% %y% %z% %yaw% %pitch%"
-teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-
-# Commands used to reset the game world before a match.
-# Placeholders: %world%, %seed%
-# Empty list [] = no reset (static map).
-world-reset-commands:
-  - "cwr edit %world% setSeed %seed%"
-  - "cwr reset %world%"
 
 # Chat prefixes per game mode
 prefixes:
-  deathswap: "§8[§6DeathSwap§8]"
-  deathshuffle: "§8[§dDeathShuffle§8]"
-  blockshuffle: "§8[§bBlockShuffle§8]"
+  deathswap: "&8[&6DeathSwap&8]"
+  deathshuffle: "&8[&dDeathShuffle&8]"
+  blockshuffle: "&8[&bBlockShuffle&8]"
 
 # =========================================
 #   Features & Toggles
 # =========================================
 
-# Statistics system
 stats:
-  enabled: true             # Enable statistics
-  auto-save-minutes: 5      # Auto-save interval (minutes)
+  enabled: true
+  auto-save-minutes: 5
 
-# Seed voting system
 voting:
-  enabled: true             # Enable voting
-  vote-time: 15             # Voting duration in seconds
-  options-count: 3          # Number of seed choices shown
+  enabled: true
+  vote-time: 15
+  options-count: 3
 
-# Challenges (DeathSwap only)
 challenges:
-  enabled: false            # Enable challenges
+  enabled: false # Default disabled as requested
   list:
     - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft a Workbench" }
-    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 coal ores" }
-    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Kill a zombie" }
+    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 Coal" }
+    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Kill a Zombie" }
+    - { type: CRAFT, target: FURNACE, amount: 1, reward: FASTER_DIGGING, description: "Craft a Furnace" }
+    - { type: MINE, target: IRON_ORE, amount: 1, reward: RESISTANCE, description: "Find Iron" }
 
-# Custom sounds
 sounds:
   enabled: true
   game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
@@ -220,98 +205,82 @@ sounds:
   round-success: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
   round-fail: { type: "ENTITY_VILLAGER_NO", volume: 1.0, pitch: 0.8 }
   challenge-complete: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
-  vote-cast: { type: "ENTITY_UI_BUTTON_CLICK", volume: 1.0, pitch: 2.0 }
+  vote-cast:
+    type: "UI_BUTTON_CLICK"
+    volume: 1.0
+    pitch: 1.0
 ```
 
 </details>
 
 ### Arena File (`arenas/<id>.yml`)
 
-<details>
-<summary><b>📂 View the commented arena configuration (example.yml)</b></summary>
+  <details>
+  <summary><b>📂 View the commented arena configuration (example.yml)</b></summary>
 
 ```yaml
 # ==========================================
 #      DEATHSWAP ARENA CONFIGURATION
 # ==========================================
-# Reference file. Copy this to create a
-# new arena (e.g., default.yml).
+# ID: example
+# This file serves as a reference for all settings.
 
-# Game mode: DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
+# Mode de jeu : DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
 game-type: DEATHSWAP
 
-# Worlds (must be managed by Multiverse or exist on the server)
+# Mondes (doivent être gérés par Multiverse)
 game-world: "example_Game"
 lobby-world: "example_Lobby"
 
-# Player limits
+# Joueurs
 min-players: 2
 max-players: 20
-
-# Interface mode: RICH (BossBar + ActionBar) or CLEAN (Chat only)
-ui-mode: RICH
+ui-mode: RICH  # RICH (BossBar + ActionBar) ou CLEAN (Chat uniquement)
 
 # ==========================================
 #                 TIMERS
 # ==========================================
 timers:
-  load-time: 40           # Lobby wait time before TP (seconds)
-  swap-mode: FIXED        # FIXED or RANDOM
-  swap-interval: 300      # Time between swaps if FIXED (seconds)
-  swap-min: 120           # Min swap time if RANDOM (seconds)
-  swap-max: 420           # Max swap time if RANDOM (seconds)
-  max-game-time: 1800     # Max game duration (seconds). 0 = Unlimited
-  spawn-protection: 30    # Invulnerability + Slow Falling at start (seconds)
+  load-time: 40           # Temps d'attente dans le lobby avant TP (secondes)
+  swap-mode: FIXED        # FIXED (fixe) ou RANDOM (aléatoire)
+  swap-interval: 300      # Temps entre les swaps (si FIXED)
+  swap-min: 120           # Minimum temps de swap (si RANDOM)
+  swap-max: 420           # Maximum temps de swap (si RANDOM)
+  max-game-time: 1800     # Durée max de la partie (secondes). 0 = Illimité.
+  spawn-protection: 30    # Invulnérabilité au début (secondes)
 
 # ==========================================
 #              ROUND TIMERS
 # ==========================================
-# Used for DeathShuffle / BlockShuffle only
+# Utilisés uniquement pour DeathShuffle / BlockShuffle
 round-timers:
   easy: 90
   medium: 70
   hard: 50
 
 # ==========================================
-#             GAME RULES
+#              GAME RULES
 # ==========================================
 game:
-  pvp-enabled: true       # PvP between players
-  nether-enabled: true    # Nether access
-  end-enabled: true       # End access
+  pvp-enabled: true
+  nether-enabled: true
+  end-enabled: true
 
-# Minecraft gamerules (snake_case format)
+# Règles classiques Minecraft (format Snake Case 1.21+)
 gamerules:
   keep_inventory: "false"
-  immediate_respawn: "true"
-  do_daylight_cycle: "true"
-  do_weather_cycle: "true"
+  natural_health_regeneration: "true"
   mob_griefing: "true"
-  natural_regeneration: "true"
-  do_mob_spawning: "true"
-  send_command_feedback: "false"
-  log_admin_commands: "false"
-  spawn_radius: "0"
-  random_tick_speed: "3"
-  announce_advancements: "true"
+  do_fire_tick: "true"
+  show_death_messages: "true"
+  announce_advancements: "true" # (show_advancement_messages sur les anciennes versions)
+  immediate_respawn: "true"
+  random_tick_speed: "3" # (3 = défaut)
 
 # ==========================================
-#           ADVANCED OPTIONS
+#           STRUCTURES (SEEDS)
 # ==========================================
-
-# Resilience: robust start
-start-if-min-players-met: false       # Ignore "Not Ready" if min reached
-prevent-cancel-after-countdown: false # Continue even if a player leaves
-
-# Per-arena command overrides (null = use global default)
-# teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-# world-reset-commands:
-#   - "cwr edit %world% setSeed %seed%"
-#   - "cwr reset %world%"
-
-# ==========================================
-#               SEEDS
-# ==========================================
+# Liste des seeds disponibles pour la génération du monde
 seeds:
   - seed: "-123456789"
     name: "Coastal Village"
@@ -320,6 +289,19 @@ seeds:
 ```
 
 </details>
+
+### Global Seeds (`seeds.yml`)
+
+Arenas can either use their own seeds (as shown above) or draw from the global `seeds.yml` file. 
+This file contains a very large collection of default seeds (Villages, Temples, etc.) to ensure a fresh map structure for each game.
+
+```yaml
+seeds:
+  - seed: '8214184745'
+    name: Ruined Portal & Jungle Temple 001
+  - seed: '8554217320'
+    name: Shipwreck & Portal 001
+```
 
 ### 🏟️ Adding an Arena
 
@@ -641,6 +623,28 @@ classDiagram
     Listeners --> ArenaManager
     Listeners --> GameInstance
 ```
+
+---
+
+## 💻 Developer API (Custom Modes)
+
+DeathSwap exposes a simple API that allows third-party developers to register their own game modes natively!
+You simply need to create a class extending `GameInstance` and call `DeathSwapAPI.registerMode()`.
+
+```java
+import be.dualsfwshield.deathswap.api.DeathSwapAPI;
+import be.dualsfwshield.deathswap.GameType;
+
+// Inside your addon plugin's onEnable():
+DeathSwapAPI.registerMode(
+    "MY_CUSTOM_MODE",            // Internal ID
+    "My Custom Mode",            // Display Name
+    "§8[§aMyMode§8]",            // Chat Prefix
+    MyCustomGameInstance::new    // Factory (Constructor Reference)
+);
+```
+
+You can then use `game-type: MY_CUSTOM_MODE` in any of your `/plugins/DeathSwap/arenas/arena1.yml`.
 
 ---
 
