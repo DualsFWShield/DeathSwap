@@ -729,11 +729,11 @@ blocks:
   STONE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   CRAFTING_TABLE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   # ... etc (Around 80 configurable items by default)
 ```
 

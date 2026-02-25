@@ -1,346 +1,335 @@
 # BlockShuffle Configuration
 # Each block/item can be individually enabled/disabled with custom difficulty.
 # difficulty: 1 = Easy, 2 = Medium, 3 = Hard
-# type: STAND (stand on block) or CRAFT (craft the item)
 #
 # The plugin uses these defaults if this file is empty.
 # You can modify difficulty, toggle entries on/off, etc.
 
 blocks:
   # ─── Easy (Difficulty 1) ───
-  # Stand
   DIRT:
     enabled: true
     difficulty: 1
-    type: STAND
+
   OAK_LOG:
     enabled: true
     difficulty: 1
-    type: STAND
+
   COBBLESTONE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   SAND:
     enabled: true
     difficulty: 1
-    type: STAND
+
   GRAVEL:
     enabled: true
     difficulty: 1
-    type: STAND
+
   STONE:
     enabled: true
     difficulty: 1
-    type: STAND
-  # Craft
+
   CRAFTING_TABLE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   OAK_PLANKS:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   STICK:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   WOODEN_PICKAXE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   TORCH:
     enabled: true
     difficulty: 1
-    type: CRAFT
 
   GRASS_BLOCK:
     enabled: true
     difficulty: 1
-    type: STAND
+
   ANDESITE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   DIORITE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   GRANITE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   COAL_ORE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   COPPER_ORE:
     enabled: true
     difficulty: 1
-    type: STAND
+
   OAK_LEAVES:
     enabled: true
     difficulty: 1
-    type: STAND
+
   BIRCH_LOG:
     enabled: true
     difficulty: 1
-    type: STAND
+
   SPRUCE_LOG:
     enabled: true
     difficulty: 1
-    type: STAND
+
     
   APPLE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   BONE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   ROTTEN_FLESH:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   SPIDER_EYE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   STRING:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   FEATHER:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   SUGAR_CANE:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   WHEAT:
     enabled: true
     difficulty: 1
-    type: CRAFT
+
   WHEAT_SEEDS:
     enabled: true
     difficulty: 1
-    type: CRAFT
 
   # ─── Medium (Difficulty 2) ───
-  # Stand
   IRON_ORE:
     enabled: true
     difficulty: 2
-    type: STAND
+
   GOLD_ORE:
     enabled: true
     difficulty: 2
-    type: STAND
+
   CLAY:
     enabled: true
     difficulty: 2
-    type: STAND
+
   MOSSY_COBBLESTONE:
     enabled: true
     difficulty: 2
-    type: STAND
+
   ICE:
     enabled: true
     difficulty: 2
-    type: STAND
-  # Craft
+
   IRON_PICKAXE:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   FURNACE:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   BUCKET:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   SHIELD:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   COMPASS:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   BOOKSHELF:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
     
   LAPIS_ORE:
     enabled: true
     difficulty: 2
-    type: STAND
+
   REDSTONE_ORE:
     enabled: true
     difficulty: 2
-    type: STAND
+
   OBSIDIAN:
     enabled: true
     difficulty: 2
-    type: STAND
+
   NETHERRACK:
     enabled: true
     difficulty: 2
-    type: STAND
+
   SOUL_SAND:
     enabled: true
     difficulty: 2
-    type: STAND
+
   MAGMA_BLOCK:
     enabled: true
     difficulty: 2
-    type: STAND
+
   GLOWSTONE:
     enabled: true
     difficulty: 2
-    type: STAND
+
     
   BLAZE_ROD:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   ENDER_PEARL:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   SLIME_BALL:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   GHAST_TEAR:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   BREWING_STAND:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   ANVIL:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   JUKEBOX:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   NOTE_BLOCK:
     enabled: true
     difficulty: 2
-    type: CRAFT
+
   TARGET:
     enabled: true
     difficulty: 2
-    type: CRAFT
 
   # ─── Hard (Difficulty 3) ───
-  # Stand
   DIAMOND_ORE:
     enabled: true
     difficulty: 3
-    type: STAND
+
   EMERALD_ORE:
     enabled: true
     difficulty: 3
-    type: STAND
+
   SPAWNER:
     enabled: true
     difficulty: 3
-    type: STAND
+
   DEEPSLATE_DIAMOND_ORE:
     enabled: true
     difficulty: 3
-    type: STAND
-  # Craft
+
   DIAMOND_PICKAXE:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   ENCHANTING_TABLE:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   GOLDEN_APPLE:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   PISTON:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   CAKE:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
     
   ANCIENT_DEBRIS:
     enabled: true
     difficulty: 3
-    type: STAND
+
   END_STONE:
     enabled: true
     difficulty: 3
-    type: STAND
+
   DRAGON_EGG:
     enabled: true
     difficulty: 3
-    type: STAND
+
   CRYING_OBSIDIAN:
     enabled: true
     difficulty: 3
-    type: STAND
+
   NETHERITE_BLOCK:
     enabled: true
     difficulty: 3
-    type: STAND
 
   NETHERITE_INGOT:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   BEACON:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   CONDUIT:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   NETHER_STAR:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   OBSERVER:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   DISPENSER:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   DROPPER:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   SLIME_BLOCK:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   HONEY_BLOCK:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
   TOTEM_OF_UNDYING:
     enabled: true
     difficulty: 3
-    type: CRAFT
+
