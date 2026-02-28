@@ -9,6 +9,8 @@ game-type: DEATHSWAP
 
 # Mondes (doivent être gérés par Multiverse)
 game-world: "example_Game"
+game-world-nether: "example_Game_nether"
+game-world-end: "example_Game_the_end"
 lobby-world: "example_Lobby"
 
 # Joueurs

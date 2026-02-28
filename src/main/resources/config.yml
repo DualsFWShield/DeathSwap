@@ -61,6 +61,8 @@ arenas:
 
     # --- Worlds ---
     game-world: "DeathSwap_Game"
+    game-world-nether: "DeathSwap_Game_nether"
+    game-world-end: "DeathSwap_Game_the_end"
     lobby-world: "DS_WaitingLobby"
 
     # --- Player Limits ---

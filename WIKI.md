@@ -55,9 +55,9 @@
 | `/ds stop [arène]`                             | Arrête une arène                             | `deathswap.admin` |
 | `/ds swapnow`                                   | Force un swap immédiat                       | `deathswap.admin` |
 | `/ds reload`                                    | Recharge la configuration complète            | `deathswap.admin` |
-| `/ds settings`                                  | Ouvre le GUI Settings de l'arène courante    | `deathswap.admin` |
-| `/ds help commands`                             | Affiche les commandes admin en chat           | `deathswap.admin` |
-| `/ds admin`                                     | Ouvre le Dashboard Admin (GUI)                | `deathswap.admin` |
+| `/ds admin gamerule <arène> set <r> <v>`       | Ajouter/modifier une gamerule                 | `deathswap.admin` |
+| `/ds admin gamerule <arène> remove <r>`        | Supprimer une gamerule                        | `deathswap.admin` |
+| `/ds admin list`                                | Liste les arènes (GUI)                       | `deathswap.admin` |
 | `/ds admin list`                                | Liste les arènes (GUI)                       | `deathswap.admin` |
 | `/ds admin create <nom>`                        | Crée une arène                               | `deathswap.admin` |
 | `/ds admin edit <arène>`                       | Ouvre le GUI Settings d'une arène            | `deathswap.admin` |
@@ -179,6 +179,7 @@ gamerules:                   # Format snake_case 1.21.11+
 # Options avancées de démarrage
 start-if-min-players-met: false
 prevent-cancel-after-countdown: false
+lightning-fast-start: false
 
 # Surcharge de commandes par arène (optionnel)
 # teleport-command: "..."
@@ -474,7 +475,7 @@ Les actions destructives (**Régénérer Monde** et **Bannir**) passent par un �
 ### Concept
 
 Chaque arène est une **instance indépendante** avec :
-- Son propre monde de jeu et lobby
+- Son propre monde de jeu et lobby (y compris dimensions Nether et End configurables)
 - Sa propre configuration complète
 - Ses propres joueurs et partie
 
@@ -556,8 +557,103 @@ Utilisé pour :
 ### Configuration CyberWorldReset
 
 1. Installez le plugin CyberWorldReset
-2. Ajoutez le monde de jeu : `/cwr add DeathSwap_Game`
-3. La commande `cwr reset <monde>` sera utilisée automatiquement
+2. Ajoutez le monde de jeu et les dimensions avec leurs options.
+
+Voici les fichiers de configuration recommandés pour que CWR fonctionne de manière optimale avec DeathSwap :
+
+**`plugins/CyberWorldReset/config.yml`**
+```yaml
+config:
+  confirmation:
+    enabled: false
+    seconds: 15
+  save-world-before-reset: false
+  loading-type: ULTRA-FAST
+  loading-radius: 0
+  timer-load-delay: 1
+  world-reset-delay: 10
+  recursive-teleporting:
+    enabled: false
+    milliseconds: 150
+  detailed-messages: false
+  fix-suffocation-teleport-1_8-1_9: false
+  fix-suffocation-on-join: true
+  hooks:
+    world-guard-delete: false
+    save-cmi-warps: false
+    refresh-cmi-portals: false
+    refresh-mv-portals: false
+  auto-update-configs:
+    config: true
+    lang: true
+  lang: fr
+```
+
+**`plugins/CyberWorldReset/worlds.yml`**
+```yaml
+worlds:
+  # Monde Principal
+  DeathSwap_Game:
+    enabled: true
+    last-saved: false
+    settings:
+      time: []
+      message: '&8[&6DeathSwap&8] &aLa map a été régénérée avec succès !'
+      seed: RANDOM
+      environment: DEFAULT
+      generator: DEFAULT
+      safe-world:
+        enabled: true
+        world: MainLobby
+        delay: 5 # Petit délai pour laisser le serveur respirer
+        spawn: DEFAULT
+      warning:
+        enabled: true
+        message: '&cAttention : reset du monde {world} dans {time}.'
+        time: [5, 1]
+        title:
+          title: Reset en cours
+          sub-title: Veuillez patienter...
+          fade: [10, 40, 10]
+
+  # Monde Nether
+  DeathSwap_Game_nether:
+    enabled: true
+    last-saved: false
+    settings:
+      time: []
+      message: '&8[&6DeathSwap&8] &cNether réinitialisé !'
+      seed: RANDOM
+      environment: NETHER
+      generator: DEFAULT
+      safe-world:
+        enabled: true
+        world: MainLobby
+        delay: 0 # Reset instantané
+        spawn: DEFAULT
+      warning:
+        enabled: false # Le monde principal s'en occupe
+      commands: []
+
+  # Monde End
+  DeathSwap_Game_the_end:
+    enabled: true
+    last-saved: false
+    settings:
+      time: []
+      message: '&8[&6DeathSwap&8] &5L''End a été réinitialisé !'
+      seed: RANDOM
+      environment: THE_END
+      generator: DEFAULT
+      safe-world:
+        enabled: true
+        world: MainLobby
+        delay: 0 # Reset instantané
+        spawn: DEFAULT
+      warning:
+        enabled: false
+      commands: []
+```
 
 ---
 
@@ -671,6 +767,8 @@ sounds:
 ```yaml
 game-type: DEATHSWAP
 game-world: "example_Game"
+game-world-nether: "example_Game_nether"
+game-world-end: "example_Game_the_end"
 lobby-world: "example_Lobby"
 min-players: 2
 max-players: 20
@@ -692,22 +790,26 @@ round-timers:
 
 game:
   pvp-enabled: true
-  nether-enabled: true
-  end-enabled: true
+  nether-enabled: false
+  end-enabled: false
+  world-load-enabled: true
+  world-unload-enabled: false
+  world-load-command: "mv load %world%"
+  world-unload-command: "mv unload %world%"
 
 gamerules:
   keep_inventory: "false"
-  immediate_respawn: "true"
-  do_daylight_cycle: "true"
-  do_weather_cycle: "true"
+  natural_health_regeneration: "true"
   mob_griefing: "true"
-  natural_regeneration: "true"
-  do_mob_spawning: "true"
-  send_command_feedback: "false"
-  log_admin_commands: "false"
-  spawn_radius: "0"
-  random_tick_speed: "3"
+  show_death_messages: "true"
   announce_advancements: "true"
+  immediate_respawn: "true"
+  random_tick_speed: "3"
+
+# Options avancées
+start-if-min-players-met: false
+prevent-cancel-after-countdown: false
+lightning-fast-start: false
 
 seeds: []
 ```

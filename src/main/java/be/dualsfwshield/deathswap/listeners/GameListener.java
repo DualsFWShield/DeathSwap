@@ -90,10 +90,19 @@ public class GameListener implements Listener {
 
             // Determine target world: overworld ↔ nether
             String targetWorldName;
-            if (currentWorld.equals(gameWorld + "_nether")) {
+            // Allow entering custom nether
+            if (currentWorld.equals(arena.getConfig().gameWorldNether)) {
+                // If in custom nether, go back to overworld
                 targetWorldName = gameWorld; // Nether → Overworld
+            } else if (currentWorld.equals(gameWorld)) {
+                // If in overworld, go to custom nether
+                targetWorldName = arena.getConfig().gameWorldNether; // Overworld → Nether
             } else {
-                targetWorldName = gameWorld + "_nether"; // Overworld → Nether
+                // If player is in neither the overworld nor the custom nether,
+                // e.g., in the end, or another world, prevent portal use.
+                event.setCancelled(true);
+                Lang.send(player, "portal-nether-invalid-location");
+                return;
             }
 
             World target = Bukkit.getWorld(targetWorldName);
@@ -115,15 +124,21 @@ public class GameListener implements Listener {
 
             // Determine target world: overworld ↔ end
             String targetWorldName;
-            if (currentWorld.equals(gameWorld + "_the_end")) {
+            if (currentWorld.equals(arena.getConfig().gameWorldEnd)) {
                 targetWorldName = gameWorld; // End → Overworld (spawn)
+            } else if (currentWorld.equals(gameWorld)) {
+                targetWorldName = arena.getConfig().gameWorldEnd; // Overworld → End
             } else {
-                targetWorldName = gameWorld + "_the_end"; // Overworld → End
+                // If player is in neither the overworld nor the custom end,
+                // e.g., in the nether, or another world, prevent portal use.
+                event.setCancelled(true);
+                Lang.send(player, "portal-end-invalid-location");
+                return;
             }
 
             World target = Bukkit.getWorld(targetWorldName);
             if (target != null) {
-                if (currentWorld.equals(gameWorld + "_the_end")) {
+                if (currentWorld.equals(arena.getConfig().gameWorldEnd)) {
                     // Returning from End → spawn at overworld spawn
                     event.setTo(target.getSpawnLocation());
                 } else if (event.getTo() != null) {
@@ -237,8 +252,8 @@ public class GameListener implements Listener {
         String gameWorld = arena.getConfig().gameWorld;
         if (!newWorld.equals(gameWorld)
                 && !newWorld.equals(arena.getConfig().lobbyWorld)
-                && !newWorld.equals(gameWorld + "_nether")
-                && !newWorld.equals(gameWorld + "_the_end")) {
+                && !newWorld.equals(arena.getConfig().gameWorldNether)
+                && !newWorld.equals(arena.getConfig().gameWorldEnd)) {
             // Player left the arena context entirely
             arena.handleDisconnectForfeit(player);
         }

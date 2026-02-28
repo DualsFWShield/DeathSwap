@@ -19,6 +19,9 @@
 ⚙️ **In-Game Config** — Modify everything via GUI or commands, no file editing needed
 🛠️ **Custom GameMode API** — Developers can register their own modes using the DeathSwapAPI
 🌐 **Bilingual** — French and English support
+⚡ **Lightning Fast Start** — Bypass wait times for instant gameplay!
+🌍 **Custom Dimensions** — Configurable Nether & End worlds per arena with dedicated gamerules
+🛡️ **World-Ready Polling** — Intelligent loading checks ensuring CWR and Multiverse worlds are securely loaded
 
 ---
 

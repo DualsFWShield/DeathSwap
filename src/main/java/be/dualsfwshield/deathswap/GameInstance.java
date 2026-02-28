@@ -524,6 +524,30 @@ public class GameInstance {
             // No voting — pick random seed
             SeedEntry seed;
             if (viableSeeds.isEmpty()) {
+                // Unload the previous custom nether/end to allow reset
+                String netherWorld = config.gameWorldNether;
+                if (Bukkit.getWorld(netherWorld) != null) {
+                    Bukkit.unloadWorld(netherWorld, false);
+                }
+                String endWorld = config.gameWorldEnd;
+                if (Bukkit.getWorld(endWorld) != null) {
+                    Bukkit.unloadWorld(endWorld, false);
+                }
+
+                // If loading is enabled, pre-load the worlds via command
+                if (config.worldLoadEnabled && config.worldLoadCommand != null
+                        && !config.worldLoadCommand.isEmpty()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            config.worldLoadCommand.replace("%world%", config.gameWorld));
+                    if (config.netherEnabled) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                config.worldLoadCommand.replace("%world%", config.gameWorldNether));
+                    }
+                    if (config.endEnabled) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                config.worldLoadCommand.replace("%world%", config.gameWorldEnd));
+                    }
+                }
                 seed = new SeedEntry("0", "Random World");
             } else {
                 seed = viableSeeds.get(ThreadLocalRandom.current().nextInt(viableSeeds.size()));
@@ -543,11 +567,11 @@ public class GameInstance {
                     config.worldLoadCommand.replace("%world%", config.gameWorld));
             if (config.netherEnabled) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        config.worldLoadCommand.replace("%world%", config.gameWorld + "_nether"));
+                        config.worldLoadCommand.replace("%world%", config.gameWorldNether));
             }
             if (config.endEnabled) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        config.worldLoadCommand.replace("%world%", config.gameWorld + "_the_end"));
+                        config.worldLoadCommand.replace("%world%", config.gameWorldEnd));
             }
         }
 
@@ -740,13 +764,13 @@ public class GameInstance {
 
         // Apply the same gamerules to dedicated dimension worlds
         if (config.netherEnabled) {
-            World nether = Bukkit.getWorld(config.gameWorld + "_nether");
+            World nether = Bukkit.getWorld(config.gameWorldNether);
             if (nether != null) {
                 applyGameRulesToWorld(nether);
             }
         }
         if (config.endEnabled) {
-            World end = Bukkit.getWorld(config.gameWorld + "_the_end");
+            World end = Bukkit.getWorld(config.gameWorldEnd);
             if (end != null) {
                 applyGameRulesToWorld(end);
             }

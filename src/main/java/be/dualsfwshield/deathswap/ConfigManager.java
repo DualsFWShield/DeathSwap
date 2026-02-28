@@ -317,6 +317,8 @@ public class ConfigManager {
         clone.id = targetId;
         clone.gameType = source.gameType;
         clone.gameWorld = targetId + "_Game";
+        clone.gameWorldNether = targetId + "_Game_nether";
+        clone.gameWorldEnd = targetId + "_Game_the_end";
         clone.lobbyWorld = targetId + "_Lobby";
         clone.minPlayers = source.minPlayers;
         clone.maxPlayers = source.maxPlayers;
@@ -373,6 +375,8 @@ public class ConfigManager {
         }
 
         ac.gameWorld = section.getString("game-world", "DeathSwap_Game");
+        ac.gameWorldNether = section.getString("game-world-nether", ac.gameWorld + "_nether");
+        ac.gameWorldEnd = section.getString("game-world-end", ac.gameWorld + "_the_end");
         ac.lobbyWorld = section.getString("lobby-world", "DS_WaitingLobby");
         ac.minPlayers = section.getInt("min-players", 2);
         ac.maxPlayers = section.getInt("max-players", 20);
@@ -527,6 +531,8 @@ public class ConfigManager {
 
         config.set("game-type", ac.gameType.name());
         config.set("game-world", ac.gameWorld);
+        config.set("game-world-nether", ac.gameWorldNether);
+        config.set("game-world-end", ac.gameWorldEnd);
         config.set("lobby-world", ac.lobbyWorld);
         config.set("min-players", ac.minPlayers);
         config.set("max-players", ac.maxPlayers);
@@ -696,6 +702,8 @@ public class ConfigManager {
 
         // Worlds
         public String gameWorld;
+        public String gameWorldNether;
+        public String gameWorldEnd;
         public String lobbyWorld;
 
         // Players

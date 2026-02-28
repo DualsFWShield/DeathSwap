@@ -47,6 +47,9 @@
 - **Seeds** : Système de vote avec seeds prédéfinies et configuration par arène via le toggle custom-arena-seed-only.
 - **Modes Shuffle Avancés** : GUI en jeu pour (dés)activer les blocs/causes, sous-modes "Course d'Item", "Cibles uniques", etc. Auto-découverte des nouveaux Blocs/Causes au lancement.
 - **Anti-Solo Protection**: Prévention logicielle interdisant qu'un seul joueur soit bloqué indéfiniment. Fin automatique ou blocage de la partie.
+- **Mondes Optionnels & Hooks** : Support complet du Nether et de l'End avec des noms de mondes configurables par arène. Commandes hooks pour le chargement et déchargement auto des mondes.
+- **Démarrage Éclair** : Option "Lightning Fast Start" pour réduire tous les délais d'attente à zéro et rentrer en jeu instantanément.
+- **Résilience de Chargement** : Le "World-Ready Polling" vérifie automatiquement que Multiverse et CWR ont complètement fini de générer les mondes (y compris le nether et l'end) avant la téléportation.
 - **API Custom Modes** : Intégration de `DeathSwapAPI.registerMode()` permettant aux développeurs tiers d'ajouter leurs propres modes de jeux via un plugin addon.
 - **Challenges** : Craft, mine, kill avec récompenses (DeathSwap)
 - **Commandes Configurables** : Téléportation et Reset de monde 100% configurables (support Vanilla/autres plugins)
