@@ -56,6 +56,16 @@ public class DeathShuffleInstance extends GameInstance {
     private final Map<EntityDamageEvent.DamageCause, Integer> customDifficulties = new EnumMap<>(
             EntityDamageEvent.DamageCause.class);
 
+    // Death causes that require the Nether dimension
+    private static final Set<EntityDamageEvent.DamageCause> NETHER_CAUSES = Set.of(
+            EntityDamageEvent.DamageCause.HOT_FLOOR // Magma blocks are Nether-exclusive
+    );
+
+    // Death causes that require the End dimension
+    private static final Set<EntityDamageEvent.DamageCause> END_CAUSES = Set.of(
+            EntityDamageEvent.DamageCause.DRAGON_BREATH // Dragon is End-exclusive
+    );
+
     public DeathShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
         loadAllowedCauses();
@@ -72,6 +82,13 @@ public class DeathShuffleInstance extends GameInstance {
                 try {
                     EntityDamageEvent.DamageCause dc = EntityDamageEvent.DamageCause
                             .valueOf(entry.cause().toUpperCase());
+
+                    // Filter out dimension-dependent causes when disabled
+                    if (!getConfig().netherEnabled && NETHER_CAUSES.contains(dc))
+                        continue;
+                    if (!getConfig().endEnabled && END_CAUSES.contains(dc))
+                        continue;
+
                     allowedCauses.add(dc);
                     // Store custom difficulty override
                     customDifficulties.put(dc, entry.difficulty());

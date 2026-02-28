@@ -45,7 +45,8 @@ public class VoteManager {
      * @param voters   players who can vote
      * @param callback called with the winning SeedEntry
      */
-    public void startVote(GameInstance game, List<SeedEntry> seeds, Set<Player> voters, Consumer<SeedEntry> callback) {
+    public void startVote(GameInstance game, List<SeedEntry> seeds, Set<Player> voters, int voteTime,
+            Consumer<SeedEntry> callback) {
         if (seeds.isEmpty()) {
             callback.accept(new SeedEntry("0", "Random World"));
             return;
@@ -81,14 +82,14 @@ public class VoteManager {
             }
 
             player.sendMessage(Component.empty());
-            player.sendMessage(Component.text("Temps restant : " + plugin.getConfigManager().getVoteTime() + "s",
+            player.sendMessage(Component.text("Temps restant : " + voteTime + "s",
                     NamedTextColor.GRAY));
             player.sendMessage(Component.text("------------------------------", NamedTextColor.DARK_GRAY,
                     TextDecoration.STRIKETHROUGH));
         }
 
         // Start countdown
-        int voteTime = plugin.getConfigManager().getVoteTime();
+        // Start countdown — use provided voteTime
         new BukkitRunnable() {
             int remaining = voteTime;
 

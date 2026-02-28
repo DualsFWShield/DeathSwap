@@ -3,9 +3,13 @@ package be.dualsfwshield.deathswap.listeners;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
 import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.GameState;
+import be.dualsfwshield.deathswap.GameType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,10 +21,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import be.dualsfwshield.deathswap.util.Lang;
 
 /**
- * Handles in-game events: death, portal blocking, PvP control, fall protection,
+ * Handles in-game events: death, portal redirection, PvP control, fall
+ * protection,
  * spectator restrictions.
  */
 public class GameListener implements Listener {
@@ -32,12 +38,12 @@ public class GameListener implements Listener {
     }
 
     /**
-     * Handle player death in a game world.
+     * Handle player death in a game world (including dedicated nether/end).
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
         if (arena == null || arena.getState() != GameState.RUNNING)
             return;
 
@@ -51,31 +57,84 @@ public class GameListener implements Listener {
             return;
         }
 
+        // Shuffle modes have their own death listeners — skip generic handleDeath
+        if (arena.getConfig().gameType == GameType.DEATHSHUFFLE
+                || arena.getConfig().gameType == GameType.BLOCKSHUFFLE) {
+            return;
+        }
+
         arena.handleDeath(player);
     }
 
     /**
-     * Block Nether/End portals in game worlds.
+     * Handle portal events: redirect to dedicated dimension worlds or block if
+     * disabled.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPortal(PlayerPortalEvent event) {
         Player player = event.getPlayer();
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
-        if (arena == null)
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
+        if (arena == null || arena.getState() != GameState.RUNNING)
             return;
 
-        if (event.getCause() == org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
-                && !arena.getConfig().netherEnabled) {
-            event.setCancelled(true);
-            player.sendMessage(Component.text("[DeathSwap] ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("Le Nether est désactivé pour cette partie !",
-                            NamedTextColor.RED)));
-        } else if (event.getCause() == org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
-                && !arena.getConfig().endEnabled) {
-            event.setCancelled(true);
-            player.sendMessage(Component.text("[DeathSwap] ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("L'End est désactivé pour cette partie !",
-                            NamedTextColor.RED)));
+        String currentWorld = player.getWorld().getName();
+        String gameWorld = arena.getConfig().gameWorld;
+        TeleportCause cause = event.getCause();
+
+        if (cause == TeleportCause.NETHER_PORTAL) {
+            if (!arena.getConfig().netherEnabled) {
+                event.setCancelled(true);
+                Lang.send(player, "portal-nether-disabled");
+                return;
+            }
+
+            // Determine target world: overworld ↔ nether
+            String targetWorldName;
+            if (currentWorld.equals(gameWorld + "_nether")) {
+                targetWorldName = gameWorld; // Nether → Overworld
+            } else {
+                targetWorldName = gameWorld + "_nether"; // Overworld → Nether
+            }
+
+            World target = Bukkit.getWorld(targetWorldName);
+            if (target != null && event.getTo() != null) {
+                Location to = event.getTo();
+                event.setTo(new Location(target, to.getX(), to.getY(), to.getZ(),
+                        to.getYaw(), to.getPitch()));
+            } else {
+                event.setCancelled(true);
+                Lang.send(player, "portal-nether-not-loaded");
+            }
+
+        } else if (cause == TeleportCause.END_PORTAL) {
+            if (!arena.getConfig().endEnabled) {
+                event.setCancelled(true);
+                Lang.send(player, "portal-end-disabled");
+                return;
+            }
+
+            // Determine target world: overworld ↔ end
+            String targetWorldName;
+            if (currentWorld.equals(gameWorld + "_the_end")) {
+                targetWorldName = gameWorld; // End → Overworld (spawn)
+            } else {
+                targetWorldName = gameWorld + "_the_end"; // Overworld → End
+            }
+
+            World target = Bukkit.getWorld(targetWorldName);
+            if (target != null) {
+                if (currentWorld.equals(gameWorld + "_the_end")) {
+                    // Returning from End → spawn at overworld spawn
+                    event.setTo(target.getSpawnLocation());
+                } else if (event.getTo() != null) {
+                    Location to = event.getTo();
+                    event.setTo(new Location(target, to.getX(), to.getY(), to.getZ(),
+                            to.getYaw(), to.getPitch()));
+                }
+            } else {
+                event.setCancelled(true);
+                Lang.send(player, "portal-end-not-loaded");
+            }
         }
     }
 
@@ -91,7 +150,7 @@ public class GameListener implements Listener {
         if (!(event.getEntity() instanceof Player victim))
             return;
 
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(attacker.getWorld().getName());
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(attacker.getWorld().getName());
         if (arena == null || arena.getState() != GameState.RUNNING)
             return;
 
@@ -117,7 +176,7 @@ public class GameListener implements Listener {
         if (event.getCause() != EntityDamageEvent.DamageCause.FALL)
             return;
 
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
         if (arena == null || arena.getState() != GameState.RUNNING)
             return;
 
@@ -134,7 +193,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
         if (arena == null)
             return;
 
@@ -151,7 +210,7 @@ public class GameListener implements Listener {
         if (!(event.getEntity() instanceof Player player))
             return;
 
-        GameInstance arena = plugin.getArenaManager().findByGameWorld(player.getWorld().getName());
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
         if (arena == null)
             return;
 
@@ -161,8 +220,9 @@ public class GameListener implements Listener {
     }
 
     /**
-     * Handle when a player leaves the game world or lobby world via commands like
-     * /lobby or /hub.
+     * Handle when a player leaves the game/dimension worlds via commands like
+     * /lobby or /hub. Allows travel between game world and its dedicated
+     * dimensions.
      */
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
@@ -171,10 +231,14 @@ public class GameListener implements Listener {
         if (arena == null)
             return;
 
-        // If they moved to a world that is NEITHER the game world NOR the lobby world,
-        // they left.
+        // If they moved to a world that is NEITHER the game world, NOR the lobby world,
+        // NOR a dedicated dimension world, they left.
         String newWorld = player.getWorld().getName();
-        if (!newWorld.equals(arena.getConfig().gameWorld) && !newWorld.equals(arena.getConfig().lobbyWorld)) {
+        String gameWorld = arena.getConfig().gameWorld;
+        if (!newWorld.equals(gameWorld)
+                && !newWorld.equals(arena.getConfig().lobbyWorld)
+                && !newWorld.equals(gameWorld + "_nether")
+                && !newWorld.equals(gameWorld + "_the_end")) {
             // Player left the arena context entirely
             arena.handleDisconnectForfeit(player);
         }

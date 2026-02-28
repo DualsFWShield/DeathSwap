@@ -35,18 +35,18 @@ challenges:
 
 sounds:
   enabled: true
-  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
-  countdown-tick: { type: "BLOCK_NOTE_BLOCK_HAT", volume: 1.0, pitch: 1.0 }
-  countdown-go: { type: "ENTITY_EXPERIENCE_ORB_PICKUP", volume: 1.0, pitch: 1.2 }
-  swap: { type: "ENTITY_ENDERMAN_TELEPORT", volume: 1.0, pitch: 1.0 }
-  shuffle: { type: "BLOCK_NOTE_BLOCK_CHIME", volume: 1.0, pitch: 1.5 }
-  death: { type: "ENTITY_WITHER_DEATH", volume: 0.5, pitch: 1.0 }
-  win: { type: "UI_TOAST_CHALLENGE_COMPLETE", volume: 1.0, pitch: 1.0 }
-  round-success: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
-  round-fail: { type: "ENTITY_VILLAGER_NO", volume: 1.0, pitch: 0.8 }
-  challenge-complete: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
+  game-start: { type: "entity.ender_dragon.growl", volume: 1.0, pitch: 1.0 }
+  countdown-tick: { type: "block.note_block.hat", volume: 1.0, pitch: 1.0 }
+  countdown-go: { type: "entity.experience_orb.pickup", volume: 1.0, pitch: 1.2 }
+  swap: { type: "entity.enderman.teleport", volume: 1.0, pitch: 1.0 }
+  shuffle: { type: "block.note_block.chime", volume: 1.0, pitch: 1.5 }
+  death: { type: "entity.wither.death", volume: 0.5, pitch: 1.0 }
+  win: { type: "ui.toast.challenge_complete", volume: 1.0, pitch: 1.0 }
+  round-success: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
+  round-fail: { type: "entity.villager.no", volume: 1.0, pitch: 0.8 }
+  challenge-complete: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
   vote-cast:
-    type: "UI_BUTTON_CLICK"
+    type: "ui.button.click"
     volume: 1.0
     pitch: 1.0
 
@@ -88,6 +88,11 @@ arenas:
       pvp-enabled: true          # false = players can't hit each other, but can attack mobs
       nether-enabled: false
       end-enabled: false
+      # World management — load worlds before CWR reset, don't unload after game
+      world-load-enabled: true             # Load worlds before reset (CWR needs them loaded)
+      world-unload-enabled: false          # Don't unload after game end
+      world-load-command: "mv load %world%"     # %world% = world name placeholder
+      world-unload-command: "mv unload %world%"
 
     # --- Seeds ---
     seeds:

@@ -95,6 +95,48 @@ public class BlockShuffleInstance extends GameInstance {
 
     private final List<ShuffleTarget> targets = new ArrayList<>();
 
+    // Materials that require the Nether dimension
+    private static final Set<Material> NETHER_MATERIALS = Set.of(
+            Material.NETHERRACK, Material.SOUL_SAND, Material.SOUL_SOIL,
+            Material.MAGMA_BLOCK, Material.GLOWSTONE, Material.NETHER_BRICKS,
+            Material.NETHER_BRICK, Material.NETHER_WART, Material.NETHER_WART_BLOCK,
+            Material.WARPED_STEM, Material.CRIMSON_STEM, Material.SHROOMLIGHT,
+            Material.BLAZE_ROD, Material.BLAZE_POWDER, Material.GHAST_TEAR,
+            Material.NETHER_QUARTZ_ORE, Material.QUARTZ, Material.NETHER_GOLD_ORE,
+            Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP, Material.NETHERITE_INGOT,
+            Material.NETHERITE_BLOCK, Material.NETHER_STAR,
+            Material.CRYING_OBSIDIAN, Material.BLACKSTONE, Material.BASALT,
+            Material.GILDED_BLACKSTONE, Material.BREWING_STAND, Material.BEACON);
+
+    // Materials that require the End dimension
+    private static final Set<Material> END_MATERIALS = Set.of(
+            Material.END_STONE, Material.END_STONE_BRICKS, Material.PURPUR_BLOCK,
+            Material.PURPUR_PILLAR, Material.END_ROD, Material.CHORUS_FLOWER,
+            Material.CHORUS_FRUIT, Material.CHORUS_PLANT, Material.DRAGON_EGG,
+            Material.ELYTRA, Material.SHULKER_SHELL, Material.SHULKER_BOX,
+            Material.DRAGON_BREATH);
+
+    // Materials exclusive to rare overworld biomes — auto-bumped to difficulty 3
+    private static final Set<Material> RARE_BIOME_MATERIALS = Set.of(
+            // Mushroom Island
+            Material.MYCELIUM, Material.MUSHROOM_STEM,
+            Material.RED_MUSHROOM_BLOCK, Material.BROWN_MUSHROOM_BLOCK,
+            // Deep Dark
+            Material.SCULK, Material.SCULK_CATALYST, Material.SCULK_SENSOR,
+            Material.SCULK_SHRIEKER, Material.SCULK_VEIN,
+            // Ice Spikes / Frozen
+            Material.PACKED_ICE, Material.BLUE_ICE,
+            // Badlands
+            Material.TERRACOTTA, Material.RED_SAND,
+            // Lush Caves
+            Material.MOSS_BLOCK, Material.SPORE_BLOSSOM, Material.BIG_DRIPLEAF,
+            // Amethyst Geodes
+            Material.AMETHYST_BLOCK, Material.AMETHYST_CLUSTER, Material.CALCITE, Material.BUDDING_AMETHYST,
+            // Ocean Monuments
+            Material.PRISMARINE, Material.SEA_LANTERN, Material.SPONGE,
+            // Jungle
+            Material.BAMBOO);
+
     private final Map<UUID, ShuffleTarget> playerTargets = new HashMap<>(); // Replaces single currentTarget
 
     private int currentRound = 0;
@@ -118,11 +160,23 @@ public class BlockShuffleInstance extends GameInstance {
                     continue;
                 try {
                     Material mat = Material.valueOf(entry.material().toUpperCase());
+
+                    // Filter out Nether/End materials if dimensions are disabled
+                    if (!getConfig().netherEnabled && NETHER_MATERIALS.contains(mat))
+                        continue;
+                    if (!getConfig().endEnabled && END_MATERIALS.contains(mat))
+                        continue;
+
                     String typeName = entry.type() != null ? entry.type().toUpperCase() : "STAND";
                     AssignmentType assignType = typeName.equals("CRAFT") ? AssignmentType.CRAFT : AssignmentType.STAND;
                     String name = entry.material().toLowerCase().replace("_", " ");
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    targets.add(new ShuffleTarget(mat, entry.difficulty(), assignType, name));
+                    // Auto-bump rare biome materials to minimum difficulty 3
+                    int effectiveDifficulty = entry.difficulty();
+                    if (RARE_BIOME_MATERIALS.contains(mat) && effectiveDifficulty < 3) {
+                        effectiveDifficulty = 3;
+                    }
+                    targets.add(new ShuffleTarget(mat, effectiveDifficulty, assignType, name));
                 } catch (IllegalArgumentException e) {
                     getPlugin().getLogger().warning("Invalid material in blockshuffle.yml: " + entry.material());
                 }

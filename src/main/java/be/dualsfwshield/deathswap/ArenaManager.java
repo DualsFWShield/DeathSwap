@@ -180,4 +180,29 @@ public class ArenaManager {
         }
         return null;
     }
+
+    /**
+     * Find an arena by a dedicated dimension world name (nether/end).
+     * Matches worlds named {gameWorld}_nether or {gameWorld}_the_end.
+     */
+    public GameInstance findByDimensionWorld(String worldName) {
+        for (GameInstance instance : arenas.values()) {
+            String base = instance.getConfig().gameWorld;
+            if (worldName.equals(base + "_nether") || worldName.equals(base + "_the_end")) {
+                return instance;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find an arena by any associated world (game, nether, or end).
+     */
+    public GameInstance findByAnyGameWorld(String worldName) {
+        GameInstance arena = findByGameWorld(worldName);
+        if (arena == null) {
+            arena = findByDimensionWorld(worldName);
+        }
+        return arena;
+    }
 }

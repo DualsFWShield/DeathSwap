@@ -363,6 +363,7 @@ public class DeathShuffleGUI implements Listener {
             case "FALL":
                 return Material.FEATHER;
             case "FIRE":
+                return Material.FIRE_CHARGE;
             case "FIRE_TICK":
                 return Material.FLINT_AND_STEEL;
             case "CONTACT":

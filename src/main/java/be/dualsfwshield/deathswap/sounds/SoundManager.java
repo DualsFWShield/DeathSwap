@@ -21,6 +21,20 @@ public class SoundManager {
     }
 
     /**
+     * Normalize a sound type string to a valid Minecraft registry key.
+     * Converts legacy enum format (e.g. UI_BUTTON_CLICK) to namespace key
+     * (ui.button.click).
+     */
+    private String normalizeSoundKey(String type) {
+        // If already in dot notation, just lowercase
+        if (type.contains(".")) {
+            return type.toLowerCase();
+        }
+        // Convert ENUM_STYLE to dot.style (UI_BUTTON_CLICK -> ui.button.click)
+        return type.toLowerCase().replace('_', '.');
+    }
+
+    /**
      * Play a configured sound event to a single player.
      *
      * @param eventName config key (e.g. "swap", "death", "win")
@@ -36,7 +50,8 @@ public class SoundManager {
             return;
 
         try {
-            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(sc.type().toLowerCase()));
+            String key = normalizeSoundKey(sc.type());
+            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(key));
             if (sound == null)
                 throw new IllegalArgumentException("Sound not found");
             player.playSound(player.getLocation(), sound, sc.volume(), sc.pitch());
@@ -61,7 +76,8 @@ public class SoundManager {
             return;
 
         try {
-            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(sc.type().toLowerCase()));
+            String key = normalizeSoundKey(sc.type());
+            Sound sound = org.bukkit.Registry.SOUNDS.get(org.bukkit.NamespacedKey.minecraft(key));
             if (sound == null)
                 throw new IllegalArgumentException("Sound not found");
             for (Player player : players) {

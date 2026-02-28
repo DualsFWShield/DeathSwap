@@ -184,28 +184,28 @@ blocks:
 
   NETHERRACK:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   SOUL_SAND:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   MAGMA_BLOCK:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   GLOWSTONE:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
     
   BLAZE_ROD:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   ENDER_PEARL:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   SLIME_BALL:
     enabled: true
@@ -213,11 +213,11 @@ blocks:
 
   GHAST_TEAR:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   BREWING_STAND:
     enabled: true
-    difficulty: 2
+    difficulty: 3
 
   ANVIL:
     enabled: true
@@ -245,7 +245,7 @@ blocks:
     difficulty: 3
 
   SPAWNER:
-    enabled: true
+    enabled: false
     difficulty: 3
 
   DEEPSLATE_DIAMOND_ORE:
@@ -282,7 +282,7 @@ blocks:
     difficulty: 3
 
   DRAGON_EGG:
-    enabled: true
+    enabled: false
     difficulty: 3
 
   CRYING_OBSIDIAN:
@@ -298,7 +298,7 @@ blocks:
     difficulty: 3
 
   BEACON:
-    enabled: true
+    enabled: false
     difficulty: 3
 
   CONDUIT:
@@ -306,7 +306,7 @@ blocks:
     difficulty: 3
 
   NETHER_STAR:
-    enabled: true
+    enabled: false
     difficulty: 3
 
   OBSERVER:

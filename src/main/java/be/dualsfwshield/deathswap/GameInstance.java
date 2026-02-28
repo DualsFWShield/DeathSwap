@@ -511,10 +511,12 @@ public class GameInstance {
         List<SeedEntry> viableSeeds = config.customArenaSeedOnly ? config.seeds
                 : plugin.getConfigManager().getGlobalSeeds();
 
-        if (plugin.getConfigManager().isVotingEnabled() && plugin.getVoteManager() != null
+        if (!config.lightningStart && config.votingEnabled && plugin.getConfigManager().isVotingEnabled()
+                && plugin.getVoteManager() != null
                 && !viableSeeds.isEmpty() && lobbyPlayers.size() >= 2) {
             // Start a vote, then continue with the winner
-            plugin.getVoteManager().startVote(this, viableSeeds, lobbyPlayers, (seed) -> {
+            int voteTime = config.voteTime > 0 ? config.voteTime : plugin.getConfigManager().getVoteTime();
+            plugin.getVoteManager().startVote(this, viableSeeds, lobbyPlayers, voteTime, (seed) -> {
                 broadcastLobby(Lang.get("vote-result", "%seed%", seed.name()));
                 continueStartWithSeed(seed);
             });
@@ -535,6 +537,20 @@ public class GameInstance {
      * Continue the start sequence after seed selection.
      */
     private void continueStartWithSeed(SeedEntry seed) {
+        // Load worlds before reset — CWR needs them loaded to reset properly
+        if (config.worldLoadEnabled) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                    config.worldLoadCommand.replace("%world%", config.gameWorld));
+            if (config.netherEnabled) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        config.worldLoadCommand.replace("%world%", config.gameWorld + "_nether"));
+            }
+            if (config.endEnabled) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        config.worldLoadCommand.replace("%world%", config.gameWorld + "_the_end"));
+            }
+        }
+
         // Execute configured world reset commands
         List<String> commands = config.worldResetCommands;
         if (commands == null) {
@@ -542,24 +558,46 @@ public class GameInstance {
         }
 
         if (commands != null && !commands.isEmpty()) {
+            // Reset overworld
             for (String cmd : commands) {
                 String finalCmd = cmd.replace("%world%", config.gameWorld)
                         .replace("%seed%", seed.seed());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
             }
+
+            // Reset dedicated Nether world (same seed)
+            if (config.netherEnabled) {
+                String netherWorld = config.gameWorld + "_nether";
+                for (String cmd : commands) {
+                    String finalCmd = cmd.replace("%world%", netherWorld)
+                            .replace("%seed%", seed.seed());
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
+                }
+            }
+
+            // Reset dedicated End world (same seed)
+            if (config.endEnabled) {
+                String endWorld = config.gameWorld + "_the_end";
+                for (String cmd : commands) {
+                    String finalCmd = cmd.replace("%world%", endWorld)
+                            .replace("%seed%", seed.seed());
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
+                }
+            }
         }
 
-        // Wait a bit before counting down (give time for async resets if any)
+        // Wait before countdown — lightning mode minimizes delay
+        long postResetDelay = config.lightningStart ? 2L : 20L;
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             startCountdown();
-        }, 20L); // Increased delay slightly to be safe
+        }, postResetDelay);
     }
 
     /**
      * Countdown sequence after world reset.
      */
     private void startCountdown() {
-        final int waitTime = config.loadTime;
+        final int waitTime = config.lightningStart ? 0 : config.loadTime;
         broadcastLobby(Lang.get("game-generating", "%time%", String.valueOf(waitTime)));
 
         new BukkitRunnable() {
@@ -611,10 +649,9 @@ public class GameInstance {
      * players.
      */
     private void onCountdownFinished() {
-        // Load world via Multiverse
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv load " + config.gameWorld);
-
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        // Poll until game world(s) are loaded before proceeding
+        broadcastLobby(Lang.get("game-waiting-world"));
+        waitForWorldsReady(() -> {
             // Set game rules
             setGameRules();
 
@@ -636,10 +673,57 @@ public class GameInstance {
 
             // Teleport players (handles spreading internal)
             teleportPlayersToGame();
+        });
+    }
 
-            // No longer needed to call spreadPlayers delayed, handled in
-            // teleportPlayersToGame
-        }, 5L);
+    /**
+     * Polls every second until all required game worlds are loaded,
+     * then runs the callback. Times out after 60 seconds.
+     */
+    private void waitForWorldsReady(Runnable onReady) {
+        final int maxAttempts = 60; // 60 seconds timeout
+
+        new BukkitRunnable() {
+            int attempts = 0;
+
+            @Override
+            public void run() {
+                if (state != GameState.STARTING) {
+                    cancel();
+                    return;
+                }
+
+                boolean allReady = Bukkit.getWorld(config.gameWorld) != null;
+
+                if (allReady && config.netherEnabled) {
+                    allReady = Bukkit.getWorld(config.gameWorld + "_nether") != null;
+                }
+                if (allReady && config.endEnabled) {
+                    allReady = Bukkit.getWorld(config.gameWorld + "_the_end") != null;
+                }
+
+                if (allReady) {
+                    cancel();
+                    onReady.run();
+                    return;
+                }
+
+                attempts++;
+
+                // Notify players every 5 seconds
+                if (attempts % 5 == 0) {
+                    broadcastLobby(Lang.get("game-waiting-world-progress", "%time%", String.valueOf(attempts)));
+                }
+
+                if (attempts >= maxAttempts) {
+                    cancel();
+                    plugin.getLogger().severe("World(s) failed to load within " + maxAttempts
+                            + "s — aborting game start for arena " + arenaId);
+                    broadcastLobby(Lang.get("game-world-load-timeout"));
+                    state = GameState.WAITING;
+                }
+            }
+        }.runTaskTimer(plugin, 20L, 20L); // Check every 1 second
     }
 
     /**
@@ -647,9 +731,45 @@ public class GameInstance {
      */
     private void setGameRules() {
         World world = Bukkit.getWorld(config.gameWorld);
-        if (world == null)
-            return;
+        if (world != null) {
+            applyGameRulesToWorld(world);
 
+            // Force nether portal gamerule based on nether enabled state
+            setPortalGameRule(world, "allow_entering_nether_using_portals", config.netherEnabled);
+        }
+
+        // Apply the same gamerules to dedicated dimension worlds
+        if (config.netherEnabled) {
+            World nether = Bukkit.getWorld(config.gameWorld + "_nether");
+            if (nether != null) {
+                applyGameRulesToWorld(nether);
+            }
+        }
+        if (config.endEnabled) {
+            World end = Bukkit.getWorld(config.gameWorld + "_the_end");
+            if (end != null) {
+                applyGameRulesToWorld(end);
+            }
+        }
+    }
+
+    /**
+     * Set a portal-related boolean gamerule on a world (if it exists in the
+     * registry).
+     */
+    @SuppressWarnings("unchecked")
+    private void setPortalGameRule(World world, String snakeCaseName, boolean value) {
+        org.bukkit.NamespacedKey nsKey = org.bukkit.NamespacedKey.minecraft(snakeCaseName);
+        GameRule<?> rule = org.bukkit.Registry.GAME_RULE.get(nsKey);
+        if (rule != null && rule.getType() == Boolean.class) {
+            world.setGameRule((GameRule<Boolean>) rule, value);
+        }
+    }
+
+    /**
+     * Apply all configured gamerules and PvP setting to a specific world.
+     */
+    private void applyGameRulesToWorld(World world) {
         // Apply specialized settings
         world.setPVP(config.pvpEnabled);
 
@@ -1272,20 +1392,48 @@ public class GameInstance {
         // Save users to return
         Set<Player> playersToReturn = new HashSet<>(gamePlayers);
 
-        cleanup();
-        state = GameState.WAITING;
-
-        // Send all players back to the arena lobby
-        for (Player p : playersToReturn) {
-            p.setGameMode(GameMode.ADVENTURE);
-            p.getInventory().clear();
-
-            // Re-join the lobby automatically
-            joinLobby(p);
+        // Optionally unload dedicated dimension worlds
+        if (config.worldUnloadEnabled) {
+            if (config.netherEnabled) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        config.worldUnloadCommand.replace("%world%", config.gameWorld + "_nether"));
+            }
+            if (config.endEnabled) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        config.worldUnloadCommand.replace("%world%", config.gameWorld + "_the_end"));
+            }
         }
 
         cleanup();
         state = GameState.WAITING;
+
+        // Send all players based on post-game action
+        for (Player p : playersToReturn) {
+            p.setGameMode(GameMode.ADVENTURE);
+            p.getInventory().clear();
+
+            if (config.postGameAction == ConfigManager.PostGameAction.REJOIN) {
+                // Re-join the arena lobby automatically
+                joinLobby(p);
+            } else {
+                // MAIN_LOBBY (default) - send to hub world
+                if (config.postGameCommand != null && !config.postGameCommand.isEmpty()) {
+                    // Custom command executed as the player (supports %player% placeholder)
+                    String cmd = config.postGameCommand.replace("%player%", p.getName());
+                    p.performCommand(cmd);
+                } else {
+                    // Built-in: use mvtp to hub world
+                    String hubWorld = plugin.getConfigManager().getHubWorld();
+                    World hub = Bukkit.getWorld(hubWorld);
+                    if (hub != null) {
+                        mvtp(p, hubWorld, hub.getSpawnLocation());
+                    } else {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                "mvtp " + p.getName() + " e:" + hubWorld + ":0,64,0");
+                    }
+                }
+            }
+        }
     }
 
     /**

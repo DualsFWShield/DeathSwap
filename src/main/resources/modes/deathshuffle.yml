@@ -13,10 +13,10 @@ causes:
   FALL:
     enabled: true
     difficulty: 1
-  FIRE_TICK:
+  FIRE:
     enabled: true
     difficulty: 1
-  FIRE_BLOCK:
+  FIRE_TICK:
     enabled: true
     difficulty: 1
   CONTACT:
@@ -42,7 +42,7 @@ causes:
   LAVA:
     enabled: true
     difficulty: 2
-  EXPLOSION:
+  ENTITY_EXPLOSION:
     enabled: true
     difficulty: 2
   PROJECTILE:

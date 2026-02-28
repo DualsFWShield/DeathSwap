@@ -121,7 +121,7 @@ public class ConfigManager {
                 ConfigurationSection s = soundsSection.getConfigurationSection(key);
                 if (s != null) {
                     sounds.put(key, new SoundConfig(
-                            s.getString("type", "BLOCK_NOTE_BLOCK_HAT"),
+                            s.getString("type", "block.note_block.hat"),
                             (float) s.getDouble("volume", 1.0),
                             (float) s.getDouble("pitch", 1.0)));
                 }
@@ -341,6 +341,13 @@ public class ConfigManager {
         clone.pvpEnabled = source.pvpEnabled;
         clone.netherEnabled = source.netherEnabled;
         clone.endEnabled = source.endEnabled;
+        clone.votingEnabled = source.votingEnabled;
+        clone.voteTime = source.voteTime;
+        clone.lightningStart = source.lightningStart;
+        clone.worldLoadEnabled = source.worldLoadEnabled;
+        clone.worldUnloadEnabled = source.worldUnloadEnabled;
+        clone.worldLoadCommand = source.worldLoadCommand;
+        clone.worldUnloadCommand = source.worldUnloadCommand;
 
         clone.seeds = new ArrayList<>(source.seeds);
         clone.gamerules = new HashMap<>(source.gamerules);
@@ -417,6 +424,13 @@ public class ConfigManager {
             ac.pvpEnabled = game.getBoolean("pvp-enabled", true);
             ac.netherEnabled = game.getBoolean("nether-enabled", true);
             ac.endEnabled = game.getBoolean("end-enabled", true);
+            ac.votingEnabled = game.getBoolean("voting-enabled", true);
+            ac.voteTime = game.getInt("vote-time", 15);
+            ac.lightningStart = game.getBoolean("lightning-start", false);
+            ac.worldLoadEnabled = game.getBoolean("world-load-enabled", true);
+            ac.worldUnloadEnabled = game.getBoolean("world-unload-enabled", false);
+            ac.worldLoadCommand = game.getString("world-load-command", "mv load %world%");
+            ac.worldUnloadCommand = game.getString("world-unload-command", "mv unload %world%");
         }
 
         // Seeds
@@ -444,6 +458,13 @@ public class ConfigManager {
         }
         ac.debugMode = section.getBoolean("debug-mode", false);
         ac.customArenaSeedOnly = section.getBoolean("custom-arena-seed-only", false);
+        try {
+            ac.postGameAction = PostGameAction.valueOf(
+                    section.getString("post-game-action", "MAIN_LOBBY").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            ac.postGameAction = PostGameAction.MAIN_LOBBY;
+        }
+        ac.postGameCommand = section.getString("post-game-command", null);
 
         ac.blockShuffleRaceMode = section.getBoolean("game.blockshuffle-race-mode", false);
         ac.blockShuffleUniqueTargets = section.getBoolean("game.blockshuffle-unique-targets", true);
@@ -533,7 +554,13 @@ public class ConfigManager {
         config.set("game.pvp-enabled", ac.pvpEnabled);
         config.set("game.nether-enabled", ac.netherEnabled);
         config.set("game.end-enabled", ac.endEnabled);
-        config.set("game.end-enabled", ac.endEnabled);
+        config.set("game.voting-enabled", ac.votingEnabled);
+        config.set("game.vote-time", ac.voteTime);
+        config.set("game.lightning-start", ac.lightningStart);
+        config.set("game.world-load-enabled", ac.worldLoadEnabled);
+        config.set("game.world-unload-enabled", ac.worldUnloadEnabled);
+        config.set("game.world-load-command", ac.worldLoadCommand);
+        config.set("game.world-unload-command", ac.worldUnloadCommand);
 
         config.set("game.blockshuffle-race-mode", ac.blockShuffleRaceMode);
         config.set("game.blockshuffle-unique-targets", ac.blockShuffleUniqueTargets);
@@ -557,6 +584,10 @@ public class ConfigManager {
         config.set("launch-mode", ac.launchMode.name());
         config.set("debug-mode", ac.debugMode);
         config.set("custom-arena-seed-only", ac.customArenaSeedOnly);
+        config.set("post-game-action", ac.postGameAction.name());
+        if (ac.postGameCommand != null) {
+            config.set("post-game-command", ac.postGameCommand);
+        }
 
         if (ac.teleportCommand != null) {
             config.set("teleport-command", ac.teleportCommand);
@@ -652,6 +683,10 @@ public class ConfigManager {
         MINIMUM, MAXIMUM
     }
 
+    public enum PostGameAction {
+        MAIN_LOBBY, REJOIN
+    }
+
     /**
      * Holds all configuration values for a single arena.
      */
@@ -693,6 +728,15 @@ public class ConfigManager {
         public boolean pvpEnabled = true;
         public boolean netherEnabled = true;
         public boolean endEnabled = true;
+        public boolean votingEnabled = true;
+        public int voteTime = 15; // Per-arena vote duration in seconds
+        public boolean lightningStart = false; // Ultra-fast start: no vote, no countdown
+
+        // World management
+        public boolean worldLoadEnabled = true; // Load worlds before CWR reset (required for CWR)
+        public boolean worldUnloadEnabled = false; // Don't unload after game (CWR handles it)
+        public String worldLoadCommand = "mv load %world%";
+        public String worldUnloadCommand = "mv unload %world%";
 
         // Seeds
         public List<SeedEntry> seeds = new ArrayList<>();
@@ -704,6 +748,10 @@ public class ConfigManager {
         public int forceStartDelay = 30; // 0 = disabled, otherwise seconds to wait before force start
         public boolean preventCancelAfterCountdown = false;
         public LaunchMode launchMode = LaunchMode.MINIMUM;
+        public PostGameAction postGameAction = PostGameAction.MAIN_LOBBY;
+        // Custom command for MAIN_LOBBY action (null = use built-in mvtp). Supports
+        // %player% placeholder.
+        public String postGameCommand = null;
         public boolean debugMode = false;
         public boolean customArenaSeedOnly = false;
 
@@ -720,7 +768,7 @@ public class ConfigManager {
         public List<String> worldResetCommands = null;
 
         public ArenaConfig() {
-            // Default gamerules (1.21.11 snake_case names)
+            // Default gamerules (1.21+ snake_case names) — DeathSwap preset
             gamerules.put("keep_inventory", "false");
             gamerules.put("immediate_respawn", "true");
             gamerules.put("respawn_radius", "0");
@@ -731,17 +779,23 @@ public class ConfigManager {
             gamerules.put("advance_time", "true");
             gamerules.put("advance_weather", "true");
             gamerules.put("mob_griefing", "true");
-            gamerules.put("natural_health_regeneration", "true");
-            gamerules.put("reduced_debug_info", "true");
+            gamerules.put("show_death_messages", "true");
+            gamerules.put("natural_health_regeneration", "false");
+            gamerules.put("reduced_debug_info", "false");
             gamerules.put("spawn_mobs", "true");
+            gamerules.put("spawn_monsters", "true");
+            gamerules.put("spawn_phantoms", "true");
+            gamerules.put("spawn_wandering_traders", "true");
+            gamerules.put("spawn_wardens", "true");
+            gamerules.put("spawner_blocks_work", "true");
             gamerules.put("entity_drops", "true");
             gamerules.put("mob_drops", "true");
             gamerules.put("block_drops", "true");
-            gamerules.put("show_death_messages", "true");
             gamerules.put("drowning_damage", "true");
             gamerules.put("fall_damage", "true");
             gamerules.put("fire_damage", "true");
             gamerules.put("freeze_damage", "true");
+            gamerules.put("locatorBar", "false"); // Disable player locator bar (1.21.6+)
         }
 
         /**

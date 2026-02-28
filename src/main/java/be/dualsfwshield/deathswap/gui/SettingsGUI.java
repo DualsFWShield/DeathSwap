@@ -45,12 +45,14 @@ public class SettingsGUI implements Listener {
     private static final int SLOT_UI_MODE = 8;
 
     // Row 2 (9-17): Timers & limits
-    private static final int SLOT_SWAP_TIMER = 10;
-    private static final int SLOT_MAX_GAME = 12;
-    private static final int SLOT_LOAD_TIME = 14;
-    private static final int SLOT_PVP = 16;
+    private static final int SLOT_VOTE_TIME = 9;
+    private static final int SLOT_SWAP_TIMER = 11;
+    private static final int SLOT_MAX_GAME = 13;
+    private static final int SLOT_LOAD_TIME = 15;
+    private static final int SLOT_PVP = 17;
 
     // Row 3 (18-26): Players & limits
+    private static final int SLOT_VOTING = 18;
     private static final int SLOT_MIN_PLAYERS = 20;
     private static final int SLOT_MAX_PLAYERS = 22;
     private static final int SLOT_SPAWN_PROT = 24;
@@ -63,11 +65,12 @@ public class SettingsGUI implements Listener {
     private static final int SLOT_MIN_PLAYER_DIST = 34;
 
     // Row 5 (36-44): Commands & resilience
-    private static final int SLOT_TP_CMD = 37;
-    private static final int SLOT_RESET_CMD = 39;
-    private static final int SLOT_RESILIENCE = 41; // Now Launch Mode
-    private static final int SLOT_DEBUG_MODE = 43;
-    private static final int SLOT_MODE_CONFIG = 44;
+    private static final int SLOT_LIGHTNING = 36;
+    private static final int SLOT_TP_CMD = 38;
+    private static final int SLOT_RESET_CMD = 40;
+    private static final int SLOT_RESILIENCE = 42; // Now Launch Mode
+    private static final int SLOT_DEBUG_MODE = 44;
+    private static final int SLOT_MODE_CONFIG = 46;
 
     // Row 6 (45-53): Footer
     private static final int SLOT_ARENA_INFO = 45;
@@ -130,6 +133,13 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-change")));
 
         // Row 2 (9-17): Timers & Limits
+        inv.setItem(SLOT_VOTE_TIME, createItem(Material.BOOK,
+                Lang.get("gui-settings-votetime-name"),
+                Lang.get("gui-settings-votetime-current", "%time%", String.valueOf(config.voteTime)),
+                "",
+                Lang.get("gui-settings-click-add-5s"),
+                Lang.get("gui-settings-click-sub-5s")));
+
         String timerNameKey = "gui-settings-swap-timer-name";
         if (config.gameType != GameType.DEATHSWAP) {
             timerNameKey = "gui-settings-round-timer-name";
@@ -164,6 +174,14 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-toggle")));
 
         // Row 3 (18-26): Players & Limits
+        inv.setItem(SLOT_VOTING, createItem(
+                config.votingEnabled ? Material.WRITABLE_BOOK : Material.BOOK,
+                Lang.get("gui-settings-voting-name"),
+                config.votingEnabled ? Lang.get("gui-settings-voting-enabled")
+                        : Lang.get("gui-settings-voting-disabled"),
+                "",
+                Lang.get("gui-settings-click-toggle")));
+
         inv.setItem(SLOT_MIN_PLAYERS, createItem(Material.PLAYER_HEAD, Lang.get("gui-settings-minplayers-name"),
                 Lang.get("gui-settings-minplayers-current", "%count%", String.valueOf(config.minPlayers)),
                 "",
@@ -220,6 +238,15 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-sub-10")));
 
         // Row 5 (36-44): Commands & Resilience
+        inv.setItem(SLOT_LIGHTNING, createItem(
+                config.lightningStart ? Material.FIREWORK_ROCKET : Material.FEATHER,
+                Lang.get("gui-settings-lightning-name"),
+                config.lightningStart ? Lang.get("gui-settings-lightning-enabled")
+                        : Lang.get("gui-settings-lightning-disabled"),
+                Lang.get("gui-settings-lightning-lore"),
+                "",
+                Lang.get("gui-settings-click-toggle")));
+
         String tpCmdPreview = config.teleportCommand != null && !config.teleportCommand.isEmpty()
                 ? (config.teleportCommand.length() > 30 ? config.teleportCommand.substring(0, 27) + "..."
                         : config.teleportCommand)
@@ -364,7 +391,13 @@ public class SettingsGUI implements Listener {
             }
             case SLOT_LOAD_TIME -> { // Load time
                 config.loadTime += isLeftClick ? 10 : -10;
-                config.loadTime = Math.max(10, config.loadTime);
+                config.loadTime = Math.max(0, config.loadTime);
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_VOTE_TIME -> { // Vote time
+                config.voteTime += isLeftClick ? 5 : -5;
+                config.voteTime = Math.max(5, config.voteTime);
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
@@ -410,6 +443,16 @@ public class SettingsGUI implements Listener {
             }
             case SLOT_END -> { // End
                 config.endEnabled = !config.endEnabled;
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_VOTING -> { // Voting
+                config.votingEnabled = !config.votingEnabled;
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_LIGHTNING -> { // Lightning Start
+                config.lightningStart = !config.lightningStart;
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }

@@ -877,3 +877,68 @@ seeds:
   name: Manoir 031
 - seed: '2100218908'
   name: Manoir 032
+# ─── User-tested seeds (spawn near 0,0) ───
+- seed: '-8535389529208998065'
+  name: Shipwreck (spawn)
+- seed: '-2319906079325865398'
+  name: Portail en ruine & Village (spawn)
+- seed: '-4893761084997910812'
+  name: Village (spawn)
+- seed: '8945448445836108514'
+  name: Portail en ruine & Shipwreck (spawn)
+- seed: '-2375265139582020408'
+  name: Village (spawn)
+- seed: '5415729858962444334'
+  name: Village (spawn)
+- seed: '-4765257855917552747'
+  name: Portail en ruine & Shipwreck (spawn)
+- seed: '2986124702985019949'
+  name: Village (spawn)
+- seed: '9213212750165156713'
+  name: Portail en ruine (spawn)
+- seed: '7525322434498761664'
+  name: Portail en ruine & Shipwreck (spawn)
+- seed: '-882726641673919328'
+  name: Portail en ruine & Shipwreck (spawn)
+- seed: '-189837339625807204'
+  name: Portail en ruine & Village (spawn)
+- seed: '-7779498362913232843'
+  name: Portail en ruine (spawn)
+- seed: '-6920526914923131223'
+  name: Village (spawn)
+- seed: '-9083290940334624419'
+  name: Portail en ruine (0,0)
+- seed: '-31354834870224544'
+  name: Shipwreck x2 (0,0)
+- seed: '-8521318901660521147'
+  name: Portail en ruine (spawn)
+- seed: '-7708466208119719952'
+  name: Portail en ruine (0,0)
+- seed: '6226618139669114941'
+  name: Portail en ruine (spawn)
+- seed: '4845270996002203749'
+  name: Portail en ruine (spawn)
+- seed: '6326039425298551489'
+  name: Portail en ruine (spawn)
+- seed: '6874139497289106661'
+  name: Portail en ruine (spawn)
+- seed: '6504814134084764771'
+  name: Portail en ruine (spawn)
+- seed: '-5646116399914340859'
+  name: Portail en ruine (spawn)
+- seed: '-4586475939806603326'
+  name: Portail en ruine (spawn)
+- seed: '8921289324079065025'
+  name: Portail en ruine (spawn)
+- seed: '-8553725865068236907'
+  name: Portail en ruine & Shipwreck x2 (spawn)
+- seed: '-1521962792561186541'
+  name: Temple du désert (spawn)
+- seed: '-7061305408203979365'
+  name: Shipwreck (spawn)
+- seed: '-3904869283004264515'
+  name: Village (spawn)
+- seed: '6604158916114600992'
+  name: Village (spawn)
+- seed: '2876195009839262916'
+  name: Village (spawn)

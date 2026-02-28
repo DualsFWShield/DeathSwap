@@ -42,19 +42,28 @@ round-timers:
 # ==========================================
 game:
   pvp-enabled: true
-  nether-enabled: true
-  end-enabled: true
+  nether-enabled: false
+  end-enabled: false
 
 # Règles classiques Minecraft (format Snake Case 1.21+)
 gamerules:
   keep_inventory: "false"
-  natural_health_regeneration: "true"
+  natural_health_regeneration: "false"
   mob_griefing: "true"
-  do_fire_tick: "true"
   show_death_messages: "true"
-  announce_advancements: "true" # (show_advancement_messages sur les anciennes versions)
+  show_advancement_messages: "true"
   immediate_respawn: "true"
-  random_tick_speed: "3" # (3 = défaut)
+  random_tick_speed: "3"
+  spawn_mobs: "true"
+  spawn_phantoms: "true"
+  spawn_wandering_traders: "true"
+  spawn_wardens: "true"
+  spawner_blocks_work: "true"
+  spawn_monsters: "true"
+  drowning_damage: "true"
+  fall_damage: "true"
+  fire_damage: "true"
+  freeze_damage: "true"
 
 # ==========================================
 #           STRUCTURES (SEEDS)
