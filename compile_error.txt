@@ -21,28 +21,40 @@
 [WARNING] location of system modules is not set in conjunction with -source 21
   not setting the location of system modules may lead to class files that cannot run on JDK 21
     --release 21 is recommended instead of -source 21 -target 21 because it sets the location of system modules automatically
-[INFO] 1 warning
+[WARNING] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java:[818,40] <T>getByName(@org.jetbrains.annotations.NotNull java.lang.String) in org.bukkit.GameRule has been deprecated and marked for removal
+[WARNING] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/gui/GamerulesGUI.java:[399,27] getName() in org.bukkit.GameRule has been deprecated and marked for removal
+[INFO] 3 warnings 
 [INFO] -------------------------------------------------------------
 [INFO] -------------------------------------------------------------
 [ERROR] COMPILATION ERROR : 
 [INFO] -------------------------------------------------------------
-[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/ConfigManager.java:[32,52] cannot infer type arguments for java.util.EnumMap<>
-[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/gui/SettingsGUI.java:[322,46] cannot find symbol
-  symbol:   method ordinal()
-  location: variable gameType of type be.dualsfwshield.deathswap.GameType
-[INFO] 2 errors 
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java:[993,77] cannot find symbol
+  symbol:   variable DAMAGE_RESISTANCE
+  location: class org.bukkit.potion.PotionEffectType
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java:[1255,70] cannot find symbol
+  symbol:   variable DAMAGE_RESISTANCE
+  location: class org.bukkit.potion.PotionEffectType
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/listeners/GameListener.java:[90,73] cannot find symbol
+  symbol:   variable DAMAGE_RESISTANCE
+  location: class org.bukkit.potion.PotionEffectType
+[INFO] 3 errors 
 [INFO] -------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.279 s
-[INFO] Finished at: 2026-02-25T01:27:02+01:00
+[INFO] Total time:  3.465 s
+[INFO] Finished at: 2026-03-02T00:36:23+01:00
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project deathswap: Compilation failure: Compilation failure: 
-[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/ConfigManager.java:[32,52] cannot infer type arguments for java.util.EnumMap<>
-[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/gui/SettingsGUI.java:[322,46] cannot find symbol
-[ERROR]   symbol:   method ordinal()
-[ERROR]   location: variable gameType of type be.dualsfwshield.deathswap.GameType
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java:[993,77] cannot find symbol
+[ERROR]   symbol:   variable DAMAGE_RESISTANCE
+[ERROR]   location: class org.bukkit.potion.PotionEffectType
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java:[1255,70] cannot find symbol
+[ERROR]   symbol:   variable DAMAGE_RESISTANCE
+[ERROR]   location: class org.bukkit.potion.PotionEffectType
+[ERROR] /C:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/listeners/GameListener.java:[90,73] cannot find symbol
+[ERROR]   symbol:   variable DAMAGE_RESISTANCE
+[ERROR]   location: class org.bukkit.potion.PotionEffectType
 [ERROR] -> [Help 1]
 [ERROR] 
 [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.

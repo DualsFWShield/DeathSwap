@@ -328,7 +328,9 @@ public class ConfigManager {
         clone.swapInterval = source.swapInterval;
         clone.swapMin = source.swapMin;
         clone.swapMax = source.swapMax;
+        clone.gameEndMode = source.gameEndMode;
         clone.maxGameTime = source.maxGameTime;
+        clone.maxRounds = source.maxRounds;
         clone.spawnProtection = source.spawnProtection;
         clone.spawnRadius = source.spawnRadius;
         clone.minPlayerDistance = source.minPlayerDistance;
@@ -403,7 +405,15 @@ public class ConfigManager {
             ac.swapInterval = timers.getInt("swap-interval", 300);
             ac.swapMin = timers.getInt("swap-min", 120);
             ac.swapMax = timers.getInt("swap-max", 420);
+
+            try {
+                ac.gameEndMode = GameEndMode.valueOf(timers.getString("game-end-mode", "TIME").toUpperCase());
+            } catch (IllegalArgumentException e) {
+                ac.gameEndMode = GameEndMode.TIME;
+            }
             ac.maxGameTime = timers.getInt("max-game-time", 1800);
+            ac.maxRounds = timers.getInt("max-rounds", 10);
+
             ac.spawnProtection = timers.getInt("spawn-protection", 30);
             ac.spawnRadius = timers.getInt("spawn-radius", 100);
             ac.minPlayerDistance = timers.getInt("min-player-distance", 50);
@@ -543,7 +553,11 @@ public class ConfigManager {
         config.set("timers.swap-interval", ac.swapInterval);
         config.set("timers.swap-min", ac.swapMin);
         config.set("timers.swap-max", ac.swapMax);
+
+        config.set("timers.game-end-mode", ac.gameEndMode.name());
         config.set("timers.max-game-time", ac.maxGameTime);
+        config.set("timers.max-rounds", ac.maxRounds);
+
         config.set("timers.spawn-protection", ac.spawnProtection);
         config.set("timers.spawn-radius", ac.spawnRadius);
         config.set("timers.min-player-distance", ac.minPlayerDistance);
@@ -693,6 +707,10 @@ public class ConfigManager {
         MAIN_LOBBY, REJOIN
     }
 
+    public enum GameEndMode {
+        TIME, ROUNDS, UNLIMITED
+    }
+
     /**
      * Holds all configuration values for a single arena.
      */
@@ -717,7 +735,12 @@ public class ConfigManager {
         public int swapInterval = 300;
         public int swapMin = 120;
         public int swapMax = 420;
+
+        // End Game settings
+        public GameEndMode gameEndMode = GameEndMode.TIME;
         public int maxGameTime = 1800;
+        public int maxRounds = 10;
+
         public int spawnProtection = 30;
         public int spawnRadius = 100;
         public int minPlayerDistance = 50;

@@ -80,6 +80,7 @@ public class GameInstance {
     // Track game start time for survival time stats
     private long gameStartEpoch;
     private long gracePeriodEndTime = 0;
+    protected int currentRound = 1;
 
     // Force Start
     private BukkitTask forceStartTask;
@@ -986,6 +987,11 @@ public class GameInstance {
                 if (loc != null) {
                     player.teleport(loc);
                     player.setBedSpawnLocation(loc, true);
+
+                    // Temporary fall damage immunity
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 200, 0, false, false));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 100, 4, false, false));
+
                     future.complete(true);
                 } else {
                     future.complete(false);
@@ -1123,7 +1129,7 @@ public class GameInstance {
 
                 // Swap check
                 if (swapTimer <= 0) {
-                    performSwap();
+                    performSwap(); // This initiates the teleport logic
 
                     // Assign challenges after swap
                     if (plugin.getConfigManager().isChallengesEnabled() && plugin.getChallengeManager() != null) {
@@ -1133,10 +1139,17 @@ public class GameInstance {
                     // Get next interval (random or fixed)
                     currentSwapInterval = config.getNextSwapInterval();
                     swapTimer = currentSwapInterval;
+
+                    if (config.gameEndMode == ConfigManager.GameEndMode.ROUNDS && currentRound >= config.maxRounds) {
+                        broadcastGame(Lang.get("game-timeout"));
+                        stopGame();
+                        return;
+                    }
+                    currentRound++;
                 }
 
                 // Global time check
-                if (globalTimer <= 0) {
+                if (config.gameEndMode == ConfigManager.GameEndMode.TIME && globalTimer <= 0) {
                     broadcastGame(Lang.get("game-timeout"));
                     stopGame();
                 }
@@ -1236,6 +1249,7 @@ public class GameInstance {
             Player swappedWith = survivors.get(nextIndex);
 
             current.teleport(targetLoc);
+
             current.showTitle(Title.title(
                     Lang.getComponent("title-swap")
                             .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),

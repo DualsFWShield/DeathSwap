@@ -21,6 +21,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import be.dualsfwshield.deathswap.util.Lang;
 
@@ -64,6 +67,29 @@ public class GameListener implements Listener {
         }
 
         arena.handleDeath(player);
+    }
+
+    /**
+     * Handle global respawns to provide temporary fall damage immunity.
+     * Helpful when players spawn mid-air.
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        GameInstance arena = plugin.getArenaManager().findByAnyGameWorld(player.getWorld().getName());
+        // If they are respawning, we check if they are part of a running game
+        if (arena == null || arena.getState() != GameState.RUNNING || !arena.getAlivePlayers().contains(player)) {
+            return;
+        }
+
+        // Apply Slow Falling and Resistance to prevent dying from fall damage when
+        // respawning mid-air
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline()) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 200, 0, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 100, 4, false, false));
+            }
+        }, 5L); // Slight delay to ensure player is fully spawned
     }
 
     /**

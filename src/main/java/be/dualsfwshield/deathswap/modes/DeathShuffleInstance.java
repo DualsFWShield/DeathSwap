@@ -98,12 +98,10 @@ public class DeathShuffleInstance extends GameInstance {
             }
         }
 
-        // Fallback
-        if (allowedCauses.isEmpty()) {
-            for (EntityDamageEvent.DamageCause dc : EntityDamageEvent.DamageCause.values()) {
-                allowedCauses.add(dc);
-            }
-        }
+        // No fallback here to all causes. If empty, it means the user intentionally
+        // disabled everything
+        // or filtered them out via dimension settings. We handle this safely in
+        // startNextRound.
     }
 
     /**
@@ -167,8 +165,15 @@ public class DeathShuffleInstance extends GameInstance {
                 .toArray(EntityDamageEvent.DamageCause[]::new);
 
         if (causes.length == 0) {
-            // Fallback to all allowed causes
+            // Fallback to all allowed causes (e.g., if no allowed causes match this
+            // specific difficulty tier)
             causes = allowedCauses.toArray(new EntityDamageEvent.DamageCause[0]);
+        }
+
+        // If STILL empty (e.g., player disabled absolutely everything in the config or
+        // all were filtered by dimension settings)
+        if (causes.length == 0) {
+            causes = new EntityDamageEvent.DamageCause[] { EntityDamageEvent.DamageCause.SUICIDE };
         }
 
         // Assign causes and duration

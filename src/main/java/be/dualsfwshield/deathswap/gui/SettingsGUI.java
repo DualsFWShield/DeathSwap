@@ -154,11 +154,30 @@ public class SettingsGUI implements Listener {
                 "",
                 Lang.get("gui-settings-click-config")));
 
-        inv.setItem(SLOT_MAX_GAME, createItem(Material.RECOVERY_COMPASS, Lang.get("gui-settings-maxgame-name"),
-                Lang.get("gui-settings-maxgame-current", "%time%", GuiUtils.formatTime(config.maxGameTime)),
+        String endModeStr = "";
+        String limitStr = "";
+        if (config.gameEndMode == ConfigManager.GameEndMode.TIME) {
+            endModeStr = Lang.get("gui-settings-endmode-time");
+            limitStr = GuiUtils.formatTime(config.maxGameTime);
+        } else if (config.gameEndMode == ConfigManager.GameEndMode.ROUNDS) {
+            endModeStr = Lang.get("gui-settings-endmode-rounds");
+            limitStr = String.valueOf(config.maxRounds);
+        } else {
+            endModeStr = Lang.get("gui-settings-endmode-unlimited");
+            limitStr = "∞";
+        }
+
+        inv.setItem(SLOT_MAX_GAME, createItem(Material.RECOVERY_COMPASS, Lang.get("gui-settings-endcondition-name"),
+                Lang.get("gui-settings-endcondition-current", "%mode%", endModeStr),
+                config.gameEndMode != ConfigManager.GameEndMode.UNLIMITED
+                        ? Lang.get("gui-settings-endcondition-limit", "%limit%", limitStr)
+                        : "",
                 "",
+                Lang.get("gui-settings-click-toggle-mode"),
                 Lang.get("gui-settings-click-add-min"),
-                Lang.get("gui-settings-click-sub-min")));
+                Lang.get("gui-settings-click-sub-min"),
+                Lang.get("gui-settings-click-add-5min"),
+                Lang.get("gui-settings-click-sub-5min")));
 
         inv.setItem(SLOT_LOAD_TIME, createItem(Material.HOPPER, Lang.get("gui-settings-loadtime-name"),
                 Lang.get("gui-settings-loadtime-current", "%time%", String.valueOf(config.loadTime)),
@@ -383,9 +402,26 @@ public class SettingsGUI implements Listener {
                 player.closeInventory();
                 plugin.getSwapTimerGUI().open(player, arenaId);
             }
-            case SLOT_MAX_GAME -> { // Max game time
-                config.maxGameTime += isLeftClick ? 60 : -60;
-                config.maxGameTime = Math.max(60, config.maxGameTime);
+            case SLOT_MAX_GAME -> { // Max game time / End condition
+                if (event.getClick() == org.bukkit.event.inventory.ClickType.MIDDLE
+                        || event.getClick() == org.bukkit.event.inventory.ClickType.DROP) {
+                    ConfigManager.GameEndMode[] modes = ConfigManager.GameEndMode.values();
+                    int ordinal = config.gameEndMode.ordinal();
+                    config.gameEndMode = modes[(ordinal + 1) % modes.length];
+                } else {
+                    int modifier = 1;
+                    if (event.isShiftClick()) {
+                        modifier = 5;
+                    }
+                    if (config.gameEndMode == ConfigManager.GameEndMode.TIME) {
+                        modifier *= 60; // minutes to seconds
+                        config.maxGameTime += isLeftClick ? modifier : -modifier;
+                        config.maxGameTime = Math.max(60, config.maxGameTime);
+                    } else if (config.gameEndMode == ConfigManager.GameEndMode.ROUNDS) {
+                        config.maxRounds += isLeftClick ? modifier : -modifier;
+                        config.maxRounds = Math.max(1, config.maxRounds);
+                    }
+                }
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }

@@ -115,7 +115,11 @@ public class SwapTimerGUI implements Listener {
                 Lang.get("gui-timer-fixed-lore-2"),
                 "",
                 isFixed ? Lang.get("gui-timer-active")
-                        : Lang.get("gui-timer-click-activate"));
+                        : Lang.get("gui-timer-click-activate"),
+                isFixed ? Lang.get("gui-timer-fixed-leftclick") : "",
+                isFixed ? Lang.get("gui-timer-fixed-rightclick") : "",
+                isFixed ? Lang.get("gui-timer-fixed-shiftleft") : "",
+                isFixed ? Lang.get("gui-timer-fixed-shiftright") : "");
         if (isFixed) {
             ItemMeta fixedMeta = fixedItem.getItemMeta();
             fixedMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
@@ -211,8 +215,27 @@ public class SwapTimerGUI implements Listener {
 
         switch (slot) {
             case SLOT_FIXED -> {
-                // Switch to FIXED mode
-                config.swapMode = SwapMode.FIXED;
+                // If not currently FIXED, switch to FIXED
+                if (config.swapMode != SwapMode.FIXED) {
+                    config.swapMode = SwapMode.FIXED;
+                } else {
+                    // Already in FIXED mode, so we adjust time
+                    int modifier = 60; // 1 minute default
+                    if (event.isShiftClick()) {
+                        modifier = 300; // 5 minutes with shift
+                    }
+
+                    if (isLeftClick) {
+                        config.swapInterval += modifier;
+                    } else {
+                        config.swapInterval -= modifier;
+                    }
+
+                    // Enforce minimum of 10 seconds
+                    if (config.swapInterval < 10) {
+                        config.swapInterval = 10;
+                    }
+                }
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }
