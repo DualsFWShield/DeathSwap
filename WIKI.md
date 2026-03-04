@@ -412,10 +412,10 @@ Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit
 Accessible via le **Shift+Clic** sur une arène dans le Dashboard, ou via `/ds settings` / `/ds admin edit <arène>`.
 Ce menu permet de modifier **tous** les aspects de l'arène sans toucher aux fichiers :
 
-- **Mondes** : Changer le monde Lobby et Game (saisie clavier dans le chat)
-- **Mode de Jeu** : Changer entre DeathSwap, DeathShuffle, BlockShuffle
-- **Gamerules** : Activer/Désactiver les règles (keep_inventory, etc.)
-- **Timers** : Ajuster les temps de swap, max game time, etc.
+- **Mondes**   **Item Bingo:** Une grille 5x5 d'items aléatoires; le premier à compléter une ligne l'emporte.
+*   **Modes de difficulté:** Progressif, Thématique (Facile, Moyen, Difficile, Extrême), Aléatoire, Équilibré.
+*   **Unique Targets:** Le même item ne tombera jamais deux fois par partie.
+*   **Options:** Permettez ou non le PvP, l'accès au Nether, et autres détails. de swap, max game time, etc.
 - **Commandes** : Configurer la commande de TP et de Reset
 - **Résilience** : Activer les options de démarrage robuste
 
@@ -518,16 +518,18 @@ La commande `/ds admin set <arène> <propriété> <valeur>` supporte les propri�
 | `minplayers`    | Int     | Minimum de joueurs                 | `2`                                  |
 | `maxplayers`    | Int     | Maximum de joueurs                 | `20`                                 |
 | `uimode`        | Enum    | Mode d'interface                   | `RICH` ou `CLEAN`                   |
-| `loadtime`      | Int     | Temps de chargement (secondes)     | `40`                                 |
-| `swapmode`      | Enum    | Mode de swap                       | `FIXED` ou `RANDOM`                 |
-| `swapinterval`  | Int     | Intervalle de swap fixe (sec)      | `300`                                |
-| `swapmin`       | Int     | Swap min aléatoire (sec)          | `120`                                |
-| `swapmax`       | Int     | Swap max aléatoire (sec)          | `420`                                |
-| `maxgametime`   | Int     | Durée max de la partie (sec)      | `1800`                               |
-| `spawnprotection` | Int   | Protection de spawn (sec)          | `30`                                 |
-| `roundtimeeasy` | Int     | Temps round facile (sec)           | `90`                                 |
-| `roundtimemedium` | Int   | Temps round moyen (sec)            | `70`                                 |
-| `roundtimehard` | Int     | Temps round difficile (sec)        | `50`                                 |
+| `loadtime`       | Modifier le temps de chargement de partie (en sec).                  | `/ds admin set arene2 loadtime 20`       |
+| `swapmode`       | Changer le mode de téléportation (AUTO ou RANDOM).                   | `/ds admin set arene2 swapmode random`   |
+| `swapinterval`   | Modifier le temps entre les swaps (AUTO) (en sec).                   | `/ds admin set arene2 swapinterval 300`  |
+| `swapmin`/`max`  | Modifier la plage de temps (RANDOM) (en sec).                        | `/ds admin set arene2 swapmin 60`        |
+| `maxgametime`    | Temps maximum de la partie (en sec).                                 | `/ds admin set arene2 maxgametime 3600`  |
+| `roundtimeeasy`  | [BlockShuffle] Temps pour un block Facile (sec)                      | `/ds admin set arene2 roundtimeeasy 300` |
+| `roundtimemedium`| [BlockShuffle] Temps pour un block Moyen (sec)                       | `/ds admin set arene2 roundtimemedium 600`|
+| `roundtimehard`  | [BlockShuffle] Temps pour un block Difficile (sec)                   | `/ds admin set arene2 roundtimehard 900` |
+| `roundtimeextreme` | [BlockShuffle] Temps pour un block Extrême (sec)                 | `/ds admin set arene2 roundtimeextreme 1200`|
+| `difficultymode` | [BlockShuffle] Mode: PROGRESSIVE, THEMATIC_EASY, THEMATIC_MEDIUM, THEMATIC_HARD, THEMATIC_EXTREME, RANDOM, BALANCED | `/ds admin set arene2 difficultymode random`|
+| `maxitems`       | [Block/DeathShuffle] Modifie la limit de points maximum de la partie | `/ds admin set arene2 maxitems 10`       |
+| `spawnprotection`| Durée de la protection au spawn (en sec).                            | `/ds admin set arene2 spawnprotection 10`|
 | `pvp`           | Boolean | PvP activé                        | `true` / `false`                    |
 | `nether`        | Boolean | Nether activé                     | `true` / `false`                    |
 | `end`           | Boolean | End activé                        | `true` / `false`                    |

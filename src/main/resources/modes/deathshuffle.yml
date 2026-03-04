@@ -1,9 +1,11 @@
 # DeathShuffle Configuration
-# Each death cause can be individually enabled/disabled with custom difficulty.
-# difficulty: 1 = Easy, 2 = Medium, 3 = Hard
+# Each death cause can be individually enabled/disabled#
+# Pour chaque cause, définissez:
+#   enabled: true/false
+#   difficulty: 1 (Easy), 2 (Medium), 3 (Hard), 4 (Extreme)
+#               Détermine la probabilité d'apparition avec le temps ou selon le mode.
 #
-# The plugin uses these defaults if this file is empty.
-# You can modify difficulty, toggle entries on/off, etc.
+# Astuce: Pour éviter trop de try-hard en début de partie, laissez les dégâts faciles en difficulté 1.
 
 causes:
   # ─── Easy (Difficulty 1) ───

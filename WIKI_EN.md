@@ -518,16 +518,18 @@ The `/ds admin set <arena> <property> <value>` command supports the following pr
 | `minplayers`    | Int     | Minimum players                    | `2`                                   |
 | `maxplayers`    | Int     | Maximum players                    | `20`                                  |
 | `uimode`        | Enum    | Interface mode                     | `RICH` or `CLEAN`                    |
-| `loadtime`      | Int     | Load time (seconds)                | `40`                                  |
-| `swapmode`      | Enum    | Swap mode                          | `FIXED` or `RANDOM`                  |
-| `swapinterval`  | Int     | Fixed swap interval (sec)          | `300`                                 |
-| `swapmin`       | Int     | Random swap min (sec)              | `120`                                 |
-| `swapmax`       | Int     | Random swap max (sec)              | `420`                                 |
-| `maxgametime`   | Int     | Max game duration (sec)            | `1800`                                |
-| `spawnprotection` | Int   | Spawn protection (sec)             | `30`                                  |
-| `roundtimeeasy` | Int     | Easy round time (sec)              | `90`                                  |
-| `roundtimemedium` | Int   | Medium round time (sec)            | `70`                                  |
-| `roundtimehard` | Int     | Hard round time (sec)              | `50`                                  |
+| `loadtime`       | Int     | Modify the game loading time (in sec).                 | `/ds admin set arena2 loadtime 20`       |
+| `swapmode`       | Enum    | Change teleportation mode (AUTO or RANDOM).            | `/ds admin set arena2 swapmode random`   |
+| `swapinterval`   | Int     | Modify time between swaps (AUTO) (in sec).             | `/ds admin set arena2 swapinterval 300`  |
+| `swapmin`/`max`  | Int     | Modify random swap time range (RANDOM) (in sec).       | `/ds admin set arena2 swapmin 60`        |
+| `maxgametime`    | Int     | Maximum game time (in sec).                            | `/ds admin set arena2 maxgametime 3600`  |
+| `roundtimeeasy`  | Int     | [BlockShuffle] Time for an Easy block (sec)            | `/ds admin set arena2 roundtimeeasy 300` |
+| `roundtimemedium`| Int     | [BlockShuffle] Time for a Medium block (sec)           | `/ds admin set arena2 roundtimemedium 600`|
+| `roundtimehard`  | Int     | [BlockShuffle] Time for a Hard block (sec)             | `/ds admin set arena2 roundtimehard 900` |
+| `roundtimeextreme` | Int   | [BlockShuffle] Time for an Extreme block (sec)       | `/ds admin set arena2 roundtimeextreme 1200`|
+| `difficultymode` | Enum    | [BlockShuffle] Mode: PROGRESSIVE, THEMATIC_EASY, THEMATIC_MEDIUM, THEMATIC_HARD, THEMATIC_EXTREME, RANDOM, BALANCED | `/ds admin set arena2 difficultymode random`|
+| `maxitems`       | Int     | [Block/DeathShuffle] Max total blocks/deaths in match  | `/ds admin set arena2 maxitems 10`       |
+| `spawnprotection`| Int     | Spawn protection duration (in sec).                    | `/ds admin set arena2 spawnprotection 10`|
 | `pvp`           | Boolean | PvP enabled                        | `true` / `false`                     |
 | `nether`        | Boolean | Nether enabled                     | `true` / `false`                     |
 | `end`           | Boolean | End enabled                        | `true` / `false`                     |
@@ -871,9 +873,11 @@ blocks:
 
 1. **Item Race** (BlockShuffle only): The first player to find/craft the item wins the round (others fail).
 2. **Death Run** (DeathShuffle only): The first player to die from the specified cause wins the round (others fail).
-3. **Unique Targets/Causes**: Assigns a different block/cause to each player for the current round.
+*   **Item Bingo:** A 5x5 grid of random items; the first to complete a line wins.
+*   **Modes of difficulty:** Progressive, Thematic (Easy, Medium, Hard, Extreme), Random, Balanced.
+*   **Unique Targets:** The same item will never fall twice per game.
+*   **Options:** Allow or forbid PvP, Nether access, and other details.
 4. **Pool Configuration**: Edit targets (Blocks/Causes) directly in-game using the paginated menu (Left click to toggle ON/OFF, Right click to change difficulty).
-```
 
 ---
 

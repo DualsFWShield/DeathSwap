@@ -19,9 +19,15 @@
 
 ### 🕹️ 3 Game Modes
 
-| Mode                   | Description                                                                                               |
+*   **Item Race:** The first player to find the target item wins the point.
+*   **Item Bingo:** A 5x5 grid of random items; the first to complete a line wins.
+*   **Modes of difficulty:** Progressive, Thematic (Easy, Medium, Hard, Extreme), Random, Balanced.
+*   **DeathShuffle:** Players must find a way to take a specific type of damage. (e.g., fall damage, fire, drowning).
+*   **Bingo:** A 5x5 grid of challenges; the first to complete a line wins.
+*   **More modes coming soon!**
+| Mode | Description |
 | ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| **DeathSwap**    | Players are randomly swapped. Trap the area before the swap!                                          |
+| **DeathSwap** | Players are randomly swapped. Trap the area before the swap! |
 | **DeathShuffle** | Die the right way to survive! (Causes editable in-game via GUI, includes "Death Run" & "Unique Causes" sub-modes) |
 | **BlockShuffle** | Find and stand or craft the correct block! (Blocks editable in-game via GUI, includes "Item Race" & "Unique Targets" sub-modes) |
 

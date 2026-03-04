@@ -165,11 +165,18 @@ public class DeathShuffleGUI implements Listener {
     }
 
     private String getDifficultyName(int difficulty) {
-        if (difficulty == 1)
-            return Lang.get("gui-shuffle-difficulty-easy");
-        if (difficulty == 2)
-            return Lang.get("gui-shuffle-difficulty-medium");
-        return Lang.get("gui-shuffle-difficulty-hard");
+        switch (difficulty) {
+            case 1:
+                return Lang.get("gui-shuffle-difficulty-easy");
+            case 2:
+                return Lang.get("gui-shuffle-difficulty-medium");
+            case 3:
+                return Lang.get("gui-shuffle-difficulty-hard");
+            case 4:
+                return Lang.get("gui-shuffle-difficulty-extreme");
+            default:
+                return "&8Inconnu";
+        }
     }
 
     @EventHandler
@@ -338,14 +345,14 @@ public class DeathShuffleGUI implements Listener {
                 player.playSound(player.getLocation(),
                         newState ? Sound.ENTITY_EXPERIENCE_ORB_PICKUP : Sound.BLOCK_WOOD_BREAK, 1, 1);
             } else if (event.getClick().isRightClick()) {
-                // Cycle difficulty 1->2->3->1
+                // Cycle difficulty 1->2->3->4->1
                 int newDiff = entry.difficulty() + 1;
-                if (newDiff > 3)
+                if (newDiff > 4)
                     newDiff = 1;
                 config.setDifficulty(entry.cause(), newDiff);
                 changed = true;
 
-                float pitch = newDiff == 1 ? 1.0f : newDiff == 2 ? 1.3f : 1.6f;
+                float pitch = newDiff == 1 ? 1.0f : newDiff == 2 ? 1.2f : newDiff == 3 ? 1.4f : 1.6f;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, pitch);
             }
 

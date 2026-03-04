@@ -2,6 +2,7 @@ package be.dualsfwshield.deathswap.gui;
 
 import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.DifficultyMode;
 import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -124,7 +125,7 @@ public class BlockShuffleGUI implements Listener {
         inv.setItem(51, GuiUtils.createItem(Material.REDSTONE_BLOCK, Lang.get("gui-shuffle-disable-all-name")));
         inv.setItem(52, GuiUtils.createItem(Material.EMERALD_BLOCK, Lang.get("gui-shuffle-enable-all-name")));
 
-        // Toggles
+        // Mode-specific options (BlockShuffle)
         if (arenaConfig != null) {
             String raceStatus = arenaConfig.blockShuffleRaceMode ? Lang.get("enabled") : Lang.get("disabled");
             inv.setItem(48, GuiUtils.createItem(Material.GOLDEN_BOOTS,
@@ -141,6 +142,26 @@ public class BlockShuffleGUI implements Listener {
                     Lang.get("gui-settings-status", "%status%", uniqueStatus),
                     "",
                     Lang.get("gui-settings-click-toggle")));
+
+            // Difficulty Mode
+            String modeDisplay = Lang.get("gui-settings-difficulty-mode-"
+                    + arenaConfig.difficultyMode.name().toLowerCase().replace("_", "-"));
+            inv.setItem(51, GuiUtils.createItem(Material.EXPERIENCE_BOTTLE,
+                    Lang.get("gui-settings-difficulty-mode-name"),
+                    Lang.get("gui-settings-difficulty-mode-current", "%mode%", modeDisplay),
+                    "",
+                    Lang.get("gui-settings-click-change")));
+
+            // Max Items Per Game
+            String maxItemsDisplay = arenaConfig.maxItemsPerGame <= 0
+                    ? Lang.get("gui-settings-max-items-unlimited")
+                    : String.valueOf(arenaConfig.maxItemsPerGame);
+            inv.setItem(52, GuiUtils.createItem(Material.CHEST,
+                    Lang.get("gui-settings-max-items-name"),
+                    Lang.get("gui-settings-max-items-current", "%count%", maxItemsDisplay),
+                    "",
+                    Lang.get("gui-settings-click-add-1"),
+                    Lang.get("gui-settings-click-sub-1")));
         }
 
         inv.setItem(49, GuiUtils.createItem(Material.BARRIER, Lang.get("gui-shuffle-back"), "&8Arena: " + arenaId));
@@ -149,11 +170,18 @@ public class BlockShuffleGUI implements Listener {
     }
 
     private String getDifficultyName(int difficulty) {
-        if (difficulty == 1)
-            return Lang.get("gui-shuffle-difficulty-easy");
-        if (difficulty == 2)
-            return Lang.get("gui-shuffle-difficulty-medium");
-        return Lang.get("gui-shuffle-difficulty-hard");
+        switch (difficulty) {
+            case 1:
+                return Lang.get("gui-shuffle-difficulty-easy");
+            case 2:
+                return Lang.get("gui-shuffle-difficulty-medium");
+            case 3:
+                return Lang.get("gui-shuffle-difficulty-hard");
+            case 4:
+                return Lang.get("gui-shuffle-difficulty-extreme");
+            default:
+                return "&8Inconnu";
+        }
     }
 
     @EventHandler
@@ -274,8 +302,9 @@ public class BlockShuffleGUI implements Listener {
             return;
         }
 
-        // Mass Actions
-        if (slot == 51) {
+        // Mass Actions (now on dedicated buttons or shift-click)
+        if (slot == 51 && arenaConfig == null) {
+            // Disable All (only if no arena config — safety)
             for (ConfigManager.BlockShuffleEntry e : filteredEntries) {
                 config.setEnabled(e.material(), false);
             }
@@ -284,13 +313,37 @@ public class BlockShuffleGUI implements Listener {
             player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1, 0.8f);
             return;
         }
-        if (slot == 52) {
+        if (slot == 52 && arenaConfig == null) {
+            // Enable All (only if no arena config — safety)
             for (ConfigManager.BlockShuffleEntry e : filteredEntries) {
                 config.setEnabled(e.material(), true);
             }
             config.save();
             open(player, arenaId, page);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2f);
+            return;
+        }
+
+        // Difficulty Mode (slot 51)
+        if (slot == 51 && arenaConfig != null) {
+            DifficultyMode[] modes = DifficultyMode.values();
+            int ordinal = arenaConfig.difficultyMode.ordinal();
+            arenaConfig.difficultyMode = modes[(ordinal + 1) % modes.length];
+            plugin.getConfigManager().saveArena(arenaConfig);
+            open(player, arenaId, page);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1.2f);
+            return;
+        }
+
+        // Max Items (slot 52)
+        if (slot == 52 && arenaConfig != null) {
+            boolean isLeftClick = event.getClick().isLeftClick();
+            arenaConfig.maxItemsPerGame += isLeftClick ? 1 : -1;
+            if (arenaConfig.maxItemsPerGame < 0)
+                arenaConfig.maxItemsPerGame = 0;
+            plugin.getConfigManager().saveArena(arenaConfig);
+            open(player, arenaId, page);
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
             return;
         }
 
@@ -311,14 +364,14 @@ public class BlockShuffleGUI implements Listener {
                 player.playSound(player.getLocation(),
                         newState ? Sound.ENTITY_EXPERIENCE_ORB_PICKUP : Sound.BLOCK_WOOD_BREAK, 1, 1);
             } else if (event.getClick().isRightClick()) {
-                // Cycle difficulty 1->2->3->1
+                // Cycle difficulty 1->2->3->4->1
                 int newDiff = entry.difficulty() + 1;
-                if (newDiff > 3)
+                if (newDiff > 4)
                     newDiff = 1;
                 config.setDifficulty(entry.material(), newDiff);
                 changed = true;
 
-                float pitch = newDiff == 1 ? 1.0f : newDiff == 2 ? 1.3f : 1.6f;
+                float pitch = newDiff == 1 ? 1.0f : newDiff == 2 ? 1.2f : newDiff == 3 ? 1.4f : 1.6f;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, pitch);
             }
 

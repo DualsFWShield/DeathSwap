@@ -1,9 +1,10 @@
 # BlockShuffle Configuration
 # Each block/item can be individually enabled/disabled with custom difficulty.
-# difficulty: 1 = Easy, 2 = Medium, 3 = Hard
-#
-# The plugin uses these defaults if this file is empty.
-# You can modify difficulty, toggle entries on/off, etc.
+# type: L'action requise pour valider l'item (STAND, CRAFT, INTERACT). Si manquant, par défaut 'STAND'.
+#       Si un block a p. ex. CRAFT, il doit impérativement être crafté, l'avoir en main ne suffit pas.
+# difficulty: Optionnel. Niveau de difficulté (1=Easy, 2=Medium, 3=Hard, 4=Extreme).
+#             Détermine sa probabilité d'apparaître selon la durée de la partie.
+#             Par défaut, si manquant, dépend du type de l'item (ex: dirt = 1, spawner = 3).
 
 blocks:
   # ─── Easy (Difficulty 1) ───

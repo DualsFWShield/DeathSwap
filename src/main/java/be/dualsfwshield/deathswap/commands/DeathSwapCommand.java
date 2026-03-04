@@ -1,6 +1,7 @@
 package be.dualsfwshield.deathswap.commands;
 
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.DifficultyMode;
 import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.stats.PlayerStats;
 import be.dualsfwshield.deathswap.util.Lang;
@@ -530,6 +531,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 case "roundtimeeasy" -> config.roundTimeEasy = Integer.parseInt(value);
                 case "roundtimemedium" -> config.roundTimeMedium = Integer.parseInt(value);
                 case "roundtimehard" -> config.roundTimeHard = Integer.parseInt(value);
+                case "roundtimeextreme" -> config.roundTimeExtreme = Integer.parseInt(value);
 
                 // Game Rules
                 case "pvp" -> config.pvpEnabled = Boolean.parseBoolean(value);
@@ -539,6 +541,10 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 // Force Start
                 case "forcestart" -> config.forceStartDelay = Integer.parseInt(value);
                 case "preventcancel" -> config.preventCancelAfterCountdown = Boolean.parseBoolean(value);
+
+                // BlockShuffle Difficulty
+                case "difficultymode" -> config.difficultyMode = DifficultyMode.valueOf(value.toUpperCase());
+                case "maxitems" -> config.maxItemsPerGame = Integer.parseInt(value);
 
                 default -> {
                     Lang.send(player, "cmd-admin-set-unknown", "%prop%", property);
@@ -755,7 +761,8 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                             "lobby", "game", "gametype", "minplayers", "maxplayers", "uimode",
                             "loadtime", "swapmode", "swapinterval", "swapmin", "swapmax",
                             "maxgametime", "spawnprotection", "roundtimeeasy", "roundtimemedium",
-                            "roundtimehard", "pvp", "nether", "end", "resilience"), args[3]);
+                            "roundtimehard", "roundtimeextreme", "pvp", "nether", "end", "resilience",
+                            "difficultymode", "maxitems"), args[3]);
                 }
                 if (adminSub.equals("gamerule")) {
                     return filter(Arrays.asList("set", "remove"), args[3]);
@@ -782,6 +789,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                                 .collect(Collectors.toList()), args[4]);
                     if (Arrays.asList("pvp", "nether", "end", "resilience").contains(prop))
                         return filter(Arrays.asList("true", "false"), args[4]);
+                    if (prop.equals("difficultymode"))
+                        return filter(Arrays.stream(DifficultyMode.values()).map(Enum::name)
+                                .collect(Collectors.toList()), args[4]);
                 }
                 if (adminSub.equals("command") && args[3].equalsIgnoreCase("reset")) {
                     return filter(Arrays.asList("none", "mv", "cwr"), args[4]);

@@ -2,6 +2,7 @@ package be.dualsfwshield.deathswap.modes;
 
 import be.dualsfwshield.deathswap.ConfigManager;
 import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.DifficultyMode;
 import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.GameState;
 import be.dualsfwshield.deathswap.GameType;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -137,18 +139,63 @@ public class BlockShuffleInstance extends GameInstance {
             // Jungle
             Material.BAMBOO);
 
-    private final Map<UUID, ShuffleTarget> playerTargets = new HashMap<>(); // Replaces single currentTarget
+    private final Map<UUID, ShuffleTarget> playerTargets = new HashMap<>();
 
     private int currentRound = 0;
-    // private ShuffleTarget currentTarget; // REMOVED
     private int roundTimer;
     private int roundDuration;
     private BukkitTask roundTask;
     private final Set<UUID> completedRound = new HashSet<>();
 
+    // Shared RNG for RANDOM mode fairness — both players get the same difficulty
+    // sequence.
+    private Random sharedRandom;
+    // Track consecutive hard rounds for hard-lock prevention.
+    private int consecutiveHardRounds = 0;
+
     public BlockShuffleInstance(DeathSwapPlugin plugin, String arenaId, ConfigManager.ArenaConfig config) {
         super(plugin, arenaId, config);
         loadTargets();
+        // Initialize shared RNG with a fixed seed so all players share the same
+        // sequence.
+        this.sharedRandom = new Random(System.nanoTime());
+    }
+
+    /**
+     * Resolve the difficulty tier for the current round based on the configured
+     * DifficultyMode.
+     * Includes hard-lock prevention: max 2 consecutive hard rounds in RANDOM mode.
+     */
+    private int resolveDifficulty(int round) {
+        int diff = switch (getConfig().difficultyMode) {
+            case PROGRESSIVE -> round <= 3 ? 1 : round <= 6 ? 2 : round <= 9 ? 3 : 4;
+            case THEMATIC_EASY -> 1;
+            case THEMATIC_MEDIUM -> 2;
+            case THEMATIC_HARD -> 3;
+            case THEMATIC_EXTREME -> 4;
+            case RANDOM -> {
+                int[] pool = { 1, 2, 3, 4 };
+                yield pool[sharedRandom.nextInt(pool.length)];
+            }
+            case BALANCED -> {
+                // Pattern: Easy, Easy, Medium, repeat — avoids long sessions.
+                int idx = (round - 1) % 3;
+                yield idx < 2 ? 1 : 2;
+            }
+        };
+
+        // Hard-lock prevention: if we have had 2+ consecutive hard rounds, downgrade.
+        if (diff == 3) {
+            consecutiveHardRounds++;
+            if (consecutiveHardRounds > 2) {
+                diff = 2; // Force medium
+                consecutiveHardRounds = 0;
+            }
+        } else {
+            consecutiveHardRounds = 0;
+        }
+
+        return diff;
     }
 
     private void loadTargets() {
@@ -215,14 +262,15 @@ public class BlockShuffleInstance extends GameInstance {
         completedRound.clear();
         playerTargets.clear();
 
-        // Determine difficulty tier
-        int difficulty;
-        if (currentRound <= 3)
-            difficulty = 1;
-        else if (currentRound <= 6)
-            difficulty = 2;
-        else
-            difficulty = 3;
+        // Check maxItemsPerGame limit
+        if (getConfig().maxItemsPerGame > 0 && currentRound > getConfig().maxItemsPerGame) {
+            broadcastGame(Lang.get("game-ended"));
+            stopGame();
+            return;
+        }
+
+        // Determine difficulty tier using the configured DifficultyMode
+        int difficulty = resolveDifficulty(currentRound);
 
         // Pick random target from difficulty tier
         List<ShuffleTarget> pool = targets.stream()
@@ -252,14 +300,14 @@ public class BlockShuffleInstance extends GameInstance {
                 ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
                 playerTargets.put(p.getUniqueId(), t);
             }
-            roundDuration = getConfig().getNextSwapInterval();
+            roundDuration = getConfig().getRoundTime(difficulty);
         } else {
             // Classic mode: Same target for everyone
             ShuffleTarget sharedTarget = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
             for (Player p : getAlivePlayers()) {
                 playerTargets.put(p.getUniqueId(), sharedTarget);
             }
-            roundDuration = getConfig().getNextSwapInterval();
+            roundDuration = getConfig().getRoundTime(difficulty);
         }
 
         roundTimer = roundDuration;

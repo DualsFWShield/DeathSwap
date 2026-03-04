@@ -342,6 +342,9 @@ public class ConfigManager {
         clone.roundTimeEasy = source.roundTimeEasy;
         clone.roundTimeMedium = source.roundTimeMedium;
         clone.roundTimeHard = source.roundTimeHard;
+        clone.roundTimeExtreme = source.roundTimeExtreme;
+        clone.difficultyMode = source.difficultyMode;
+        clone.maxItemsPerGame = source.maxItemsPerGame;
         clone.pvpEnabled = source.pvpEnabled;
         clone.netherEnabled = source.netherEnabled;
         clone.endEnabled = source.endEnabled;
@@ -427,10 +430,20 @@ public class ConfigManager {
         // Round timers (for DeathShuffle / BlockShuffle)
         ConfigurationSection roundTimers = section.getConfigurationSection("round-timers");
         if (roundTimers != null) {
-            ac.roundTimeEasy = roundTimers.getInt("easy", 90);
-            ac.roundTimeMedium = roundTimers.getInt("medium", 70);
-            ac.roundTimeHard = roundTimers.getInt("hard", 50);
+            ac.roundTimeEasy = roundTimers.getInt("easy", 300);
+            ac.roundTimeMedium = roundTimers.getInt("medium", 600);
+            ac.roundTimeHard = roundTimers.getInt("hard", 900);
+            ac.roundTimeExtreme = roundTimers.getInt("extreme", 1200);
         }
+
+        // Difficulty mode (BlockShuffle)
+        try {
+            ac.difficultyMode = DifficultyMode.valueOf(
+                    section.getString("difficulty-mode", "PROGRESSIVE").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            ac.difficultyMode = DifficultyMode.PROGRESSIVE;
+        }
+        ac.maxItemsPerGame = section.getInt("max-items-per-game", 0);
 
         // Game rules
         ConfigurationSection game = section.getConfigurationSection("game");
@@ -570,6 +583,10 @@ public class ConfigManager {
         config.set("round-timers.easy", ac.roundTimeEasy);
         config.set("round-timers.medium", ac.roundTimeMedium);
         config.set("round-timers.hard", ac.roundTimeHard);
+        config.set("round-timers.extreme", ac.roundTimeExtreme);
+
+        config.set("difficulty-mode", ac.difficultyMode.name());
+        config.set("max-items-per-game", ac.maxItemsPerGame);
 
         config.set("game.pvp-enabled", ac.pvpEnabled);
         config.set("game.nether-enabled", ac.netherEnabled);
@@ -751,9 +768,14 @@ public class ConfigManager {
         public int challengeRewardDuration = 30;
 
         // Round timers (DeathShuffle / BlockShuffle)
-        public int roundTimeEasy = 90;
-        public int roundTimeMedium = 70;
-        public int roundTimeHard = 50;
+        public int roundTimeEasy = 300; // 5 min
+        public int roundTimeMedium = 600; // 10 min
+        public int roundTimeHard = 900; // 15 min
+        public int roundTimeExtreme = 1200; // 20 min
+
+        // Difficulty mode (BlockShuffle only)
+        public DifficultyMode difficultyMode = DifficultyMode.PROGRESSIVE;
+        public int maxItemsPerGame = 0; // 0 = unlimited
 
         // Game rules
         public boolean pvpEnabled = true;
@@ -846,11 +868,18 @@ public class ConfigManager {
          * Get round time based on difficulty tier (1=easy, 2=medium, 3+=hard).
          */
         public int getRoundTime(int difficulty) {
-            if (difficulty <= 1)
-                return roundTimeEasy;
-            if (difficulty == 2)
-                return roundTimeMedium;
-            return roundTimeHard;
+            switch (difficulty) {
+                case 1:
+                    return roundTimeEasy;
+                case 2:
+                    return roundTimeMedium;
+                case 3:
+                    return roundTimeHard;
+                case 4:
+                    return roundTimeExtreme;
+                default:
+                    return roundTimeEasy;
+            }
         }
     }
 
