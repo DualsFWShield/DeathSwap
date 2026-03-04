@@ -6,331 +6,5709 @@
 #             Détermine sa probabilité d'apparaître selon la durée de la partie.
 #             Par défaut, si manquant, dépend du type de l'item (ex: dirt = 1, spawner = 3).
 
+# BlockShuffle Configuration
+# Each block/item can be individually enabled/disabled with custom difficulty.
+# difficulty: 1 = Easy, 2 = Medium, 3 = Hard
+#
+# The plugin uses these defaults if this file is empty.
+# You can modify difficulty, toggle entries on/off, etc.
+
 blocks:
   # ─── Easy (Difficulty 1) ───
   DIRT:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   OAK_LOG:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   COBBLESTONE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   SAND:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   GRAVEL:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   STONE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   CRAFTING_TABLE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   OAK_PLANKS:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   STICK:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   WOODEN_PICKAXE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   TORCH:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   GRASS_BLOCK:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   ANDESITE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   DIORITE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   GRANITE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   COAL_ORE:
-    enabled: true
-    difficulty: 1
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   COPPER_ORE:
-    enabled: true
-    difficulty: 1
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   OAK_LEAVES:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   BIRCH_LOG:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   SPRUCE_LOG:
     enabled: true
     difficulty: 1
-
-    
+    type: STAND
+  
+  
   APPLE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   BONE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   ROTTEN_FLESH:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   SPIDER_EYE:
     enabled: true
-    difficulty: 1
-
+    difficulty: 2
+    type: STAND
+  
   STRING:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   FEATHER:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   SUGAR_CANE:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   WHEAT:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   WHEAT_SEEDS:
     enabled: true
     difficulty: 1
-
+    type: STAND
+  
   # ─── Medium (Difficulty 2) ───
   IRON_ORE:
-    enabled: true
-    difficulty: 2
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   GOLD_ORE:
-    enabled: true
-    difficulty: 2
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   CLAY:
     enabled: true
-    difficulty: 2
-
+    difficulty: 1
+    type: STAND
+  
   MOSSY_COBBLESTONE:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   ICE:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   IRON_PICKAXE:
     enabled: true
-    difficulty: 2
-
+    difficulty: 1
+    type: STAND
+  
   FURNACE:
     enabled: true
-    difficulty: 2
-
+    difficulty: 1
+    type: STAND
+  
   BUCKET:
     enabled: true
-    difficulty: 2
-
+    difficulty: 1
+    type: STAND
+  
   SHIELD:
     enabled: true
-    difficulty: 2
-
+    difficulty: 1
+    type: STAND
+  
   COMPASS:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   BOOKSHELF:
     enabled: true
     difficulty: 2
-
-    
+    type: STAND
+  
+  
   LAPIS_ORE:
-    enabled: true
-    difficulty: 2
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   REDSTONE_ORE:
-    enabled: true
-    difficulty: 2
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   OBSIDIAN:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   NETHERRACK:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   SOUL_SAND:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   MAGMA_BLOCK:
     enabled: true
-    difficulty: 3
-
+    difficulty: 1
+    type: STAND
+  
   GLOWSTONE:
     enabled: true
     difficulty: 3
-
-    
+    type: STAND
+  
+  
   BLAZE_ROD:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   ENDER_PEARL:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   SLIME_BALL:
     enabled: true
-    difficulty: 2
-
+    difficulty: 3
+    type: STAND
+  
   GHAST_TEAR:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   BREWING_STAND:
     enabled: true
-    difficulty: 3
-
+    difficulty: 2
+    type: STAND
+  
   ANVIL:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   JUKEBOX:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   NOTE_BLOCK:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   TARGET:
     enabled: true
     difficulty: 2
-
+    type: STAND
+  
   # ─── Hard (Difficulty 3) ───
   DIAMOND_ORE:
     enabled: true
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   EMERALD_ORE:
     enabled: true
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   SPAWNER:
     enabled: false
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   DEEPSLATE_DIAMOND_ORE:
-    enabled: true
-    difficulty: 3
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   DIAMOND_PICKAXE:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   ENCHANTING_TABLE:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   GOLDEN_APPLE:
     enabled: true
-    difficulty: 3
-
+    difficulty: 2
+    type: STAND
+  
   PISTON:
     enabled: true
-    difficulty: 3
-
+    difficulty: 2
+    type: STAND
+  
   CAKE:
     enabled: true
     difficulty: 3
-
-    
+    type: STAND
+  
+  
   ANCIENT_DEBRIS:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   END_STONE:
     enabled: true
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   DRAGON_EGG:
     enabled: false
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   CRYING_OBSIDIAN:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   NETHERITE_BLOCK:
-    enabled: true
-    difficulty: 3
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   NETHERITE_INGOT:
-    enabled: true
-    difficulty: 3
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   BEACON:
     enabled: false
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   CONDUIT:
-    enabled: true
-    difficulty: 3
-
+    enabled: false
+    difficulty: 4
+    type: STAND
+  
   NETHER_STAR:
     enabled: false
-    difficulty: 3
-
+    difficulty: 4
+    type: STAND
+  
   OBSERVER:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   DISPENSER:
     enabled: true
-    difficulty: 3
-
+    difficulty: 2
+    type: STAND
+  
   DROPPER:
     enabled: true
-    difficulty: 3
-
+    difficulty: 2
+    type: STAND
+  
   SLIME_BLOCK:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   HONEY_BLOCK:
     enabled: true
     difficulty: 3
-
+    type: STAND
+  
   TOTEM_OF_UNDYING:
     enabled: true
+    difficulty: 4
+    type: STAND
+  ACACIA_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  AMETHYST_SHARD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ANGLER_POTTERY_SHERD:
+    enabled: true
     difficulty: 3
-
+    type: STAND
+  ARCHER_POTTERY_SHERD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ARMADILLO_SCUTE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ARMOR_STAND:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ARMS_UP_POTTERY_SHERD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ARROW:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  AXOLOTL_BUCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAKED_POTATO:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BAMBOO_CHEST_RAFT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_RAFT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BEEF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BEETROOT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BEETROOT_SEEDS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BEETROOT_SOUP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLADE_POTTERY_SHERD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLAZE_POWDER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLUE_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_EGG:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLUE_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BOLT_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  BONE_MEAL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BOOK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BORDURE_INDENTED_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  BOW:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BOWL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BREAD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BREEZE_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BREWER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  BRICK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BROWN_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_EGG:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BROWN_HARNESS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BRUSH:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BURN_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CARROT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CARROT_ON_A_STICK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHAINMAIL_BOOTS:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CHAINMAIL_CHESTPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CHAINMAIL_HELMET:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CHAINMAIL_LEGGINGS:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CHARCOAL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHERRY_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_CHEST_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHEST_MINECART:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHICKEN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHORUS_FRUIT:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  CLAY_BALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COAL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COAST_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  COCOA_BEANS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COD_BUCKET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_BEEF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_CHICKEN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_COD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_MUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_PORKCHOP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_RABBIT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKED_SALMON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COOKIE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COPPER_AXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_BOOTS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_CHESTPLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_HELMET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_HOE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_HORSE_ARMOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_INGOT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_LEGGINGS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_NAUTILUS_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COPPER_NUGGET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_PICKAXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_SHOVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_SPEAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_SWORD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CREEPER_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  CROSSBOW:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DANGER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  DARK_OAK_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DIAMOND:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_AXE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_BOOTS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_CHESTPLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_HELMET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_HOE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_HORSE_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_LEGGINGS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_NAUTILUS_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_SHOVEL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_SPEAR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_SWORD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DISC_FRAGMENT_5:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  DRAGON_BREATH:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  DRIED_KELP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DUNE_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  ECHO_SHARD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  EGG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ELYTRA:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  EMERALD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ENCHANTED_BOOK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ENCHANTED_GOLDEN_APPLE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  END_CRYSTAL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ENDER_EYE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPERIENCE_BOTTLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  EXPLORER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  EYE_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FERMENTED_SPIDER_EYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIELD_MASONED_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FILLED_MAP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIRE_CHARGE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIREWORK_ROCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIREWORK_STAR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FISHING_ROD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  FLINT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  FLINT_AND_STEEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  FLOW_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FLOW_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FLOW_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FLOWER_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FRIEND_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  FURNACE_MINECART:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GLASS_BOTTLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GLISTERING_MELON_SLICE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GLOBE_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  GLOW_BERRIES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GLOW_INK_SAC:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GLOW_ITEM_FRAME:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GLOWSTONE_DUST:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOAT_HORN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLD_INGOT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLD_NUGGET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_AXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_BOOTS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_CARROT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_CHESTPLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_HELMET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_HOE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_HORSE_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLDEN_LEGGINGS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLDEN_NAUTILUS_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLDEN_PICKAXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_SHOVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_SPEAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GOLDEN_SWORD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GUNPOWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GUSTER_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  GUSTER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  HEART_OF_THE_SEA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HEART_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  HEARTBREAK_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  HONEY_BOTTLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HONEYCOMB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HOPPER_MINECART:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  HOST_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  HOWL_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  INK_SAC:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_AXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_BOOTS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_CHESTPLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_HELMET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_HOE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_HORSE_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_INGOT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_LEGGINGS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_NAUTILUS_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_NUGGET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_SHOVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_SPEAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_SWORD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ITEM_FRAME:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  JUNGLE_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  JUNGLE_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LAPIS_LAZULI:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LAVA_BUCKET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEAD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LEATHER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEATHER_BOOTS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEATHER_CHESTPLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEATHER_HELMET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEATHER_HORSE_ARMOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEATHER_LEGGINGS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_BLUE_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_BLUE_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_BLUE_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_GRAY_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_GRAY_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LINGERING_POTION:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MACE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MAGENTA_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGMA_CREAM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  MANGROVE_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_CHEST_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  MELON_SEEDS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MELON_SLICE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MILK_BUCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MINECART:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MINER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MOJANG_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MOURNER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSHROOM_STEW:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUSIC_DISC_5:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_11:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_13:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_BLOCKS:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_CAT:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_CHIRP:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_CREATOR:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_CREATOR_MUSIC_BOX:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_FAR:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_LAVA_CHICKEN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_MALL:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_MELLOHI:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_OTHERSIDE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_PIGSTEP:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_PRECIPICE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_RELIC:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_STAL:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_STRAD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_TEARS:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_WAIT:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUSIC_DISC_WARD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  MUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  NAME_TAG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  NAUTILUS_SHELL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  NETHER_BRICK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHERITE_AXE:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_BOOTS:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_CHESTPLATE:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_HELMET:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_HOE:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_HORSE_ARMOR:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_LEGGINGS:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_NAUTILUS_ARMOR:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_PICKAXE:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_SCRAP:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_SHOVEL:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_SPEAR:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  NETHERITE_SWORD:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  NETHERITE_UPGRADE_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  OAK_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OMINOUS_BOTTLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  OMINOUS_TRIAL_KEY:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ORANGE_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PAINTING:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  PALE_OAK_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_CHEST_BOAT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PAPER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  PHANTOM_MEMBRANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PIGLIN_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  PINK_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  PINK_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  PINK_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PITCHER_POD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  PLENTY_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  POISONOUS_POTATO:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POPPED_CHORUS_FRUIT:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  PORKCHOP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POTATO:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POTION:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  POWDER_SNOW_BUCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_CRYSTALS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_SHARD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRIZE_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  PUFFERFISH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PUFFERFISH_BUCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PUMPKIN_PIE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PUMPKIN_SEEDS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_BUNDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_DYE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  QUARTZ:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RABBIT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RABBIT_FOOT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RABBIT_HIDE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RABBIT_STEW:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RAISER_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  RAW_COPPER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RAW_GOLD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RAW_IRON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RECOVERY_COMPASS:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  RED_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  REDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RESIN_BRICK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RIB_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SADDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SALMON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SALMON_BUCKET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SCRAPE_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SHEAF_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SHEARS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SHELTER_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SHULKER_SHELL:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SKULL_BANNER_PATTERN:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SKULL_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SNORT_POTTERY_SHERD:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SNOWBALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPECTRAL_ARROW:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SPLASH_POTION:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  SPRUCE_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SPRUCE_CHEST_BOAT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SPYGLASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STONE_AXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_HOE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_PICKAXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_SHOVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_SPEAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_SWORD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SUGAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SUSPICIOUS_STEW:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SWEET_BERRIES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TADPOLE_BUCKET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TIDE_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  TIPPED_ARROW:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  TNT_MINECART:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TORCHFLOWER_SEEDS:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  TRIAL_KEY:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  TRIDENT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  TROPICAL_FISH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TROPICAL_FISH_BUCKET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TURTLE_HELMET:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  TURTLE_SCUTE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  VEX_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  WARD_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  WARPED_FUNGUS_ON_A_STICK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WATER_BUCKET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  WHITE_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WILD_ARMOR_TRIM_SMITHING_TEMPLATE:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  WIND_CHARGE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WOLF_ARMOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WOODEN_AXE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WOODEN_HOE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WOODEN_SHOVEL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WOODEN_SPEAR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WOODEN_SWORD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WRITABLE_BOOK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WRITTEN_BOOK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  YELLOW_BUNDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_DYE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_HARNESS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ACACIA_BUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_DOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_FENCE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_FENCE_GATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_HANGING_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_LEAVES:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_LOG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_PLANKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_SAPLING:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_SHELF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACACIA_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ACTIVATOR_RAIL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ALLIUM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  AMETHYST_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  AMETHYST_CLUSTER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ANDESITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ANDESITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ANDESITE_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  AZALEA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  AZALEA_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  AZURE_BLUET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BAMBOO:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BAMBOO_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_MOSAIC:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_MOSAIC_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_MOSAIC_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_SHELF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BAMBOO_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BARREL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BASALT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BEE_NEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BEEHIVE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BELL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BIG_DRIPLEAF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BIRCH_BUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_DOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_FENCE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_FENCE_GATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_HANGING_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_LEAVES:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_PLANKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_SAPLING:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_SHELF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BIRCH_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_CANDLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLACK_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACK_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLACK_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  BLACK_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLACK_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLACK_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLACK_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLACKSTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLACKSTONE_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLACKSTONE_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLACKSTONE_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLAST_FURNACE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLUE_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_ICE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLUE_ORCHID:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BLUE_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  BLUE_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLUE_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BLUE_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BLUE_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BONE_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BRAIN_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BRAIN_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BRAIN_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BRICK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BRICK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BRICK_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BROWN_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_MUSHROOM:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  BROWN_MUSHROOM_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_SHULKER_BOX:		
+    enabled: false
+    difficulty: 4
+    type: STAND
+  BROWN_STAINED_GLASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  BROWN_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BROWN_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BUBBLE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BUBBLE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BUBBLE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  BUDDING_AMETHYST:
+    enabled: false
+    difficulty: 4			
+    type: STAND
+  BUSH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CACTUS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CACTUS_FLOWER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CALCITE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CALIBRATED_SCULK_SENSOR:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  CAMPFIRE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CARTOGRAPHY_TABLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CARVED_PUMPKIN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CAULDRON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_SAPLING:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_SHELF:
+    enabled: true
+    difficulty:2 
+    type: STAND
+  CHERRY_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHERRY_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHEST:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHIPPED_ANVIL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_BOOKSHELF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CHISELED_COPPER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHISELED_DEEPSLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHISELED_NETHER_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_POLISHED_BLACKSTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_QUARTZ_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_RED_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHISELED_RESIN_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_SANDSTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CHISELED_STONE_BRICKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHISELED_TUFF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHISELED_TUFF_BRICKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CHORUS_FLOWER:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  CHORUS_PLANT:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  CLOSED_EYEBLOSSOM:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  COAL_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COARSE_DIRT:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLED_DEEPSLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLED_DEEPSLATE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLED_DEEPSLATE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLED_DEEPSLATE_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLESTONE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLESTONE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBBLESTONE_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COBWEB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COMPARATOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COMPOSTER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_BARS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  COPPER_CHAIN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_CHEST:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_DOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COPPER_GRATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  COPPER_LANTERN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_TORCH:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CORNFLOWER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CRACKED_DEEPSLATE_BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CRACKED_DEEPSLATE_TILES:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CRACKED_NETHER_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRACKED_POLISHED_BLACKSTONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRACKED_STONE_BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  CRAFTER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CREAKING_HEART:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CREEPER_HEAD:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  CRIMSON_BUTTON:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_FENCE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_FENCE_GATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_FUNGUS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_HANGING_SIGN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_HYPHAE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_NYLIUM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_PLANKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_ROOTS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_SHELF:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_SIGN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_STEM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CRIMSON_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CUT_COPPER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_RED_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_RED_SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CUT_SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_SHULKER_BOX:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CYAN_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  CYAN_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  CYAN_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DAMAGED_ANVIL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  DANDELION:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_BUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_DOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_FENCE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_FENCE_GATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_HANGING_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_LEAVES:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_LOG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_PLANKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_SAPLING:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_SHELF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_OAK_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DARK_PRISMARINE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DARK_PRISMARINE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DARK_PRISMARINE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DAYLIGHT_DETECTOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  DEAD_BRAIN_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BRAIN_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BRAIN_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BUBBLE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BUBBLE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BUBBLE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_BUSH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_FIRE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_FIRE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_FIRE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_HORN_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_HORN_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_HORN_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_TUBE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_TUBE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEAD_TUBE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DECORATED_POT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEEPSLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DEEPSLATE_BRICK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DEEPSLATE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DEEPSLATE_BRICK_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DEEPSLATE_BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DEEPSLATE_COAL_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_COPPER_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_EMERALD_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_GOLD_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_IRON_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_LAPIS_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_REDSTONE_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DEEPSLATE_TILE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEEPSLATE_TILE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEEPSLATE_TILE_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DEEPSLATE_TILES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DETECTOR_RAIL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIAMOND_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DIORITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DIORITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DIORITE_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  DIRT_PATH:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DRAGON_HEAD:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  DRIED_GHAST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  DRIED_KELP_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  DRIPSTONE_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  EMERALD_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  END_ROD:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  END_STONE_BRICK_SLAB:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  END_STONE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  END_STONE_BRICK_WALL:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  END_STONE_BRICKS:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  ENDER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  EXPOSED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  FARMLAND:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  FERN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIRE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIRE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIRE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FIREFLY_BUSH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FLETCHING_TABLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  FLOWER_POT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FLOWERING_AZALEA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FLOWERING_AZALEA_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  FROGSPAWN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GILDED_BLACKSTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GLASS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GLASS_PANE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GLOW_LICHEN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GOLD_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GRANITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRANITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRANITE_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GRAY_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRAY_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GRAY_SHULKER_BOX:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  GRAY_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GRAY_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GRAY_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GRAY_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GREEN_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GREEN_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GREEN_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GREEN_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_SHULKER_BOX:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  GREEN_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GREEN_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  GREEN_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  GREEN_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  GRINDSTONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  HANGING_ROOTS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HAY_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  HEAVY_CORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  HEAVY_WEIGHTED_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  HONEYCOMB_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HOPPER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HORN_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HORN_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  HORN_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  INFESTED_CHISELED_STONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_COBBLESTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_CRACKED_STONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_DEEPSLATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_MOSSY_STONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_STONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  INFESTED_STONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  IRON_BARS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_CHAIN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  IRON_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  IRON_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  JACK_O_LANTERN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  JUNGLE_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_SAPLING:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_SHELF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  JUNGLE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  KELP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LADDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LANTERN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LAPIS_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LARGE_AMETHYST_BUD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LARGE_FERN:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  LEAF_LITTER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LECTERN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LEVER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIGHT_BLUE_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_SHULKER_BOX:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  LIGHT_BLUE_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIGHT_BLUE_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIGHT_BLUE_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_BLUE_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  LIGHT_GRAY_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIGHT_GRAY_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIGHT_GRAY_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_GRAY_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHT_WEIGHTED_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIGHTNING_ROD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LILAC:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LILY_OF_THE_VALLEY:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LILY_PAD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LIME_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  LIME_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIME_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  LIME_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LIME_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  LODESTONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  LOOM:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  MAGENTA_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  MAGENTA_STAINED_GLASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MAGENTA_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_PROPAGULE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_ROOTS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_SHELF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MANGROVE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MEDIUM_AMETHYST_BUD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  MELON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSS_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSS_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_COBBLESTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_COBBLESTONE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_COBBLESTONE_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_STONE_BRICK_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_STONE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_STONE_BRICK_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MOSSY_STONE_BRICKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUD_BRICK_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUD_BRICK_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUD_BRICK_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUD_BRICKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUDDY_MANGROVE_ROOTS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MUSHROOM_STEM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  MYCELIUM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  NETHER_BRICK_FENCE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_BRICK_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_BRICK_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_BRICK_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_GOLD_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  NETHER_QUARTZ_ORE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  NETHER_SPROUTS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_WART:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  NETHER_WART_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OAK_BUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_DOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_FENCE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_FENCE_GATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_HANGING_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_SAPLING:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_SHELF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_SIGN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_TRAPDOOR:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OAK_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  OCHRE_FROGLIGHT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OPEN_EYEBLOSSOM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ORANGE_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  ORANGE_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ORANGE_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ORANGE_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_TULIP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ORANGE_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  OXEYE_DAISY:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  OXIDIZED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  OXIDIZED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PACKED_ICE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PACKED_MUD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_HANGING_MOSS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_MOSS_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_MOSS_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_SAPLING:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_SHELF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PALE_OAK_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PEARLESCENT_FROGLIGHT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PEONY:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PETRIFIED_OAK_SLAB:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  PIGLIN_HEAD:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  PINK_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_PETALS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  PINK_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PINK_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PINK_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_TULIP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PINK_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PITCHER_PLANT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  PLAYER_HEAD:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  PODZOL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POINTED_DRIPSTONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_ANDESITE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_ANDESITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_ANDESITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_BASALT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_BRICK_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_BRICK_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_BUTTON:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_BLACKSTONE_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  POLISHED_DEEPSLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POLISHED_DEEPSLATE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POLISHED_DEEPSLATE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POLISHED_DEEPSLATE_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  POLISHED_DIORITE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_DIORITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_DIORITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_GRANITE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_GRANITE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_GRANITE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_TUFF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_TUFF_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_TUFF_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POLISHED_TUFF_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POPPY:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  POWERED_RAIL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_BRICK_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_BRICKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PRISMARINE_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PUMPKIN:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  PURPLE_BANNER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_BED:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_CARPET:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_CONCRETE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  PURPLE_STAINED_GLASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPLE_WOOL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  PURPUR_BLOCK:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  PURPUR_PILLAR:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  PURPUR_SLAB:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  PURPUR_STAIRS:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  QUARTZ_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  QUARTZ_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  QUARTZ_PILLAR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  QUARTZ_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  QUARTZ_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RAIL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RAW_COPPER_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RAW_GOLD_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RAW_IRON_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_MUSHROOM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_MUSHROOM_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_NETHER_BRICK_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_NETHER_BRICK_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RED_NETHER_BRICK_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RED_NETHER_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RED_SAND:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_SANDSTONE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_SANDSTONE_WALL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  RED_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RED_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  RED_TULIP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  RED_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  REDSTONE_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  REDSTONE_LAMP:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  REDSTONE_TORCH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  REINFORCED_DEEPSLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  REPEATER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_BRICK_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_BRICK_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_BRICK_WALL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_BRICKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESIN_CLUMP:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  RESPAWN_ANCHOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  ROOTED_DIRT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  ROSE_BUSH:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SANDSTONE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SANDSTONE_STAIRS:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SANDSTONE_WALL:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SCAFFOLDING:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SCULK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SCULK_CATALYST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SCULK_SENSOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SCULK_SHRIEKER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SCULK_VEIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SEA_LANTERN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SEA_PICKLE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SEAGRASS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SHORT_DRY_GRASS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SHORT_GRASS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SHROOMLIGHT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SHULKER_BOX:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SKELETON_SKULL:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  SMALL_AMETHYST_BUD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SMALL_DRIPLEAF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMITHING_TABLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOKER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SMOOTH_BASALT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SMOOTH_QUARTZ:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SMOOTH_QUARTZ_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SMOOTH_QUARTZ_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SMOOTH_RED_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_RED_SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_RED_SANDSTONE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_SANDSTONE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_SANDSTONE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_SANDSTONE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SMOOTH_STONE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SMOOTH_STONE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SNIFFER_EGG:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SNOW:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SNOW_BLOCK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SOUL_CAMPFIRE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SOUL_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SOUL_SOIL:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SOUL_TORCH:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  SPONGE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPORE_BLOSSOM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_BUTTON:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_DOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_FENCE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_FENCE_GATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_HANGING_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_LEAVES:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_PLANKS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_SAPLING:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_SHELF:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_SIGN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_SLAB:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_STAIRS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_TRAPDOOR:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SPRUCE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STICKY_PISTON:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  STONE_BRICK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_BRICK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_BRICK_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_BUTTON:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONE_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STONECUTTER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STRIPPED_ACACIA_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_ACACIA_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_BAMBOO_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_BIRCH_LOG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STRIPPED_BIRCH_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STRIPPED_CHERRY_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_CHERRY_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_CRIMSON_HYPHAE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_CRIMSON_STEM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_DARK_OAK_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_DARK_OAK_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_JUNGLE_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_JUNGLE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_MANGROVE_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_MANGROVE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_OAK_LOG:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STRIPPED_OAK_WOOD:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  STRIPPED_PALE_OAK_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_PALE_OAK_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_SPRUCE_LOG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_SPRUCE_WOOD:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_WARPED_HYPHAE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  STRIPPED_WARPED_STEM:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SUNFLOWER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  SUSPICIOUS_GRAVEL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  SUSPICIOUS_SAND:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TALL_DRY_GRASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TALL_GRASS:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TERRACOTTA:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TEST_BLOCK:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  TEST_INSTANCE_BLOCK:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  TINTED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  TNT:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TORCHFLOWER:
+    enabled: false
+    difficulty: 3
+    type: STAND
+  TRAPPED_CHEST:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TRIPWIRE_HOOK:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUBE_CORAL:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TUBE_CORAL_BLOCK:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TUBE_CORAL_FAN:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TUFF:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_BRICK_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_BRICK_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_BRICK_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_BRICKS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_SLAB:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_STAIRS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TUFF_WALL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  TURTLE_EGG:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  TWISTING_VINES:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  VAULT:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  VERDANT_FROGLIGHT:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  VINE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WARPED_BUTTON:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_FENCE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_FENCE_GATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_FUNGUS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_HANGING_SIGN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_HYPHAE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_NYLIUM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_PLANKS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_PRESSURE_PLATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_ROOTS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_SHELF:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_SIGN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_STEM:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WARPED_WART_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_BLOCK:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_EXPOSED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_OXIDIZED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_CHEST:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  WAXED_WEATHERED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WAXED_WEATHERED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_CHISELED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_BARS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_BULB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_CHAIN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_CHEST:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_DOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_GOLEM_STATUE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_GRATE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_LANTERN:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_COPPER_TRAPDOOR:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_CUT_COPPER:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_CUT_COPPER_SLAB:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_CUT_COPPER_STAIRS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEATHERED_LIGHTNING_ROD:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WEEPING_VINES:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WET_SPONGE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WHITE_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WHITE_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WHITE_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  WHITE_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WHITE_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  WHITE_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  WHITE_TULIP:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WHITE_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WILDFLOWERS:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  WITHER_ROSE:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  WITHER_SKELETON_SKULL:
+    enabled: true
+    difficulty: 4
+    type: STAND
+  YELLOW_BANNER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_BED:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_CANDLE:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  YELLOW_CARPET:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_CONCRETE:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_CONCRETE_POWDER:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  YELLOW_GLAZED_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  YELLOW_SHULKER_BOX:
+    enabled: false
+    difficulty: 4
+    type: STAND
+  YELLOW_STAINED_GLASS:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  YELLOW_STAINED_GLASS_PANE:
+    enabled: true
+    difficulty: 3
+    type: STAND
+  YELLOW_TERRACOTTA:
+    enabled: true
+    difficulty: 2
+    type: STAND
+  YELLOW_WOOL:
+    enabled: true
+    difficulty: 1
+    type: STAND
+  ZOMBIE_HEAD:
+    enabled: true
+    difficulty: 4
+    type: STAND
