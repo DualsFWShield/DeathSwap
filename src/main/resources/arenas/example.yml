@@ -35,9 +35,10 @@ timers:
 # ==========================================
 # Utilisés uniquement pour DeathShuffle / BlockShuffle
 round-timers:
-  easy: 90
-  medium: 70
-  hard: 50
+  easy: 300
+  medium: 600
+  hard: 900
+  extreme: 1200
 
 # ==========================================
 #              GAME RULES

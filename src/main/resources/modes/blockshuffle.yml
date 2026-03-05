@@ -2388,7 +2388,7 @@ blocks:
     enabled: true
     difficulty: 2
     type: STAND
-  BROWN_SHULKER_BOX:		
+  BROWN_SHULKER_BOX:    
     enabled: false
     difficulty: 4
     type: STAND
@@ -2422,7 +2422,7 @@ blocks:
     type: STAND
   BUDDING_AMETHYST:
     enabled: false
-    difficulty: 4			
+    difficulty: 4      
     type: STAND
   BUSH:
     enabled: true
@@ -2506,7 +2506,7 @@ blocks:
     type: STAND
   CHERRY_SHELF:
     enabled: true
-    difficulty:2 
+    difficulty: 2
     type: STAND
   CHERRY_SIGN:
     enabled: true

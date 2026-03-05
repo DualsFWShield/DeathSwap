@@ -603,7 +603,7 @@ gui-settings-difficulty-mode-progressive: "&eProgressif (Facile→Moyen→Diffic
 gui-settings-difficulty-mode-thematic-easy: "&aThématique: Facile"
 gui-settings-difficulty-mode-thematic-medium: "&eThématique: Moyen"
 gui-settings-difficulty-mode-thematic-hard: "&cThématique: Difficile"
-gui-settings-difficulty-mode-thematic-extreme: "&4Thématique: Extrême" (15 min/round)"
+gui-settings-difficulty-mode-thematic-extreme: "&4Thématique: Extrême (15 min/round)"
 gui-settings-difficulty-mode-random: "&dAléatoire (Séquence partagée)"
 gui-settings-difficulty-mode-balanced: "&bÉquilibré (2 Facile + 1 Moyen)"
 gui-settings-max-items-name: "&6Max Items par Partie"
