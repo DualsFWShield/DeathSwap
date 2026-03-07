@@ -5,6 +5,9 @@
 # World players are sent to when leaving / after game ends
 hub-world: "MainLobby"
 
+# Default Language
+language: "fr"
+
 # Chat prefixes per game mode
 prefixes:
   deathswap: "&8[&6DeathSwap&8]"

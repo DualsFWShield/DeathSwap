@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class Lang {
@@ -42,7 +44,15 @@ public class Lang {
         String fileName = "messages_" + languageCode + ".yml";
         File file = new File(plugin.getDataFolder(), fileName);
 
-        // Save default resource if not exists
+        // Save default resources if they don't exist
+        for (String lang : new String[] { "en", "fr" }) {
+            String fName = "messages_" + lang + ".yml";
+            File f = new File(plugin.getDataFolder(), fName);
+            if (!f.exists() && plugin.getResource(fName) != null) {
+                plugin.saveResource(fName, false);
+            }
+        }
+
         if (!file.exists()) {
             if (plugin.getResource(fileName) != null) {
                 plugin.saveResource(fileName, false);
@@ -80,6 +90,37 @@ public class Lang {
         }
 
         plugin.getLogger().info("Loaded " + messages.size() + " messages for language: " + languageCode);
+    }
+
+    public static List<String> getAvailableLanguages(DeathSwapPlugin plugin) {
+        List<String> langs = new ArrayList<>();
+        // Add defaults
+        langs.add("en");
+        langs.add("fr");
+
+        File dataFolder = plugin.getDataFolder();
+        if (dataFolder.exists() && dataFolder.isDirectory()) {
+            File[] files = dataFolder.listFiles((dir, name) -> name.startsWith("messages_") && name.endsWith(".yml"));
+            if (files != null) {
+                for (File file : files) {
+                    String name = file.getName();
+                    String code = name.substring("messages_".length(), name.length() - 4);
+                    if (!langs.contains(code)) {
+                        langs.add(code);
+                    }
+                }
+            }
+        }
+        return langs;
+    }
+
+    public static void setLanguageCode(DeathSwapPlugin plugin, String code) {
+        if (instance != null) {
+            instance.languageCode = code;
+            plugin.getConfig().set("language", code);
+            plugin.saveConfig();
+            instance.load();
+        }
     }
 
     public static String get(String key) {

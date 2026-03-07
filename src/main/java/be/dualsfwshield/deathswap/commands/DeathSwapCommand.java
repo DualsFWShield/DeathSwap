@@ -81,6 +81,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             case "admin" -> {
                 return handleAdmin(sender, args);
             }
+            case "language" -> {
+                return handleLanguage(sender, args);
+            }
             case "help" -> {
                 if (args.length > 1) {
                     if (args[1].equalsIgnoreCase("commands") && sender.hasPermission("deathswap.admin")) {
@@ -487,6 +490,33 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleLanguage(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("deathswap.admin")) {
+            Lang.send(sender, "no-permission");
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(Component.text("Usage: /ds language <lang>", NamedTextColor.RED));
+            return true;
+        }
+
+        String targetLang = args[1].toLowerCase();
+        List<String> available = Lang.getAvailableLanguages(plugin);
+
+        if (!available.contains(targetLang)) {
+            sender.sendMessage(Component.text(
+                    "Unknown language: " + targetLang + " (Available: " + String.join(", ", available) + ")",
+                    NamedTextColor.RED));
+            return true;
+        }
+
+        Lang.setLanguageCode(plugin, targetLang);
+        sender.sendMessage(Component.text("Language successfully changed to: ", NamedTextColor.GREEN)
+                .append(Component.text(targetLang, NamedTextColor.GOLD)));
+        return true;
+    }
+
     private void handleAdminSet(Player player, String[] args) {
         if (args.length < 5) {
             Lang.send(player, "cmd-admin-usage-set");
@@ -720,7 +750,8 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             List<String> subcommands = new ArrayList<>(Arrays.asList(
                     "join", "leave", "list", "stats", "top", "vote", "help"));
             if (sender.hasPermission("deathswap.admin")) {
-                subcommands.addAll(Arrays.asList("start", "stop", "swapnow", "reload", "settings", "admin"));
+                subcommands
+                        .addAll(Arrays.asList("start", "stop", "swapnow", "reload", "settings", "admin", "language"));
             }
             return filter(subcommands, args[0]);
         } else if (args.length == 2) {
@@ -743,6 +774,9 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
             if (sub.equals("admin")) {
                 return filter(Arrays.asList("create", "edit", "delete", "clone", "list", "save", "set", "gamerule",
                         "command"), args[1]);
+            }
+            if (sub.equals("language") && sender.hasPermission("deathswap.admin")) {
+                return filter(Lang.getAvailableLanguages(plugin), args[1]);
             }
         } else if (args.length == 3) {
             String sub = args[0].toLowerCase();
