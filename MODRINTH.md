@@ -53,6 +53,7 @@
 | `/ds stats` | View stats |
 | `/ds top [category]` | Leaderboard |
 | `/ds help gui` | Visual help menu |
+| `/ds language <lang>` | Change language |
 | `/ds admin` | Admin dashboard (GUI) |
 | `/ds admin create/delete/clone` | Manage arenas |
 | `/ds settings` | In-game settings GUI |

@@ -46,6 +46,7 @@
 | `/ds help gui`               | Open the visual help menu (GUI)                | `deathswap.play` |
 | `/ds list`                   | List arenas and their status                   | `deathswap.play` |
 | `/ds tp <player>`            | TP to a player (spectator only)                | `deathswap.play` |
+| `/ds language <lang>`        | Change plugin language                         | `deathswap.play` |
 
 ### Admin Commands
 
@@ -88,20 +89,18 @@ The `config.yml` contains **only** global settings. Arenas are in `arenas/<id>.y
 # World players are sent to when leaving / after game ends
 hub-world: "MainLobby"
 
-# Teleport command.
-teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
-
-# Commands used to reset the game world before a match.
-# Empty list [] = no reset (static map).
-world-reset-commands:
-  - "cwr edit %world% setSeed %seed%"
-  - "cwr reset %world%"
+# Default Language
+language: "fr"
 
 # Chat prefixes per game mode
 prefixes:
   deathswap: "&8[&6DeathSwap&8]"
   deathshuffle: "&8[&dDeathShuffle&8]"
   blockshuffle: "&8[&bBlockShuffle&8]"
+
+# =========================================
+#   Features & Toggles
+# =========================================
 
 stats:
   enabled: true
@@ -115,16 +114,83 @@ voting:
 challenges:
   enabled: false # Default disabled as requested
   list:
-    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft a Workbench" }
-    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 Coal" }
-    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Kill a Zombie" }
-    - { type: CRAFT, target: FURNACE, amount: 1, reward: FASTER_DIGGING, description: "Craft a Furnace" }
-    - { type: MINE, target: IRON_ORE, amount: 1, reward: RESISTANCE, description: "Find Iron" }
+    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft une table de craft" }
+    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 charbons" }
+    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Tue un zombie" }
+    - { type: CRAFT, target: FURNACE, amount: 1, reward: FASTER_DIGGING, description: "Craft un four" }
+    - { type: MINE, target: IRON_ORE, amount: 1, reward: RESISTANCE, description: "Trouve du fer" }
 
 sounds:
   enabled: true
-  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
-  # ... (see full file for the complete list of sounds)
+  game-start: { type: "entity.ender_dragon.growl", volume: 1.0, pitch: 1.0 }
+  countdown-tick: { type: "block.note_block.hat", volume: 1.0, pitch: 1.0 }
+  countdown-go: { type: "entity.experience_orb.pickup", volume: 1.0, pitch: 1.2 }
+  swap: { type: "entity.enderman.teleport", volume: 1.0, pitch: 1.0 }
+  shuffle: { type: "block.note_block.chime", volume: 1.0, pitch: 1.5 }
+  death: { type: "entity.wither.death", volume: 0.5, pitch: 1.0 }
+  win: { type: "ui.toast.challenge_complete", volume: 1.0, pitch: 1.0 }
+  round-success: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
+  round-fail: { type: "entity.villager.no", volume: 1.0, pitch: 0.8 }
+  challenge-complete: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
+  vote-cast:
+    type: "ui.button.click"
+    volume: 1.0
+    pitch: 1.0
+
+# =========================================
+#   Arenas (each = independent game)
+# =========================================
+arenas:
+  default:
+    # --- Game Type ---
+    # DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
+    game-type: DEATHSWAP
+
+    # --- Worlds ---
+    game-world: "DeathSwap_Game"
+    game-world-nether: "DeathSwap_Game_nether"
+    game-world-end: "DeathSwap_Game_the_end"
+    lobby-world: "DS_WaitingLobby"
+
+    # --- Player Limits ---
+    min-players: 2
+    max-players: 20
+
+    # --- Timers (seconds) ---
+    timers:
+      load-time: 40              # Wait time for world generation
+      swap-mode: FIXED           # FIXED or RANDOM
+      swap-interval: 300         # FIXED mode: exact interval (seconds)
+      swap-min: 120              # RANDOM mode: minimum interval
+      swap-max: 420              # RANDOM mode: maximum interval
+      max-game-time: 1800        # Max game duration (30 min)
+      spawn-protection: 30       # Invulnerability at start (seconds)
+
+    # --- Round Timers (DeathShuffle / BlockShuffle) ---
+    round-timers:
+      easy: 300
+      medium: 600
+      hard: 900
+      extreme: 1200
+
+    # --- Game Rules ---
+    game:
+      pvp-enabled: true          # false = players can't hit each other, but can attack mobs
+      nether-enabled: false
+      end-enabled: false
+      # World management — load worlds before CWR reset, don't unload after game
+      world-load-enabled: true             # Load worlds before reset (CWR needs them loaded)
+      world-unload-enabled: false          # Don't unload after game end
+      world-load-command: "mv load %world%"     # %world% = world name placeholder
+      world-unload-command: "mv unload %world%"
+
+    # --- Seeds ---
+    seeds:
+      - { seed: "-3542283819777", name: "Temple & Village" }
+      - { seed: "8490605437877207559", name: "Village & Ice Spikes" }
+      - { seed: "-13377777", name: "Désert & Pyramide" }
+      - { seed: "123456789", name: "Île de survie" }
+      - { seed: "-69420", name: "Manoir" }
 ```
 
 ### Arena Structure
@@ -715,21 +781,24 @@ worlds:
 
 ```yaml
 # =========================================
-#   DeathSwap Global Configuration
+#   DeathSwap Configuration
 # =========================================
 
+# World players are sent to when leaving / after game ends
 hub-world: "MainLobby"
 
-teleport-command: "mvtp %player% e:%world%:%x%,%y%,%z%:%yaw%:%pitch%"
+# Default Language
+language: "fr"
 
-world-reset-commands:
-  - "cwr edit %world% setSeed %seed%"
-  - "cwr reset %world%"
-
+# Chat prefixes per game mode
 prefixes:
-  deathswap: "§8[§6DeathSwap§8]"
-  deathshuffle: "§8[§dDeathShuffle§8]"
-  blockshuffle: "§8[§bBlockShuffle§8]"
+  deathswap: "&8[&6DeathSwap&8]"
+  deathshuffle: "&8[&dDeathShuffle&8]"
+  blockshuffle: "&8[&bBlockShuffle&8]"
+
+# =========================================
+#   Features & Toggles
+# =========================================
 
 stats:
   enabled: true
@@ -739,28 +808,87 @@ voting:
   enabled: true
   vote-time: 15
   options-count: 3
-  vote-time-per-arena: true
 
 challenges:
-  enabled: false
+  enabled: false # Default disabled as requested
   list:
-    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft a Workbench" }
-    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 coal ores" }
-    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Kill a zombie" }
+    - { type: CRAFT, target: CRAFTING_TABLE, amount: 1, reward: SPEED, description: "Craft une table de craft" }
+    - { type: MINE, target: COAL_ORE, amount: 3, reward: NIGHT_VISION, description: "Mine 3 charbons" }
+    - { type: KILL, target: ZOMBIE, amount: 1, reward: STRENGTH, description: "Tue un zombie" }
+    - { type: CRAFT, target: FURNACE, amount: 1, reward: FASTER_DIGGING, description: "Craft un four" }
+    - { type: MINE, target: IRON_ORE, amount: 1, reward: RESISTANCE, description: "Trouve du fer" }
 
 sounds:
   enabled: true
-  game-start: { type: "ENTITY_ENDER_DRAGON_GROWL", volume: 1.0, pitch: 1.0 }
-  countdown-tick: { type: "BLOCK_NOTE_BLOCK_HAT", volume: 1.0, pitch: 1.0 }
-  countdown-go: { type: "ENTITY_EXPERIENCE_ORB_PICKUP", volume: 1.0, pitch: 1.2 }
-  swap: { type: "ENTITY_ENDERMAN_TELEPORT", volume: 1.0, pitch: 1.0 }
-  shuffle: { type: "BLOCK_NOTE_BLOCK_CHIME", volume: 1.0, pitch: 1.5 }
-  death: { type: "ENTITY_WITHER_DEATH", volume: 0.5, pitch: 1.0 }
-  win: { type: "UI_TOAST_CHALLENGE_COMPLETE", volume: 1.0, pitch: 1.0 }
-  round-success: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
-  round-fail: { type: "ENTITY_VILLAGER_NO", volume: 1.0, pitch: 0.8 }
-  challenge-complete: { type: "ENTITY_PLAYER_LEVELUP", volume: 1.0, pitch: 1.5 }
-  vote-cast: { type: "ENTITY_UI_BUTTON_CLICK", volume: 1.0, pitch: 2.0 }
+  game-start: { type: "entity.ender_dragon.growl", volume: 1.0, pitch: 1.0 }
+  countdown-tick: { type: "block.note_block.hat", volume: 1.0, pitch: 1.0 }
+  countdown-go: { type: "entity.experience_orb.pickup", volume: 1.0, pitch: 1.2 }
+  swap: { type: "entity.enderman.teleport", volume: 1.0, pitch: 1.0 }
+  shuffle: { type: "block.note_block.chime", volume: 1.0, pitch: 1.5 }
+  death: { type: "entity.wither.death", volume: 0.5, pitch: 1.0 }
+  win: { type: "ui.toast.challenge_complete", volume: 1.0, pitch: 1.0 }
+  round-success: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
+  round-fail: { type: "entity.villager.no", volume: 1.0, pitch: 0.8 }
+  challenge-complete: { type: "entity.player.levelup", volume: 1.0, pitch: 1.5 }
+  vote-cast:
+    type: "ui.button.click"
+    volume: 1.0
+    pitch: 1.0
+
+# =========================================
+#   Arenas (each = independent game)
+# =========================================
+arenas:
+  default:
+    # --- Game Type ---
+    # DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
+    game-type: DEATHSWAP
+
+    # --- Worlds ---
+    game-world: "DeathSwap_Game"
+    game-world-nether: "DeathSwap_Game_nether"
+    game-world-end: "DeathSwap_Game_the_end"
+    lobby-world: "DS_WaitingLobby"
+
+    # --- Player Limits ---
+    min-players: 2
+    max-players: 20
+
+    # --- Timers (seconds) ---
+    timers:
+      load-time: 40              # Wait time for world generation
+      swap-mode: FIXED           # FIXED or RANDOM
+      swap-interval: 300         # FIXED mode: exact interval (seconds)
+      swap-min: 120              # RANDOM mode: minimum interval
+      swap-max: 420              # RANDOM mode: maximum interval
+      max-game-time: 1800        # Max game duration (30 min)
+      spawn-protection: 30       # Invulnerability at start (seconds)
+
+    # --- Round Timers (DeathShuffle / BlockShuffle) ---
+    round-timers:
+      easy: 300
+      medium: 600
+      hard: 900
+      extreme: 1200
+
+    # --- Game Rules ---
+    game:
+      pvp-enabled: true          # false = players can't hit each other, but can attack mobs
+      nether-enabled: false
+      end-enabled: false
+      # World management — load worlds before CWR reset, don't unload after game
+      world-load-enabled: true             # Load worlds before reset (CWR needs them loaded)
+      world-unload-enabled: false          # Don't unload after game end
+      world-load-command: "mv load %world%"     # %world% = world name placeholder
+      world-unload-command: "mv unload %world%"
+
+    # --- Seeds ---
+    seeds:
+      - { seed: "-3542283819777", name: "Temple & Village" }
+      - { seed: "8490605437877207559", name: "Village & Ice Spikes" }
+      - { seed: "-13377777", name: "Désert & Pyramide" }
+      - { seed: "123456789", name: "Île de survie" }
+      - { seed: "-69420", name: "Manoir" }
 ```
 
 ### Example Arena (`arenas/example.yml`)
@@ -768,53 +896,85 @@ sounds:
 > **Note:** Copy this file to create new arenas (e.g., `default.yml`). The plugin ignores `example.yml`.
 
 ```yaml
+# ==========================================
+#      DEATHSWAP ARENA CONFIGURATION
+# ==========================================
+# ID: example
+# This file serves as a reference for all settings.
+
+# Mode de jeu : DEATHSWAP, DEATHSHUFFLE, BLOCKSHUFFLE
 game-type: DEATHSWAP
+
+# Mondes (doivent être gérés par Multiverse)
 game-world: "example_Game"
 game-world-nether: "example_Game_nether"
 game-world-end: "example_Game_the_end"
 lobby-world: "example_Lobby"
+
+# Joueurs
 min-players: 2
 max-players: 20
-ui-mode: RICH
+ui-mode: RICH  # RICH (BossBar + ActionBar) ou CLEAN (Chat uniquement)
 
+# ==========================================
+#                 TIMERS
+# ==========================================
 timers:
-  load-time: 40
-  swap-mode: FIXED
-  swap-interval: 300
-  swap-min: 120
-  swap-max: 420
-  max-game-time: 1800
-  spawn-protection: 30
+  load-time: 40           # Temps d'attente dans le lobby avant TP (secondes)
+  swap-mode: FIXED        # FIXED (fixe) ou RANDOM (aléatoire)
+  swap-interval: 300      # Temps entre les swaps (si FIXED)
+  swap-min: 120           # Minimum temps de swap (si RANDOM)
+  swap-max: 420           # Maximum temps de swap (si RANDOM)
+  max-game-time: 1800     # Durée max de la partie (secondes). 0 = Illimité.
+  spawn-protection: 30    # Invulnérabilité au début (secondes)
 
+# ==========================================
+#              ROUND TIMERS
+# ==========================================
+# Utilisés uniquement pour DeathShuffle / BlockShuffle
 round-timers:
-  easy: 90
-  medium: 70
-  hard: 50
+  easy: 300
+  medium: 600
+  hard: 900
+  extreme: 1200
 
+# ==========================================
+#              GAME RULES
+# ==========================================
 game:
   pvp-enabled: true
   nether-enabled: false
   end-enabled: false
-  world-load-enabled: true
-  world-unload-enabled: false
-  world-load-command: "mv load %world%"
-  world-unload-command: "mv unload %world%"
 
+# Règles classiques Minecraft (format Snake Case 1.21+)
 gamerules:
   keep_inventory: "false"
-  natural_health_regeneration: "true"
+  natural_health_regeneration: "false"
   mob_griefing: "true"
   show_death_messages: "true"
-  announce_advancements: "true"
+  show_advancement_messages: "true"
   immediate_respawn: "true"
   random_tick_speed: "3"
+  spawn_mobs: "true"
+  spawn_phantoms: "true"
+  spawn_wandering_traders: "true"
+  spawn_wardens: "true"
+  spawner_blocks_work: "true"
+  spawn_monsters: "true"
+  drowning_damage: "true"
+  fall_damage: "true"
+  fire_damage: "true"
+  freeze_damage: "true"
 
-# Advanced startup options
-start-if-min-players-met: false
-prevent-cancel-after-countdown: false
-lightning-fast-start: false
-
-seeds: []
+# ==========================================
+#           STRUCTURES (SEEDS)
+# ==========================================
+# Liste des seeds disponibles pour la génération du monde
+seeds:
+  - seed: "-123456789"
+    name: "Village Côtier"
+  - seed: "987654321"
+    name: "Montagnes Enneigées"
 ```
 
 ### Game Modes
