@@ -311,6 +311,12 @@ public class BlockShuffleGUI implements Listener {
             config.save();
             open(player, arenaId, page);
             player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1, 0.8f);
+            
+            for (be.dualsfwshield.deathswap.GameInstance inst : plugin.getArenaManager().getAllArenas()) {
+                if (inst instanceof be.dualsfwshield.deathswap.modes.BlockShuffleInstance bsi) {
+                    bsi.reloadSettings();
+                }
+            }
             return;
         }
         if (slot == 52 && arenaConfig == null) {
@@ -321,6 +327,12 @@ public class BlockShuffleGUI implements Listener {
             config.save();
             open(player, arenaId, page);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2f);
+            
+            for (be.dualsfwshield.deathswap.GameInstance inst : plugin.getArenaManager().getAllArenas()) {
+                if (inst instanceof be.dualsfwshield.deathswap.modes.BlockShuffleInstance bsi) {
+                    bsi.reloadSettings();
+                }
+            }
             return;
         }
 
@@ -378,6 +390,12 @@ public class BlockShuffleGUI implements Listener {
             if (changed) {
                 config.save();
                 open(player, arenaId, page);
+                
+                for (be.dualsfwshield.deathswap.GameInstance inst : plugin.getArenaManager().getAllArenas()) {
+                    if (inst instanceof be.dualsfwshield.deathswap.modes.BlockShuffleInstance bsi) {
+                        bsi.reloadSettings();
+                    }
+                }
             }
         }
     }

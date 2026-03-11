@@ -924,7 +924,7 @@ public class ConfigManager {
 
         private boolean load() {
             boolean changed = false;
-            entries.clear();
+            Map<String, BlockShuffleEntry> entryMap = new java.util.LinkedHashMap<>();
             ConfigurationSection blocks = config.getConfigurationSection("blocks");
             if (blocks != null) {
                 for (String key : blocks.getKeys(false)) {
@@ -933,10 +933,13 @@ public class ConfigManager {
                         boolean enabled = sec.getBoolean("enabled", true);
                         int difficulty = sec.getInt("difficulty", 1);
                         String type = sec.getString("type", "STAND");
-                        entries.add(new BlockShuffleEntry(key, enabled, difficulty, type));
+                        String matName = key.toUpperCase();
+                        entryMap.put(matName, new BlockShuffleEntry(matName, enabled, difficulty, type));
                     }
                 }
             }
+            entries.clear();
+            entries.addAll(entryMap.values());
 
             // Sync with Bukkit's current Material enum to catch new version blocks/items
             java.util.Set<String> existing = entries.stream()
@@ -996,6 +999,7 @@ public class ConfigManager {
         }
 
         public void save() {
+            config.set("blocks", null); // Clear to avoid duplicates with different casing
             for (BlockShuffleEntry entry : entries) {
                 String path = "blocks." + entry.material();
                 config.set(path + ".enabled", entry.enabled());
@@ -1035,7 +1039,7 @@ public class ConfigManager {
 
         private boolean load() {
             boolean changed = false;
-            entries.clear();
+            Map<String, DeathShuffleEntry> entryMap = new java.util.LinkedHashMap<>();
             ConfigurationSection causes = config.getConfigurationSection("causes");
             if (causes != null) {
                 for (String key : causes.getKeys(false)) {
@@ -1043,10 +1047,13 @@ public class ConfigManager {
                     if (sec != null) {
                         boolean enabled = sec.getBoolean("enabled", true);
                         int difficulty = sec.getInt("difficulty", 1);
-                        entries.add(new DeathShuffleEntry(key.toUpperCase(), enabled, difficulty));
+                        String causeName = key.toUpperCase();
+                        entryMap.put(causeName, new DeathShuffleEntry(causeName, enabled, difficulty));
                     }
                 }
             }
+            entries.clear();
+            entries.addAll(entryMap.values());
 
             // Sync with Bukkit's current DamageCause enum to catch new version causes
             java.util.Set<String> existing = entries.stream()
@@ -1089,6 +1096,7 @@ public class ConfigManager {
         }
 
         public void save() {
+            config.set("causes", null); // Clear to avoid duplicates with different casing
             for (DeathShuffleEntry entry : entries) {
                 String path = "causes." + entry.cause();
                 config.set(path + ".enabled", entry.enabled());

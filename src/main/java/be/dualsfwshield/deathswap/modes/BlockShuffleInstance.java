@@ -198,6 +198,10 @@ public class BlockShuffleInstance extends GameInstance {
         return diff;
     }
 
+    public void reloadSettings() {
+        loadTargets();
+    }
+
     private void loadTargets() {
         targets.clear();
         ConfigManager.BlockShuffleConfig bsConfig = getPlugin().getConfigManager().getBlockShuffleConfig();

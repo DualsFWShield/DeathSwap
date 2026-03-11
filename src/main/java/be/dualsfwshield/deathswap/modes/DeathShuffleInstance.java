@@ -71,6 +71,10 @@ public class DeathShuffleInstance extends GameInstance {
         loadAllowedCauses();
     }
 
+    public void reloadSettings() {
+        loadAllowedCauses();
+    }
+
     private void loadAllowedCauses() {
         allowedCauses.clear();
         customDifficulties.clear();
