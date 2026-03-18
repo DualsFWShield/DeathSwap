@@ -18,6 +18,7 @@
 - [Seeds & Vote](#-seeds--vote)
 - [Statistiques](#-statistiques)
 - [Challenges](#-challenges)
+- [Système d'Équipes](#-système-déquipes)
 - [Sons Personnalisés](#-sons-personnalisés)
 - [Dashboard Admin](#️-dashboard-admin)
 - [Multi-Arènes](#️-multi-arènes)
@@ -436,6 +437,32 @@ challenges:
     - { type: MINE, target: DIAMOND_ORE, amount: 5, reward: SPEED, description: "Mine 5 diamants" }
     - { type: KILL, target: ENDERMAN, amount: 3, reward: NIGHT_VISION, description: "Tue 3 endermen" }
 ```
+
+---
+
+## 🤝 Système d'Équipes
+
+Une gestion d'équipe complète est intégrée pour tous les modes de jeu (DeathSwap, BlockShuffle, DeathShuffle).
+
+### Rejoindre une équipe
+
+- Dans le lobby d'attente, les joueurs reçoivent une **Boussole**. Un clic la main ouvre l'interface `TeamSelectGUI` pour rejoindre une équipe de couleur.
+- Les joueurs sans équipe lors du démarrage sont répartis via le `TeamManager` **automatiquement et équitablement**.
+
+### Mécaniques de jeu en Équipe
+
+- **DeathSwap :** Le swap s'effectue par équipe (l'équipe A et l'équipe B échangent). Tous les membres d'une même équipe partagent instantanément **un inventaire unifié**. 
+  - **Pénalité de Mort :** Si un joueur meurt, il fait perdre à son équipe une fraction du butin partagé, *et* la vie maximale des survivants baisse définitivement de moitié (10 cœurs -> 5 cœurs -> 2.5 cœurs...).
+- **Block & Death Shuffle :** Le score est collectif. Le premier membre atteignant la cible valide le point global de l'équipe.
+
+---
+
+## ⚙️ Configuration du Joueur (Lobby)
+
+Outre les réglages du `/ds settings` de l'arène, les joueurs reçoivent un **Hopper** dans leur inventaire s'ils sont dans le lobby. Il permet de configurer dynamiquement la partie qui va se lancer via le `PlayerConfigGUI` :
+- **Paramètres :** Timer de Swap, Activation du PvP, Rayon de Spawn, Protection au Spawn, **[Nouveau] Durée de l'effet de Cécité** à chaque swap.
+- **Accès Mondes :** Activer/désactiver l'accès au Nether et l'accès à l'End pour la partie.
+- **Activer ou Désactiver le système d'Équipes**.
 
 ---
 
@@ -1070,18 +1097,19 @@ Pour éviter qu'une partie ne tourne indéfiniment lorsqu'un joueur se retrouve 
 
 ---
 
-## 🛠️ API Développeur (Custom Game Modes)
+## 🛠️ API Développeur (DeathSwapAPI)
 
-DeathSwap offre désormais une API qui permet à n'importe quel développeur tiers de créer et d'enregistrer ses propres mini-jeux ! Vous pouvez y accéder via la classe `DeathSwapAPI`.
+DeathSwap offre une API accessible via la classe `be.dualsfwshield.deathswap.api.DeathSwapAPI` pour étendre les fonctionnalités du plugin.
 
-### Comment enregistrer un nouveau mode de jeu ?
+### 1. Comment enregistrer un nouveau mode de jeu ?
 
-1. Assurez-vous d'avoir `DeathSwap` comme dépendance (depend ou softdepend) dans votre `plugin.yml`.
+1. Assurez-vous d'avoir `DeathSwap` comme dépendance (`depend` ou `softdepend`) dans votre `plugin.yml`.
 2. Créez une classe étendant `GameInstance` contenant la logique de votre jeu.
 3. Enregistrez votre Factory auprès de l'API au démarrage du serveur :
 
 ```java
 import be.dualsfwshield.deathswap.api.DeathSwapAPI;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class MonPlugin extends JavaPlugin {
     @Override
@@ -1091,15 +1119,38 @@ public class MonPlugin extends JavaPlugin {
             "MON_MODE",             // ID Interne
             "Mon Super Mode",       // Nom d'affichage GUI
             "&8[&aMonMode&8]",      // Préfixe de chat par défaut
-            
-            // Factory pour retourner votre instance de classe
-            MonSuperModeInstance::new
+            MonSuperModeInstance::new // Factory
         );
     }
 }
 ```
 
-Une fois cette ligne appelée, les joueurs pourront utiliser votre mode comme n'importe quel mode intégré, les administrateurs le verront dans les GUIs de configuration, et `/ds start` fonctionnera de manière native.
+Une fois enregistré, votre mode est sélectionnable via la valeur `game-type: MON_MODE` dans les configurations d'arène.
+
+### 2. Accéder aux Managers & Événements
+
+L'instance principale `DeathSwapPlugin` permet d'accéder au cœur logique du plugin :
+
+```java
+import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.ArenaManager;
+import be.dualsfwshield.deathswap.GameInstance;
+import org.bukkit.entity.Player;
+
+DeathSwapPlugin plugin = DeathSwapPlugin.getInstance();
+
+// Récupérer et lancer manuellement une arène spécifique
+ArenaManager arenaManager = plugin.getArenaManager();
+GameInstance instance = arenaManager.getArena("default");
+if (instance != null) {
+    if (instance.getState() == GameState.WAITING) {
+        instance.startGame(); // Force le Game Start via l'API
+    }
+}
+
+// Ajouter des victoires aux statistiques persistantes d'un joueur
+plugin.getStatsManager().getPlayerStats(player.getUniqueId()).addWins(1);
+```
 
 ---
 

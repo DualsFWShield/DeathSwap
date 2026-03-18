@@ -25,6 +25,13 @@
 | **DeathShuffle** | Meurs de la bonne façon pour survivre ! (Causes éditables en jeu via GUI, inclut sous-mode "Death Run" & "Morts Uniques") |
 | **BlockShuffle** | Trouve et tiens-toi ou craft le bon bloc ! (Blocs éditables en jeu via GUI, inclut sous-mode "Item Race" & "Cibles Uniques") |
 
+### 🤝 Système d'Équipes (Nouveau !)
+
+- **Coopération Totale :** Jouez à tous les modes en équipe !
+- **Choix d'Équipe :** Les joueurs rejoignent une couleur via la Boussole dans le lobby. Auto-équilibrage actif si aucune équipe n'est choisie.
+- **DeathSwap Coop :** Les équipes swapent ensemble ! L'inventaire est partagé. Si un coéquipier meurt, ses alliés perdent de la vie max et un pourcentage du butin s'évapore.
+- **Block & Death Shuffle :** Score commun et progression coopérative en équipe.
+
 ### 🏟️ Multi-Arènes
 
 - Chaque arène est **indépendante** (monde, joueurs, config, timers)
@@ -47,9 +54,9 @@
 - **Seeds** : Système de vote avec seeds prédéfinies et configuration par arène via le toggle custom-arena-seed-only.
 - **Modes Shuffle Avancés** : GUI en jeu pour (dés)activer les blocs/causes, sous-modes "Course d'Item", "Cibles uniques", etc. Auto-découverte des nouveaux Blocs/Causes au lancement.
 - **Anti-Solo Protection**: Prévention logicielle interdisant qu'un seul joueur soit bloqué indéfiniment. Fin automatique ou blocage de la partie.
-- **Mondes Optionnels & Hooks** : Support complet du Nether et de l'End avec des noms de mondes configurables par arène. Commandes hooks pour le chargement et déchargement auto des mondes.
+- **Mondes Optionnels & Dimensions** : Support natif et complet du **Nether** et de **l'End** avec des configurations MultiVerse dédiées. Accès aux réglages de dimensions depuis le `PlayerConfigGUI`.
 - **Démarrage Éclair** : Option "Lightning Fast Start" pour réduire tous les délais d'attente à zéro et rentrer en jeu instantanément.
-- **Résilience de Chargement** : Le "World-Ready Polling" vérifie automatiquement que Multiverse et CWR ont complètement fini de générer les mondes (y compris le nether et l'end) avant la téléportation.
+- **Résilience de Chargement** : Le "World-Ready Polling" vérifie automatiquement que Multiverse et CWR ont complètement fini de générer les mondes (Overworld, Nether, End) avant la téléportation.
 - **API Custom Modes** : Intégration de `DeathSwapAPI.registerMode()` permettant aux développeurs tiers d'ajouter leurs propres modes de jeux via un plugin addon.
 - **Challenges** : Craft, mine, kill avec récompenses (DeathSwap)
 - **Commandes Configurables** : Téléportation et Reset de monde 100% configurables (support Vanilla/autres plugins)

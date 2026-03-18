@@ -18,6 +18,7 @@
 - [Seeds & Voting](#-seeds--voting)
 - [Statistics](#-statistics)
 - [Challenges](#-challenges)
+- [Team System](#-team-system)
 - [Custom Sounds](#-custom-sounds)
 - [Admin Dashboard](#️-admin-dashboard)
 - [Multi-Arenas](#️-multi-arenas)
@@ -415,6 +416,32 @@ challenges:
     - { type: MINE, target: DIAMOND_ORE, amount: 5, reward: SPEED, description: "Mine 5 diamonds" }
     - { type: KILL, target: ENDERMAN, amount: 3, reward: NIGHT_VISION, description: "Kill 3 endermen" }
 ```
+
+---
+
+## 🤝 Team System
+
+A complete team management system is integrated for all game modes (DeathSwap, BlockShuffle, DeathShuffle).
+
+### Joining a Team
+
+- In the waiting lobby, players receive a **Compass**. Clicking it opens the `TeamSelectGUI` interface to join a color team.
+- Players with no team at launch are dispatched by the `TeamManager` **automatically and evenly**.
+
+### Team Game Mechanics
+
+- **DeathSwap:** The swap happens by team (Team A and Team B trade spots). All members of the same team instantly share **a unified inventory**. 
+  - **Death Penalty:** If a player dies, a fraction of the team's shared loot is randomly evaporated, *and* the maximum life of all surviving teammates is halved permanently (10 hearts -> 5 hearts -> 2.5 hearts...).
+- **Block & Death Shuffle:** The score is collective. The first team member reaching the target scores the point for the entire team.
+
+---
+
+## ⚙️ Player Configuration (Lobby)
+
+In addition to the server-wide `/ds settings`, players receive a **Hopper** in their inventory while playing in the lobby. Clicking it opens the `PlayerConfigGUI` to easily tweak the upcoming game dynamically:
+- **Settings:** Swap Timer, PvP execution, Spawn Radius, Spawn Protection, **[New] Blindness duration** post-swap.
+- **Dimensions:** Enable or disable access to the **Nether** and **End** individually.
+- **Team Enabling:** Enable or Disable the Team System.
 
 ---
 
@@ -1051,18 +1078,19 @@ To prevent a game from running indefinitely when a player is left alone (opponen
 
 ---
 
-## 🛠️ Developer API (Custom Game Modes)
+## 🛠️ Developer API (DeathSwapAPI)
 
-DeathSwap now offers an API that allows any third-party developer to create and register their own minigames! You can access it via the `DeathSwapAPI` class.
+DeathSwap exposes an API through the `be.dualsfwshield.deathswap.api.DeathSwapAPI` class allowing developers to expand the plugin's functionalities.
 
-### How to register a new game mode?
+### 1. How to register a new game mode?
 
-1. Ensure you have `DeathSwap` as a dependency (depend or softdepend) in your `plugin.yml`.
+1. Ensure you have `DeathSwap` as a dependency (`depend` or `softdepend`) in your `plugin.yml`.
 2. Create a class extending `GameInstance` containing your game logic.
 3. Register your Factory with the API during server startup:
 
 ```java
 import be.dualsfwshield.deathswap.api.DeathSwapAPI;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class MyAddon extends JavaPlugin {
     @Override
@@ -1072,15 +1100,38 @@ public class MyAddon extends JavaPlugin {
             "MY_MODE",            // Internal ID
             "My Awesome Mode",    // Display name in GUIs
             "&8[&aMyMode&8]",     // Default chat prefix
-            
-            // Factory returning your class instance
-            MyAwesomeModeInstance::new
+            MyAwesomeModeInstance::new // Factory
         );
     }
 }
 ```
 
-Once this is called, players will be able to use your mode exactly like any built-in mode, server admins will see it inside config GUIs, and `/ds start` will work natively.
+Once registered, your mode is selectable via the `game-type: MY_MODE` setting inside arena configurations.
+
+### 2. Accessing Managers & Events
+
+The main instance `DeathSwapPlugin` allows accessing the logic core:
+
+```java
+import be.dualsfwshield.deathswap.DeathSwapPlugin;
+import be.dualsfwshield.deathswap.ArenaManager;
+import be.dualsfwshield.deathswap.GameInstance;
+import org.bukkit.entity.Player;
+
+DeathSwapPlugin plugin = DeathSwapPlugin.getInstance();
+
+// Retrieve and manually trigger a specific arena
+ArenaManager arenaManager = plugin.getArenaManager();
+GameInstance instance = arenaManager.getArena("default");
+if (instance != null) {
+    if (instance.getState() == GameState.WAITING) {
+        instance.startGame(); // Forces Game Start via API
+    }
+}
+
+// Grant persistent win stats to a player
+plugin.getStatsManager().getPlayerStats(player.getUniqueId()).addWins(1);
+```
 
 ---
 

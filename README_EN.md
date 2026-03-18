@@ -31,6 +31,13 @@
 | **DeathShuffle** | Die the right way to survive! (Causes editable in-game via GUI, includes "Death Run" & "Unique Causes" sub-modes) |
 | **BlockShuffle** | Find and stand or craft the correct block! (Blocks editable in-game via GUI, includes "Item Race" & "Unique Targets" sub-modes) |
 
+### 🤝 Team System (New!)
+
+- **Full Cooperation:** Play all modes as a team!
+- **Team Selection:** Players join a color using the Compass in the lobby. Auto-balancing is active if no team is selected.
+- **Coop DeathSwap:** Teams swap together! Inventory is shared. If a teammate dies, surviving allies lose max health and a percentage of the shared loot evaporates.
+- **Block & Death Shuffle:** Shared scoring and cooperative progression within the team.
+
 ### 🏟️ Multi-Arenas
 
 - Each arena is **independent** (world, players, config, timers)
@@ -53,7 +60,7 @@
 - **Seeds**: Voting system with predefined seeds and exclusive arena configuration with custom-arena-seed-only
 - **Advanced Shuffle Modes**: In-game GUI to toggle blocks/causes, sub-modes "Item Race", "Unique Targets", etc. Auto-discovery of new Blocks/Causes on launch.
 - **Anti-Solo Protection**: Software prevention stopping one player from getting stuck alone forever. Aborts or forces win.
-- **Optional Worlds & Hooks**: Full Nether and End support with customizable per-arena world names. Hooks available to safely load or unload worlds on demand.
+- **Optional Worlds & Dimensions**: Full native support for the **Nether** and **End** regions with dedicated MultiVerse configurations. Access dimension settings right from the `PlayerConfigGUI`.
 - **Lightning Fast Start**: Option to bypass delays and start the game immediately.
 - **World-Ready Polling**: Resilient checking mechanism to ensure all dimensions (Overworld, Nether, End) are securely loaded by Multiverse/CWR prior to teleportation.
 - **API Custom Modes**: Integration of `DeathSwapAPI.registerMode()` allowing third-party developers to add their own game modes via an addon plugin.
