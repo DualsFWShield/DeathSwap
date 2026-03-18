@@ -69,6 +69,22 @@ public class ReadyListener implements Listener {
             return;
         }
 
+        // Team selector (slot 0: compass) — opens TeamSelectGUI
+        if (type == Material.COMPASS) {
+            if (arena.getConfig().teamsEnabled && plugin.getTeamSelectGUI() != null) {
+                plugin.getTeamSelectGUI().open(player, arena);
+            }
+            return;
+        }
+
+        // Player Config (slot 6: hopper) — opens PlayerConfigGUI
+        if (type == Material.HOPPER) {
+            if (plugin.getPlayerConfigGUI() != null) {
+                plugin.getPlayerConfigGUI().open(player, arena.getConfig().id);
+            }
+            return;
+        }
+
         // Return to hub (slot 8: red bed)
         if (type == Material.RED_BED) {
             arena.sendToHub(player);

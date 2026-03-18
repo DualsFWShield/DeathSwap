@@ -36,6 +36,8 @@ public class DeathSwapPlugin extends JavaPlugin {
     private be.dualsfwshield.deathswap.gui.HelpGUI helpGUI;
     private be.dualsfwshield.deathswap.gui.BlockShuffleGUI blockShuffleGUI;
     private be.dualsfwshield.deathswap.gui.DeathShuffleGUI deathShuffleGUI;
+    private be.dualsfwshield.deathswap.gui.TeamSelectGUI teamSelectGUI;
+    private be.dualsfwshield.deathswap.gui.PlayerConfigGUI playerConfigGUI;
     private be.dualsfwshield.deathswap.listeners.ChatInputListener chatInputListener;
 
     @Override
@@ -92,6 +94,12 @@ public class DeathSwapPlugin extends JavaPlugin {
 
         this.deathShuffleGUI = new be.dualsfwshield.deathswap.gui.DeathShuffleGUI(this);
         getServer().getPluginManager().registerEvents(deathShuffleGUI, this);
+
+        this.teamSelectGUI = new be.dualsfwshield.deathswap.gui.TeamSelectGUI(this);
+        getServer().getPluginManager().registerEvents(teamSelectGUI, this);
+
+        this.playerConfigGUI = new be.dualsfwshield.deathswap.gui.PlayerConfigGUI(this);
+        getServer().getPluginManager().registerEvents(playerConfigGUI, this);
 
         // Chat Input Listener
         this.chatInputListener = new be.dualsfwshield.deathswap.listeners.ChatInputListener(this);
@@ -203,6 +211,14 @@ public class DeathSwapPlugin extends JavaPlugin {
 
     public be.dualsfwshield.deathswap.gui.DeathShuffleGUI getDeathShuffleGUI() {
         return deathShuffleGUI;
+    }
+
+    public be.dualsfwshield.deathswap.gui.TeamSelectGUI getTeamSelectGUI() {
+        return teamSelectGUI;
+    }
+
+    public be.dualsfwshield.deathswap.gui.PlayerConfigGUI getPlayerConfigGUI() {
+        return playerConfigGUI;
     }
 
     public be.dualsfwshield.deathswap.listeners.ChatInputListener getChatInputListener() {

@@ -7,6 +7,7 @@ import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.GameState;
 import be.dualsfwshield.deathswap.GameType;
 import be.dualsfwshield.deathswap.UIMode;
+import be.dualsfwshield.deathswap.TeamManager;
 import be.dualsfwshield.deathswap.util.Lang;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -20,9 +21,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -299,10 +302,20 @@ public class BlockShuffleInstance extends GameInstance {
             }
             roundDuration = Integer.MAX_VALUE;
         } else if (getConfig().blockShuffleUniqueTargets) {
-            // Unique targets per player
-            for (Player p : getAlivePlayers()) {
-                ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
-                playerTargets.put(p.getUniqueId(), t);
+            if (getTeamManager() != null && getConfig().teamsEnabled) {
+                // Team Mode: Unique targets per TEAM
+                for (TeamManager.Team team : getTeamManager().getAllTeams()) {
+                    ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+                    for (Player p : team.getAlivePlayers(getAlivePlayers())) {
+                        playerTargets.put(p.getUniqueId(), t);
+                    }
+                }
+            } else {
+                // Unique targets per player
+                for (Player p : getAlivePlayers()) {
+                    ShuffleTarget t = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+                    playerTargets.put(p.getUniqueId(), t);
+                }
             }
             roundDuration = getConfig().getRoundTime(difficulty);
         } else {
@@ -494,6 +507,23 @@ public class BlockShuffleInstance extends GameInstance {
     private void onRoundTimeExpired() {
         broadcastGame(Lang.get("ds-round-fail-everyone"));
 
+        if (getTeamManager() != null && getConfig().teamsEnabled) {
+            handleTeamRoundExpiration();
+        } else {
+            handleSoloRoundExpiration();
+        }
+
+        checkWinCondition();
+
+        if (getState() == GameState.RUNNING) {
+            // Context: User wants game to continue until global time OR "Everyone loses"
+            // logic.
+            // If we have survivors, continue.
+            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        }
+    }
+
+    private void handleSoloRoundExpiration() {
         Set<Player> failed = new HashSet<>();
         for (Player p : new HashSet<>(getAlivePlayers())) {
             if (!completedRound.contains(p.getUniqueId())) {
@@ -511,14 +541,44 @@ public class BlockShuffleInstance extends GameInstance {
                 eliminatePlayer(p);
             }
         }
+    }
 
-        checkWinCondition();
+    private void handleTeamRoundExpiration() {
+        // Any team where NO member completed the round is considered failed
+        List<TeamManager.Team> failedTeams = new ArrayList<>();
+        
+        for (TeamManager.Team team : getTeamManager().getAllTeams()) {
+            List<Player> aliveMembers = team.getAlivePlayers(getAlivePlayers());
+            if (aliveMembers.isEmpty()) continue;
+            
+            boolean teamCompleted = false;
+            for (Player p : aliveMembers) {
+                if (completedRound.contains(p.getUniqueId())) {
+                    teamCompleted = true;
+                    break;
+                }
+            }
+            
+            if (!teamCompleted) {
+                failedTeams.add(team);
+            }
+        }
 
-        if (getState() == GameState.RUNNING) {
-            // Context: User wants game to continue until global time OR "Everyone loses"
-            // logic.
-            // If we have survivors, continue.
-            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        if (failedTeams.size() == getTeamManager().getAliveTeamCount(getAlivePlayers()) && !failedTeams.isEmpty()) {
+            // Mercy Rule: All teams failed
+            broadcastGame(Lang.get("ds-round-mercy"));
+        } else {
+            // Eliminate one random player from each failed team
+            for (TeamManager.Team team : failedTeams) {
+                List<Player> aliveMembers = team.getAlivePlayers(getAlivePlayers());
+                if (!aliveMembers.isEmpty()) {
+                    Player victim = aliveMembers.get(ThreadLocalRandom.current().nextInt(aliveMembers.size()));
+                    broadcastGame(Lang.get("team-ds-eliminated", 
+                            "%player%", victim.getName(), 
+                            "%team%", team.getDisplayName()));
+                    eliminatePlayer(victim);
+                }
+            }
         }
     }
 
@@ -568,27 +628,50 @@ public class BlockShuffleInstance extends GameInstance {
      * Mark a player as having completed the round.
      */
     private void completeRound(Player player) {
-        completedRound.add(player.getUniqueId());
+        if (completedRound.contains(player.getUniqueId())) return;
+        
+        // Team Mode: Mark whole team as completed
+        TeamManager.Team team = getTeamManager() != null && getConfig().teamsEnabled ? getTeamManager().getPlayerTeam(player) : null;
+        
+        if (team != null) {
+            for (Player p : team.getAlivePlayers(getAlivePlayers())) {
+                completedRound.add(p.getUniqueId());
+            }
+            broadcastGame("&a" + player.getName() + " a validé l'objectif pour l'équipe &" + getTeamColorCode(team) + team.getDisplayName() + "&a!");
+        } else {
+            completedRound.add(player.getUniqueId());
+            broadcastGame("&a" + player.getName() + " a réussi ! &7(" +
+                    completedRound.size() + "/" + getAlivePlayers().size() + ")");
+        }
 
         if (getConfig().blockShuffleRaceMode) {
-            broadcastGame(Lang.get("ds-round-success", "%player%", player.getName(), "%count%", "1", "%total%", "1"));
+            if (team != null) {
+                broadcastGame(Lang.get("team-winner", "%team%", team.getDisplayName(), "%members%", player.getName() + " (et équipe)"));
+            } else {
+                broadcastGame(Lang.get("ds-round-success", "%player%", player.getName(), "%count%", "1", "%total%", "1"));
+                broadcastGame(Lang.get("game-winner", "%winner%", player.getName()));
+            }
             if (getPlugin().getSoundManager() != null) {
                 getPlugin().getSoundManager().playSound("victory", player);
             }
-            broadcastGame(Lang.get("game-winner", "%winner%", player.getName()));
             stopGame();
             return;
         }
 
-        broadcastGame("&a" + player.getName() + " a réussi ! &7(" +
-                completedRound.size() + "/" + getAlivePlayers().size() + ")");
-
-        player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
-                .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
-                        .decoration(TextDecoration.BOLD, false)));
-
-        if (getPlugin().getSoundManager() != null) {
-            getPlugin().getSoundManager().playSound("round-success", player);
+        if (team != null) {
+            for (Player p : team.getAlivePlayers(getAlivePlayers())) {
+                p.sendMessage(Component.text("✅ Objectif d'équipe validé ! ", NamedTextColor.GREEN, TextDecoration.BOLD));
+                if (getPlugin().getSoundManager() != null) {
+                    getPlugin().getSoundManager().playSound("round-success", p);
+                }
+            }
+        } else {
+            player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
+                    .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
+                            .decoration(TextDecoration.BOLD, false)));
+            if (getPlugin().getSoundManager() != null) {
+                getPlugin().getSoundManager().playSound("round-success", player);
+            }
         }
     }
 

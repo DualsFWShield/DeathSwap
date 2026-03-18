@@ -17,10 +17,27 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -87,6 +104,9 @@ public class GameInstance {
     private int forceStartCountdown;
     private BukkitTask startTask;
 
+    // Team Manager (null if teams disabled)
+    private TeamManager teamManager;
+
     public boolean isGracePeriod() {
         return System.currentTimeMillis() < gracePeriodEndTime;
     }
@@ -95,6 +115,11 @@ public class GameInstance {
         this.plugin = plugin;
         this.arenaId = arenaId;
         this.config = config;
+
+        // Initialize team manager if teams are enabled
+        if (config.teamsEnabled) {
+            this.teamManager = new TeamManager(config);
+        }
     }
 
     // =========================================
@@ -170,6 +195,16 @@ public class GameInstance {
     public void giveLobbyItems(Player player) {
         player.getInventory().clear();
 
+        // Slot 0: Team Selector (Compass) — only if teams enabled
+        if (config.teamsEnabled) {
+            ItemStack compass = new ItemStack(Material.COMPASS);
+            ItemMeta compassMeta = compass.getItemMeta();
+            compassMeta.displayName(Lang.getComponent("item-team-select")
+                    .decoration(TextDecoration.ITALIC, false));
+            compass.setItemMeta(compassMeta);
+            player.getInventory().setItem(0, compass);
+        }
+
         // Slot 4: Not Ready
         ItemStack notReady = new ItemStack(Material.RED_CONCRETE);
         ItemMeta notReadyMeta = notReady.getItemMeta();
@@ -177,6 +212,14 @@ public class GameInstance {
                 .decoration(TextDecoration.ITALIC, false));
         notReady.setItemMeta(notReadyMeta);
         player.getInventory().setItem(4, notReady);
+
+        // Slot 6: Player Config (Hopper)
+        ItemStack configItem = new ItemStack(Material.HOPPER);
+        ItemMeta configMeta = configItem.getItemMeta();
+        configMeta.displayName(Lang.getComponent("item-player-config")
+                .decoration(TextDecoration.ITALIC, false));
+        configItem.setItemMeta(configMeta);
+        player.getInventory().setItem(6, configItem);
 
         // Slot 8: Return to Hub
         ItemStack hubReturn = new ItemStack(Material.RED_BED);
@@ -251,8 +294,19 @@ public class GameInstance {
         spectators.remove(player);
         plugin.getArenaManager().removePlayer(player);
 
+        // Remove from team
+        if (teamManager != null) {
+            teamManager.removeFromTeam(player);
+        }
+
         if (bossBar != null) {
             player.hideBossBar(bossBar);
+        }
+
+        // Restore max health if modified by team penalty
+        AttributeInstance healthAttr = player.getAttribute(Attribute.MAX_HEALTH);
+        if (healthAttr != null && healthAttr.getBaseValue() < 20.0) {
+            healthAttr.setBaseValue(20.0);
         }
 
         // Ensure inventory and effects are cleared when a player leaves the arena
@@ -940,6 +994,24 @@ public class GameInstance {
             }
         }
 
+        // Auto-balance teams before starting
+        if (teamManager != null && config.teamAutoAssign) {
+            teamManager.autoBalanceTeams(alivePlayers);
+            // Announce teams
+            broadcastGame(Lang.get("team-game-start"));
+            for (TeamManager.Team team : teamManager.getAllTeams()) {
+                if (!team.getMembers().isEmpty()) {
+                    StringBuilder members = new StringBuilder();
+                    for (Player p : team.getAlivePlayers(alivePlayers)) {
+                        if (members.length() > 0) members.append(", ");
+                        members.append(p.getName());
+                    }
+                    broadcastGame("&" + getTeamColorCode(team) + "&l" + team.getDisplayName()
+                            + " &7: &f" + members);
+                }
+            }
+        }
+
         // Start!
         state = GameState.RUNNING;
         globalTimer = config.maxGameTime;
@@ -1226,7 +1298,28 @@ public class GameInstance {
             return;
         }
 
-        // Save all positions BEFORE moving anyone
+        if (teamManager != null && config.teamsEnabled) {
+            // TEAM SWAP: swap entire teams' positions
+            performTeamSwap(survivors);
+        } else {
+            // SOLO SWAP: circular rotation (original behavior)
+            performSoloSwap(survivors, count);
+        }
+
+        // Sync team inventories after swap
+        if (teamManager != null && config.teamsEnabled) {
+            for (TeamManager.Team team : teamManager.getAllTeams()) {
+                if (team.hasAlivePlayers(alivePlayers)) {
+                    teamManager.syncTeamInventories(team, alivePlayers);
+                }
+            }
+        }
+    }
+
+    /**
+     * Original solo circular swap.
+     */
+    private void performSoloSwap(List<Player> survivors, int count) {
         Location[] locations = new Location[count];
         for (int i = 0; i < count; i++) {
             Player p = survivors.get(i);
@@ -1241,7 +1334,6 @@ public class GameInstance {
                     new PotionEffect(PotionEffectType.BLINDNESS, config.swapBlindnessDuration * 20, 0, false, false));
         }
 
-        // Circular rotation: each player goes to the next player's position
         for (int i = 0; i < count; i++) {
             Player current = survivors.get(i);
             int nextIndex = (i + 1) % count;
@@ -1257,6 +1349,76 @@ public class GameInstance {
                             .replaceText(b -> b.matchLiteral("%player%").replacement(swappedWith.getName()))
                             .color(NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
+        }
+    }
+
+    /**
+     * Team-based swap: each team swaps with the next team.
+     * All players on team A go to team B's average position (centroid) and vice versa.
+     */
+    private void performTeamSwap(List<Player> survivors) {
+        // Get alive teams
+        List<TeamManager.Team> aliveTeams = new ArrayList<>();
+        for (TeamManager.Team t : teamManager.getAllTeams()) {
+            if (t.hasAlivePlayers(alivePlayers)) {
+                aliveTeams.add(t);
+            }
+        }
+
+        if (aliveTeams.size() < 2) return;
+
+        // Calculate centroid for each team
+        Map<TeamManager.Team, Location> centroids = new HashMap<>();
+        for (TeamManager.Team team : aliveTeams) {
+            List<Player> teamPlayers = team.getAlivePlayers(alivePlayers);
+            double x = 0, y = 0, z = 0;
+            float yaw = 0, pitch = 0;
+            org.bukkit.World world = teamPlayers.get(0).getWorld();
+            for (Player p : teamPlayers) {
+                x += p.getLocation().getX();
+                y += p.getLocation().getY();
+                z += p.getLocation().getZ();
+                yaw += p.getLocation().getYaw();
+                pitch += p.getLocation().getPitch();
+            }
+            int n = teamPlayers.size();
+            centroids.put(team, new Location(world, x / n, y / n, z / n, yaw / n, pitch / n));
+        }
+
+        // Apply blindness and sound to ALL survivors
+        for (Player p : survivors) {
+            p.leaveVehicle();
+            if (plugin.getSoundManager() != null) {
+                plugin.getSoundManager().playSound("swap", p);
+            } else {
+                p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+            }
+            p.addPotionEffect(
+                    new PotionEffect(PotionEffectType.BLINDNESS, config.swapBlindnessDuration * 20, 0, false, false));
+        }
+
+        // Circular swap: team[i] goes to team[(i+1) % n]'s centroid
+        for (int i = 0; i < aliveTeams.size(); i++) {
+            TeamManager.Team currentTeam = aliveTeams.get(i);
+            int nextIdx = (i + 1) % aliveTeams.size();
+            TeamManager.Team nextTeam = aliveTeams.get(nextIdx);
+            Location targetCentroid = centroids.get(nextTeam);
+
+            List<Player> teamPlayers = currentTeam.getAlivePlayers(alivePlayers);
+            for (int j = 0; j < teamPlayers.size(); j++) {
+                Player p = teamPlayers.get(j);
+                // Offset each player slightly from centroid to prevent stacking
+                Location target = targetCentroid.clone().add(j * 2, 0, j * 2);
+                p.teleport(target);
+
+                p.showTitle(Title.title(
+                        Lang.getComponent("title-swap")
+                                .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
+                        Lang.getComponent("subtitle-swap-team")
+                                .replaceText(b -> b.matchLiteral("%team%").replacement(nextTeam.getDisplayName()))
+                                .color(NamedTextColor.YELLOW),
+                        Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
+            }
         }
     }
 
@@ -1287,6 +1449,23 @@ public class GameInstance {
             // Survival time
             long survivalSeconds = (System.currentTimeMillis() - gameStartEpoch) / 1000;
             plugin.getStatsManager().addSurvivalTime(player.getUniqueId(), survivalSeconds);
+        }
+
+        // Team death penalties
+        if (teamManager != null && config.teamsEnabled) {
+            TeamManager.Team team = teamManager.getPlayerTeam(player);
+            if (team != null) {
+                // Penalty 1: Teammates lose 50% max health
+                teamManager.applyDeathPenalty(team, player, alivePlayers);
+
+                // Penalty 2: Remove 1/N items from team
+                int originalTeamSize = team.getMembers().size(); // includes dead player still
+                teamManager.removeItemsOnDeath(team, alivePlayers, originalTeamSize);
+
+                broadcastGame(Lang.get("team-death-penalty",
+                        "%player%", player.getName(),
+                        "%team%", team.getDisplayName()));
+            }
         }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -1364,6 +1543,55 @@ public class GameInstance {
             return; // Debug mode, don't end
         }
 
+        // Team mode win condition
+        if (teamManager != null && config.teamsEnabled) {
+            int aliveTeamCount = teamManager.getAliveTeamCount(alivePlayers);
+
+            if ((this.testMode || config.debugMode) && aliveTeamCount == 1) {
+                return; // Debug mode
+            }
+
+            if (aliveTeamCount <= 1) {
+                state = GameState.ENDED;
+                broadcastGame(Lang.get("game-ended"));
+
+                TeamManager.Team winnerTeam = teamManager.getLastAliveTeam(alivePlayers);
+                if (winnerTeam != null) {
+                    StringBuilder memberNames = new StringBuilder();
+                    for (Player p : winnerTeam.getAlivePlayers(alivePlayers)) {
+                        if (memberNames.length() > 0) memberNames.append(", ");
+                        memberNames.append(p.getName());
+                    }
+                    broadcastGame(Lang.get("team-winner",
+                            "%team%", winnerTeam.getDisplayName(),
+                            "%members%", memberNames.toString()));
+
+                    for (Player p : winnerTeam.getAlivePlayers(alivePlayers)) {
+                        p.showTitle(Title.title(
+                                Lang.getComponent("title-victory")
+                                        .color(NamedTextColor.GOLD).decoration(TextDecoration.BOLD, true),
+                                Lang.getComponent("subtitle-victory")
+                                        .color(NamedTextColor.YELLOW),
+                                Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(5), Duration.ofMillis(500))));
+                        if (plugin.getSoundManager() != null) {
+                            plugin.getSoundManager().playSound("win", p);
+                        }
+                        if (plugin.getConfigManager().isStatsEnabled() && plugin.getStatsManager() != null) {
+                            plugin.getStatsManager().addWin(p.getUniqueId(), p.getName());
+                            long survivalSeconds = (System.currentTimeMillis() - gameStartEpoch) / 1000;
+                            plugin.getStatsManager().addSurvivalTime(p.getUniqueId(), survivalSeconds);
+                        }
+                    }
+                } else {
+                    broadcastGame(Lang.get("game-draw"));
+                }
+
+                Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, config.endGameDelay * 20L);
+            }
+            return; // Team mode: don't fall through to solo check
+        }
+
+        // Solo mode win condition (original)
         if (alivePlayers.size() <= 1) {
             state = GameState.ENDED;
 
@@ -1386,7 +1614,6 @@ public class GameInstance {
                 // Record win stat
                 if (plugin.getConfigManager().isStatsEnabled() && plugin.getStatsManager() != null) {
                     plugin.getStatsManager().addWin(winner.getUniqueId(), winner.getName());
-                    // Record survival time for winner
                     long survivalSeconds = (System.currentTimeMillis() - gameStartEpoch) / 1000;
                     plugin.getStatsManager().addSurvivalTime(winner.getUniqueId(), survivalSeconds);
                 }
@@ -1394,7 +1621,7 @@ public class GameInstance {
                 broadcastGame(Lang.get("game-draw"));
             }
 
-            Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, config.endGameDelay * 20L); // Configurable delay
+            Bukkit.getScheduler().runTaskLater(plugin, this::stopGame, config.endGameDelay * 20L);
         }
     }
 
@@ -1484,6 +1711,11 @@ public class GameInstance {
         alivePlayers.clear();
         spectators.clear();
         testMode = false;
+
+        // Cleanup team data and restore health
+        if (teamManager != null) {
+            teamManager.cleanup();
+        }
     }
 
     // =========================================
@@ -1596,6 +1828,10 @@ public class GameInstance {
         return bossBar;
     }
 
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
     /**
      * Update chat notifications for CLEAN mode.
      */
@@ -1612,6 +1848,23 @@ public class GameInstance {
                 }
             }
         }
+    }
+
+    /**
+     * Get the legacy color code for a team's text color.
+     */
+    protected String getTeamColorCode(TeamManager.Team team) {
+        net.kyori.adventure.text.format.NamedTextColor color = team.getTextColor();
+        if (color == NamedTextColor.RED) return "c";
+        if (color == NamedTextColor.BLUE) return "9";
+        if (color == NamedTextColor.GREEN) return "a";
+        if (color == NamedTextColor.YELLOW) return "e";
+        if (color == NamedTextColor.GOLD) return "6";
+        if (color == NamedTextColor.DARK_PURPLE) return "5";
+        if (color == NamedTextColor.AQUA) return "b";
+        if (color == NamedTextColor.LIGHT_PURPLE) return "d";
+        if (color == NamedTextColor.WHITE) return "f";
+        return "7";
     }
 
 }

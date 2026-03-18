@@ -6,6 +6,7 @@ import be.dualsfwshield.deathswap.GameInstance;
 import be.dualsfwshield.deathswap.GameState;
 import be.dualsfwshield.deathswap.GameType;
 import be.dualsfwshield.deathswap.UIMode;
+import be.dualsfwshield.deathswap.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,18 +19,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Arrays;
-import java.util.List;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
  * DeathShuffle game mode.
@@ -49,6 +51,9 @@ public class DeathShuffleInstance extends GameInstance {
     private final Set<UUID> completedRound = new HashSet<>();
     // Track players pending respawn (died the right way)
     private final Map<UUID, Boolean> pendingRespawn = new HashMap<>();
+    
+    // Team scores for the current round
+    private final Map<TeamManager.Team, Integer> teamRoundScores = new HashMap<>();
 
     // Allowed causes from config
     private final Set<EntityDamageEvent.DamageCause> allowedCauses = new HashSet<>();
@@ -153,6 +158,16 @@ public class DeathShuffleInstance extends GameInstance {
         currentRound++;
         completedRound.clear();
         playerCauses.clear();
+        teamRoundScores.clear();
+
+        // Initialize team scores
+        if (getTeamManager() != null && getConfig().teamsEnabled) {
+            for (TeamManager.Team t : getTeamManager().getAllTeams()) {
+                if (t.hasAlivePlayers(getAlivePlayers())) {
+                    teamRoundScores.put(t, 0);
+                }
+            }
+        }
 
         // Determine difficulty tier based on round number
         int difficulty;
@@ -351,9 +366,24 @@ public class DeathShuffleInstance extends GameInstance {
 
     /**
      * When the round timer expires, eliminate players who haven't completed the
-     * challenge.
+     * challenge or the team with the lowest score.
      */
     private void onRoundTimeExpired() {
+        if (getTeamManager() != null && getConfig().teamsEnabled) {
+            handleTeamRoundExpiration();
+        } else {
+            handleSoloRoundExpiration();
+        }
+
+        checkWinCondition();
+
+        if (getState() == GameState.RUNNING) {
+            // Continue as long as survivors exist (or until global time ends)
+            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        }
+    }
+
+    private void handleSoloRoundExpiration() {
         broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-fail-everyone"));
 
         Set<Player> failed = new HashSet<>();
@@ -373,12 +403,43 @@ public class DeathShuffleInstance extends GameInstance {
                 eliminatePlayer(p);
             }
         }
+    }
 
-        checkWinCondition();
+    private void handleTeamRoundExpiration() {
+        broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-fail-everyone"));
 
-        if (getState() == GameState.RUNNING) {
-            // Continue as long as survivors exist (or until global time ends)
-            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> startNextRound(), 60L);
+        // Find the lowest score
+        int lowestScore = Integer.MAX_VALUE;
+        for (int score : teamRoundScores.values()) {
+            if (score < lowestScore) {
+                lowestScore = score;
+            }
+        }
+
+        // Find all teams with the lowest score
+        List<TeamManager.Team> losingTeams = new java.util.ArrayList<>();
+        for (Map.Entry<TeamManager.Team, Integer> entry : teamRoundScores.entrySet()) {
+            if (entry.getValue() == lowestScore) {
+                losingTeams.add(entry.getKey());
+            }
+        }
+
+        // If all teams tied for lowest, mercy rule (no one dies)
+        if (losingTeams.size() == teamRoundScores.size() && !losingTeams.isEmpty()) {
+            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-mercy"));
+            return;
+        }
+
+        // Eliminate one random player from each losing team
+        for (TeamManager.Team team : losingTeams) {
+            List<Player> aliveMembers = team.getAlivePlayers(getAlivePlayers());
+            if (!aliveMembers.isEmpty()) {
+                Player victim = aliveMembers.get(ThreadLocalRandom.current().nextInt(aliveMembers.size()));
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("team-ds-eliminated", 
+                        "%player%", victim.getName(), 
+                        "%team%", team.getDisplayName()));
+                eliminatePlayer(victim);
+            }
         }
     }
 
@@ -403,6 +464,33 @@ public class DeathShuffleInstance extends GameInstance {
             completedRound.add(player.getUniqueId());
             pendingRespawn.put(player.getUniqueId(), true);
 
+            // Record stats
+            if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
+                getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
+            }
+
+            TeamManager.Team team = getTeamManager() != null && getConfig().teamsEnabled ? getTeamManager().getPlayerTeam(player) : null;
+
+            if (team != null) {
+                // Team Mode: +1 point
+                teamRoundScores.put(team, teamRoundScores.getOrDefault(team, 0) + 1);
+                broadcastGame("&a" + player.getName() + " a réussi le challenge pour l'équipe &" + getTeamColorCode(team) + team.getDisplayName() + "&a!");
+                
+                player.sendMessage(Component.text("✅ Bien joué ! L'équipe marque 1 point.", NamedTextColor.GREEN, TextDecoration.BOLD));
+            } else {
+                // Solo Mode
+                broadcastGame("&a" + player.getName() + " a réussi le challenge ! &7(" +
+                        completedRound.size() + "/" + getAlivePlayers().size() + ")");
+                
+                player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
+                        .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.BOLD, false)));
+            }
+
+            if (getPlugin().getSoundManager() != null) {
+                getPlugin().getSoundManager().playSound("round-success", player);
+            }
+
             // Race Mode Check
             if (getConfig().deathShuffleRaceMode) {
                 broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-round-success", "%player%", player.getName(),
@@ -414,32 +502,25 @@ public class DeathShuffleInstance extends GameInstance {
                 return true;
             }
 
-            broadcastGame("&a" + player.getName() + " a réussi le challenge ! &7(" +
-                    completedRound.size() + "/" + getAlivePlayers().size() + ")");
-
-            player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
-                    .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
-                            .decoration(TextDecoration.BOLD, false)));
-
-            if (getPlugin().getSoundManager() != null) {
-                getPlugin().getSoundManager().playSound("round-success", player);
-            }
-
-            // Record stats
-            if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
-                getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
-            }
-
             return true; // Signal to respawn, not spectate
         }
 
         // Wrong death: respawn but don't mark as complete
         pendingRespawn.put(player.getUniqueId(), false);
+        TeamManager.Team team = getTeamManager() != null && getConfig().teamsEnabled ? getTeamManager().getPlayerTeam(player) : null;
+
         if (dc != null) {
-            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + getCauseChallenge(dc),
-                    NamedTextColor.RED));
+            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + getCauseChallenge(dc), NamedTextColor.RED));
         } else {
             player.sendMessage(Component.text("❌ Mauvaise mort !", NamedTextColor.RED));
+        }
+
+        if (team != null) {
+            // Team Mode penalty
+            if (roundDuration != Integer.MAX_VALUE) {
+                roundTimer = Math.max(1, roundTimer - 15);
+                broadcastGame("&c" + player.getName() + " de l'équipe &" + getTeamColorCode(team) + team.getDisplayName() + "&c est mort de la mauvaise cause ! -15s pour tous !");
+            }
         }
 
         if (getPlugin().getSoundManager() != null) {
@@ -483,14 +564,25 @@ public class DeathShuffleInstance extends GameInstance {
     }
 
     /**
-     * Check if all alive players have completed the round.
+     * Check if all alive players (or teams) have completed the round.
      */
     private boolean allAliveCompleted() {
-        for (Player p : getAlivePlayers()) {
-            if (!completedRound.contains(p.getUniqueId()))
-                return false;
+        if (getTeamManager() != null && getConfig().teamsEnabled) {
+            // In team mode, round ends when ALL alive teams have at least one point
+            int completedTeams = 0;
+            int aliveTeams = getTeamManager().getAliveTeamCount(getAlivePlayers());
+            for (int score : teamRoundScores.values()) {
+                if (score > 0) completedTeams++;
+            }
+            return completedTeams >= aliveTeams && aliveTeams > 0;
+        } else {
+            // Solo Mode
+            for (Player p : getAlivePlayers()) {
+                if (!completedRound.contains(p.getUniqueId()))
+                    return false;
+            }
+            return !getAlivePlayers().isEmpty();
         }
-        return !getAlivePlayers().isEmpty();
     }
 
     /**
@@ -556,6 +648,7 @@ public class DeathShuffleInstance extends GameInstance {
         completedRound.clear();
         pendingRespawn.clear();
         playerCauses.clear();
+        teamRoundScores.clear();
         currentRound = 0;
         super.stopGame();
     }

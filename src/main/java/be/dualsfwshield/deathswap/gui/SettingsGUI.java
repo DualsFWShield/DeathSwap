@@ -59,6 +59,7 @@ public class SettingsGUI implements Listener {
     private static final int SLOT_SPAWN_RADIUS = 26;
 
     // Row 4 (27-35): Dimensions & misc
+    private static final int SLOT_BLINDNESS_DUR = 27; // Replaced empty slot
     private static final int SLOT_NETHER = 28;
     private static final int SLOT_END = 30;
     private static final int SLOT_SEEDS = 32;
@@ -224,6 +225,12 @@ public class SettingsGUI implements Listener {
                 Lang.get("gui-settings-click-sub-50")));
 
         // Row 4 (27-35): Dimensions & Misc
+        inv.setItem(SLOT_BLINDNESS_DUR, createItem(Material.POTION, Lang.get("gui-settings-blindness-name"),
+                Lang.get("gui-settings-blindness-current", "%time%", String.valueOf(config.swapBlindnessDuration)),
+                "",
+                Lang.get("gui-settings-click-add-1s"),
+                Lang.get("gui-settings-click-sub-1s")));
+
         inv.setItem(SLOT_NETHER, createItem(
                 config.netherEnabled ? Material.NETHERRACK : Material.BARRIER,
                 Lang.get("gui-settings-nether-name"),
@@ -473,6 +480,12 @@ public class SettingsGUI implements Listener {
             case SLOT_MIN_PLAYER_DIST -> { // Min player distance
                 config.minPlayerDistance += isLeftClick ? 10 : -10;
                 config.minPlayerDistance = Math.max(0, config.minPlayerDistance);
+                plugin.getConfigManager().saveArena(config);
+                open(player, arenaId);
+            }
+            case SLOT_BLINDNESS_DUR -> { // Blindness Duration
+                config.swapBlindnessDuration += isLeftClick ? 1 : -1;
+                config.swapBlindnessDuration = Math.max(0, config.swapBlindnessDuration);
                 plugin.getConfigManager().saveArena(config);
                 open(player, arenaId);
             }

@@ -355,6 +355,10 @@ public class ConfigManager {
         clone.worldUnloadEnabled = source.worldUnloadEnabled;
         clone.worldLoadCommand = source.worldLoadCommand;
         clone.worldUnloadCommand = source.worldUnloadCommand;
+        clone.teamsEnabled = source.teamsEnabled;
+        clone.teamSize = source.teamSize;
+        clone.maxTeams = source.maxTeams;
+        clone.teamAutoAssign = source.teamAutoAssign;
 
         clone.seeds = new ArrayList<>(source.seeds);
         clone.gamerules = new HashMap<>(source.gamerules);
@@ -498,6 +502,12 @@ public class ConfigManager {
         ac.deathShuffleRaceMode = section.getBoolean("game.deathshuffle-race-mode", false);
         ac.deathShuffleUniqueCauses = section.getBoolean("game.deathshuffle-unique-causes", true);
 
+        // Team settings
+        ac.teamsEnabled = section.getBoolean("game.teams-enabled", false);
+        ac.teamSize = section.getInt("game.teams-size", 0);
+        ac.maxTeams = section.getInt("game.teams-max", 12);
+        ac.teamAutoAssign = section.getBoolean("game.teams-auto-assign", true);
+
         // Command overrides
         ac.teleportCommand = section.getString("teleport-command", null);
         if (section.contains("world-reset-commands")) {
@@ -603,6 +613,11 @@ public class ConfigManager {
         config.set("game.blockshuffle-unique-targets", ac.blockShuffleUniqueTargets);
         config.set("game.deathshuffle-race-mode", ac.deathShuffleRaceMode);
         config.set("game.deathshuffle-unique-causes", ac.deathShuffleUniqueCauses);
+
+        config.set("game.teams-enabled", ac.teamsEnabled);
+        config.set("game.teams-size", ac.teamSize);
+        config.set("game.teams-max", ac.maxTeams);
+        config.set("game.teams-auto-assign", ac.teamAutoAssign);
 
         ConfigurationSection rulesSection = config.createSection("gamerules");
         for (Map.Entry<String, String> ruleEntry : ac.gamerules.entrySet()) {
@@ -815,6 +830,12 @@ public class ConfigManager {
         // Death Shuffle
         public boolean deathShuffleRaceMode = false;
         public boolean deathShuffleUniqueCauses = true;
+
+        // Teams
+        public boolean teamsEnabled = false;
+        public int teamSize = 0;           // 0 = dynamic (auto-calculated)
+        public int maxTeams = 12;          // Maximum number of teams (max 12 wool colors)
+        public boolean teamAutoAssign = true; // Auto-assign unassigned players at game start
 
         // Command overrides (null = use global default)
         public String teleportCommand = null;
