@@ -81,6 +81,13 @@ arenas:
       swap-max: 420              # RANDOM mode: maximum interval
       max-game-time: 1800        # Max game duration (30 min)
       spawn-protection: 30       # Invulnerability at start (seconds)
+      swap-blindness-duration: 3 # Duration of blindness upon swapping (0 to disable)
+      spawn-radius: 100
+      min-player-distance: 50
+      grace-period-buffer: 15
+      end-game-delay: 5
+      challenge-reward-duration: 30
+      rtp-max-retries: 10
 
     # --- Round Timers (DeathShuffle / BlockShuffle) ---
     round-timers:

@@ -556,6 +556,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                 case "swapmax" -> config.swapMax = Integer.parseInt(value);
                 case "maxgametime" -> config.maxGameTime = Integer.parseInt(value);
                 case "spawnprotection" -> config.spawnProtection = Integer.parseInt(value);
+                case "swapblindnessduration" -> config.swapBlindnessDuration = Integer.parseInt(value);
 
                 // Round Timers
                 case "roundtimeeasy" -> config.roundTimeEasy = Integer.parseInt(value);
@@ -794,7 +795,7 @@ public class DeathSwapCommand implements CommandExecutor, TabCompleter {
                     return filter(Arrays.asList(
                             "lobby", "game", "gametype", "minplayers", "maxplayers", "uimode",
                             "loadtime", "swapmode", "swapinterval", "swapmin", "swapmax",
-                            "maxgametime", "spawnprotection", "roundtimeeasy", "roundtimemedium",
+                            "maxgametime", "spawnprotection", "swapblindnessduration", "roundtimeeasy", "roundtimemedium",
                             "roundtimehard", "roundtimeextreme", "pvp", "nether", "end", "resilience",
                             "difficultymode", "maxitems"), args[3]);
                 }
