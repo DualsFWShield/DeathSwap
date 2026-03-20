@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -146,9 +147,6 @@ public class DeathShuffleInstance extends GameInstance {
     /**
      * Start a new round with a random death cause of appropriate difficulty.
      */
-    /**
-     * Start a new round with a random death cause of appropriate difficulty.
-     */
     private void startNextRound() {
         if (getState() != GameState.RUNNING)
             return;
@@ -239,7 +237,7 @@ public class DeathShuffleInstance extends GameInstance {
                 continue;
 
             p.showTitle(Title.title(
-                    Component.text("ROUND " + currentRound, NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
+                    Lang.getComponent("shuffle-round-title-ds", "%round%", String.valueOf(currentRound)),
                     Component.text(getCauseChallenge(dc), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
@@ -251,12 +249,12 @@ public class DeathShuffleInstance extends GameInstance {
         // Update boss bar
         if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
             if (getConfig().deathShuffleUniqueCauses && !getConfig().deathShuffleRaceMode) {
-                getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
-                        .append(Component.text("Objectif personnel", NamedTextColor.YELLOW)));
+                getBossBar().name(Lang.getComponent("shuffle-bossbar-prefix-ds", "%round%", String.valueOf(currentRound))
+                        .append(Lang.getComponent("shuffle-personal-objective")));
             } else {
                 if (!playerCauses.isEmpty()) {
                     EntityDamageEvent.DamageCause dc = playerCauses.values().iterator().next();
-                    getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.LIGHT_PURPLE)
+                    getBossBar().name(Lang.getComponent("shuffle-bossbar-prefix-ds", "%round%", String.valueOf(currentRound))
                             .append(Component.text(getCauseDisplayName(dc), NamedTextColor.YELLOW)));
                 }
             }
@@ -305,23 +303,16 @@ public class DeathShuffleInstance extends GameInstance {
 
                         if (!completedRound.contains(p.getUniqueId())) {
                             if (getConfig().deathShuffleRaceMode) {
-                                p.sendActionBar(Component.text("🏁 RACE: " + getCauseChallenge(dc), NamedTextColor.GOLD,
-                                        TextDecoration.BOLD));
+                                p.sendActionBar(Lang.getComponent("shuffle-actionbar-race-ds", "%target%", getCauseChallenge(dc)));
                             } else {
                                 if (roundTimer <= 10) {
-                                    p.sendActionBar(
-                                            Component.text(
-                                                    "⚠ " + roundTimer + "s — " + getCauseChallenge(dc) + " ⚠",
-                                                    NamedTextColor.RED, TextDecoration.BOLD));
+                                    p.sendActionBar(Lang.getComponent("shuffle-actionbar-urgent-ds", "%time%", String.valueOf(roundTimer), "%target%", getCauseChallenge(dc)));
                                 } else {
-                                    p.sendActionBar(
-                                            Component.text(getCauseChallenge(dc) + " — " + roundTimer + "s",
-                                                    NamedTextColor.YELLOW));
+                                    p.sendActionBar(Lang.getComponent("shuffle-actionbar-normal-ds", "%time%", String.valueOf(roundTimer), "%target%", getCauseChallenge(dc)));
                                 }
                             }
                         } else {
-                            p.sendActionBar(
-                                    Component.text("✅ Complété ! En attente des autres...", NamedTextColor.GREEN));
+                            p.sendActionBar(Lang.getComponent("shuffle-actionbar-completed"));
                         }
                     }
                 } else {
@@ -329,7 +320,7 @@ public class DeathShuffleInstance extends GameInstance {
                     if (roundDuration != Integer.MAX_VALUE) {
                         if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
                                 || (roundTimer <= 5 && roundTimer > 0)) {
-                            broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
+                            broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("shuffle-round-ending", "%time%", String.valueOf(roundTimer)));
                             if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
                                 getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
                             }
@@ -338,9 +329,8 @@ public class DeathShuffleInstance extends GameInstance {
                             for (Player p : getAlivePlayers()) {
                                 EntityDamageEvent.DamageCause dc = playerCauses.get(p.getUniqueId());
                                 if (dc != null) {
-                                    p.sendMessage(be.dualsfwshield.deathswap.util.Lang.get("game-prefix")
-                                            + Component.text("Rappel: Vous devez mourir par " + getCauseDisplayName(dc),
-                                                    NamedTextColor.YELLOW));
+                                    p.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("game-prefix")
+                                            .append(be.dualsfwshield.deathswap.util.Lang.getComponent("ds-reminder", "%target%", getCauseDisplayName(dc))));
                                 }
                             }
                         }
@@ -474,21 +464,23 @@ public class DeathShuffleInstance extends GameInstance {
             if (team != null) {
                 // Team Mode: +1 point
                 teamRoundScores.put(team, teamRoundScores.getOrDefault(team, 0) + 1);
-                broadcastGame("&a" + player.getName() + " a réussi le challenge pour l'équipe &" + getTeamColorCode(team) + team.getDisplayName() + "&a!");
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-team-success", "%player%", player.getName(), "%team%", getTeamColorCode(team) + team.getDisplayName()));
                 
-                player.sendMessage(Component.text("✅ Bien joué ! L'équipe marque 1 point.", NamedTextColor.GREEN, TextDecoration.BOLD));
+                for (Player p : team.getAlivePlayers(getAlivePlayers())) {
+                    p.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("ds-team-completed"));
+                    if (getPlugin().getSoundManager() != null) {
+                        getPlugin().getSoundManager().playSound("round-success", p);
+                    }
+                }
             } else {
                 // Solo Mode
-                broadcastGame("&a" + player.getName() + " a réussi le challenge ! &7(" +
-                        completedRound.size() + "/" + getAlivePlayers().size() + ")");
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-solo-success", "%player%", player.getName(),
+                        "%completed%", String.valueOf(completedRound.size()), "%total%", String.valueOf(getAlivePlayers().size())));
                 
-                player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
-                        .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
-                                .decoration(TextDecoration.BOLD, false)));
-            }
-
-            if (getPlugin().getSoundManager() != null) {
-                getPlugin().getSoundManager().playSound("round-success", player);
+                player.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("ds-success-waiting"));
+                if (getPlugin().getSoundManager() != null) {
+                    getPlugin().getSoundManager().playSound("round-success", player);
+                }
             }
 
             // Race Mode Check
@@ -510,16 +502,16 @@ public class DeathShuffleInstance extends GameInstance {
         TeamManager.Team team = getTeamManager() != null && getConfig().teamsEnabled ? getTeamManager().getPlayerTeam(player) : null;
 
         if (dc != null) {
-            player.sendMessage(Component.text("❌ Mauvaise mort ! Tu dois : " + getCauseChallenge(dc), NamedTextColor.RED));
+            player.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("ds-bad-death", "%target%", getCauseChallenge(dc)));
         } else {
-            player.sendMessage(Component.text("❌ Mauvaise mort !", NamedTextColor.RED));
+            player.sendMessage(be.dualsfwshield.deathswap.util.Lang.getComponent("ds-bad-death-simple"));
         }
 
         if (team != null) {
             // Team Mode penalty
             if (roundDuration != Integer.MAX_VALUE) {
                 roundTimer = Math.max(1, roundTimer - 15);
-                broadcastGame("&c" + player.getName() + " de l'équipe &" + getTeamColorCode(team) + team.getDisplayName() + "&c est mort de la mauvaise cause ! -15s pour tous !");
+                broadcastGame(be.dualsfwshield.deathswap.util.Lang.get("ds-team-penalty", "%player%", player.getName(), "%team%", getTeamColorCode(team) + team.getDisplayName()));
             }
         }
 
@@ -545,23 +537,7 @@ public class DeathShuffleInstance extends GameInstance {
         return val != null;
     }
 
-    /**
-     * Eliminate a player — make them a spectator.
-     */
-    private void eliminatePlayer(Player player) {
-        getAlivePlayers().remove(player);
-        getSpectators().add(player);
-        player.setGameMode(GameMode.SPECTATOR);
-        giveSpectatorTools(player);
 
-        if (getPlugin().getSoundManager() != null) {
-            getPlugin().getSoundManager().playSound("death", player);
-        }
-
-        if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
-            getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
-        }
-    }
 
     /**
      * Check if all alive players (or teams) have completed the round.
@@ -585,21 +561,8 @@ public class DeathShuffleInstance extends GameInstance {
         }
     }
 
-    /**
-     * Get difficulty stars display.
-     */
-    private String getDifficultyStars(int difficulty) {
-        return switch (difficulty) {
-            case 1 -> "&a★&7☆☆";
-            case 2 -> "&e★★&7☆";
-            case 3 -> "&c★★★";
-            default -> "&7☆☆☆";
-        };
-    }
 
-    /**
-     * Get the current death cause for the listener.
-     */
+
     /**
      * Get the current death cause for a specific player.
      * Replaces getCurrentDeathCause.

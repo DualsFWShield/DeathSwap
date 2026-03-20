@@ -19,25 +19,9 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -58,7 +42,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -381,10 +364,6 @@ public class GameInstance {
     /**
      * Check if all lobby players are ready and enough to start.
      */
-
-    /**
-     * Check if all lobby players are ready and enough to start.
-     */
     private void checkAllReady() {
         if (state != GameState.WAITING && state != GameState.STARTING)
             return;
@@ -646,7 +625,7 @@ public class GameInstance {
 
             // Reset dedicated Nether world (same seed)
             if (config.netherEnabled) {
-                String netherWorld = config.gameWorld + "_nether";
+                String netherWorld = config.gameWorldNether;
                 for (String cmd : commands) {
                     String finalCmd = cmd.replace("%world%", netherWorld)
                             .replace("%seed%", seed.seed());
@@ -656,7 +635,7 @@ public class GameInstance {
 
             // Reset dedicated End world (same seed)
             if (config.endEnabled) {
-                String endWorld = config.gameWorld + "_the_end";
+                String endWorld = config.gameWorldEnd;
                 for (String cmd : commands) {
                     String finalCmd = cmd.replace("%world%", endWorld)
                             .replace("%seed%", seed.seed());
@@ -934,8 +913,6 @@ public class GameInstance {
         List<Location> assignedSpawns = new ArrayList<>();
 
         for (Player player : playersToTeleport) {
-            if (!this.testMode && !playersToTeleport.contains(player))
-                continue; // Safety
 
             player.getInventory().clear();
             player.setHealth(20);
@@ -1506,6 +1483,36 @@ public class GameInstance {
     }
 
     /**
+     * Eliminate a player.
+     */
+    protected void eliminatePlayer(Player player) {
+        getAlivePlayers().remove(player);
+        getSpectators().add(player);
+        player.setGameMode(GameMode.SPECTATOR);
+        giveSpectatorTools(player);
+
+        if (getPlugin().getSoundManager() != null) {
+            getPlugin().getSoundManager().playSound("death", player);
+        }
+
+        if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
+            getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
+        }
+    }
+
+    /**
+     * Get difficulty stars display.
+     */
+    protected String getDifficultyStars(int difficulty) {
+        return switch (difficulty) {
+            case 1 -> "&a★&7☆☆";
+            case 2 -> "&e★★&7☆";
+            case 3 -> "&c★★★";
+            default -> "&7☆☆☆";
+        };
+    }
+
+    /**
      * Send clickable teleport menu to a spectator.
      */
     public void sendSpectatorMenu(Player player) {
@@ -1661,11 +1668,11 @@ public class GameInstance {
         if (config.worldUnloadEnabled) {
             if (config.netherEnabled) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        config.worldUnloadCommand.replace("%world%", config.gameWorld + "_nether"));
+                        config.worldUnloadCommand.replace("%world%", config.gameWorldNether));
             }
             if (config.endEnabled) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        config.worldUnloadCommand.replace("%world%", config.gameWorld + "_the_end"));
+                        config.worldUnloadCommand.replace("%world%", config.gameWorldEnd));
             }
         }
 
@@ -1785,22 +1792,37 @@ public class GameInstance {
         return config;
     }
 
+    /**
+     * @apiNote This collection is returned mutably by design. Use caution when modifying it directly.
+     */
     public Set<Player> getLobbyPlayers() {
         return lobbyPlayers;
     }
 
+    /**
+     * @apiNote This collection is returned mutably by design. Use caution when modifying it directly.
+     */
     public Set<Player> getReadyPlayers() {
         return readyPlayers;
     }
 
+    /**
+     * @apiNote This collection is returned mutably by design. Use caution when modifying it directly.
+     */
     public Set<Player> getGamePlayers() {
         return gamePlayers;
     }
 
+    /**
+     * @apiNote This collection is returned mutably by design. Use caution when modifying it directly.
+     */
     public Set<Player> getAlivePlayers() {
         return alivePlayers;
     }
 
+    /**
+     * @apiNote This collection is returned mutably by design. Use caution when modifying it directly.
+     */
     public Set<Player> getSpectators() {
         return spectators;
     }
@@ -1855,16 +1877,19 @@ public class GameInstance {
      */
     protected String getTeamColorCode(TeamManager.Team team) {
         net.kyori.adventure.text.format.NamedTextColor color = team.getTextColor();
-        if (color == NamedTextColor.RED) return "c";
-        if (color == NamedTextColor.BLUE) return "9";
-        if (color == NamedTextColor.GREEN) return "a";
-        if (color == NamedTextColor.YELLOW) return "e";
-        if (color == NamedTextColor.GOLD) return "6";
-        if (color == NamedTextColor.DARK_PURPLE) return "5";
-        if (color == NamedTextColor.AQUA) return "b";
-        if (color == NamedTextColor.LIGHT_PURPLE) return "d";
-        if (color == NamedTextColor.WHITE) return "f";
-        return "7";
+        return TEAM_COLOR_CODES.getOrDefault(color, "7");
     }
+
+    private static final Map<NamedTextColor, String> TEAM_COLOR_CODES = Map.ofEntries(
+            Map.entry(NamedTextColor.RED, "c"),
+            Map.entry(NamedTextColor.BLUE, "9"),
+            Map.entry(NamedTextColor.GREEN, "a"),
+            Map.entry(NamedTextColor.YELLOW, "e"),
+            Map.entry(NamedTextColor.GOLD, "6"),
+            Map.entry(NamedTextColor.DARK_PURPLE, "5"),
+            Map.entry(NamedTextColor.AQUA, "b"),
+            Map.entry(NamedTextColor.LIGHT_PURPLE, "d"),
+            Map.entry(NamedTextColor.WHITE, "f")
+    );
 
 }

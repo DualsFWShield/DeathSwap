@@ -32,20 +32,7 @@ public class ArenaManager {
         arenas.clear();
         for (String arenaId : plugin.getConfigManager().getArenaIds()) {
             ConfigManager.ArenaConfig config = plugin.getConfigManager().getArenaConfig(arenaId);
-            GameInstance instance;
-            be.dualsfwshield.deathswap.api.DeathSwapAPI.GameInstanceFactory factory = be.dualsfwshield.deathswap.api.DeathSwapAPI
-                    .getFactory(config.gameType.name());
-
-            if (factory != null) {
-                instance = factory.create(plugin, arenaId, config);
-            } else if (config.gameType.equals(GameType.DEATHSHUFFLE)) {
-                instance = new DeathShuffleInstance(plugin, arenaId, config);
-            } else if (config.gameType.equals(GameType.BLOCKSHUFFLE)) {
-                instance = new BlockShuffleInstance(plugin, arenaId, config);
-            } else {
-                instance = new GameInstance(plugin, arenaId, config);
-            }
-
+            GameInstance instance = createInstanceForArena(arenaId, config);
             arenas.put(arenaId, instance);
         }
         plugin.getLogger().info("Initialized " + arenas.size() + " arena(s).");
@@ -87,20 +74,7 @@ public class ArenaManager {
             return; // Arena was deleted
         }
 
-        GameInstance instance;
-        be.dualsfwshield.deathswap.api.DeathSwapAPI.GameInstanceFactory factory = be.dualsfwshield.deathswap.api.DeathSwapAPI
-                .getFactory(config.gameType.name());
-
-        if (factory != null) {
-            instance = factory.create(plugin, arenaId, config);
-        } else if (config.gameType.equals(GameType.DEATHSHUFFLE)) {
-            instance = new DeathShuffleInstance(plugin, arenaId, config);
-        } else if (config.gameType.equals(GameType.BLOCKSHUFFLE)) {
-            instance = new BlockShuffleInstance(plugin, arenaId, config);
-        } else {
-            instance = new GameInstance(plugin, arenaId, config);
-        }
-
+        GameInstance instance = createInstanceForArena(arenaId, config);
         arenas.put(arenaId, instance);
         plugin.getLogger().info("Reloaded arena " + arenaId + ".");
     }
@@ -201,10 +175,21 @@ public class ArenaManager {
      * Find an arena by any associated world (game, nether, or end).
      */
     public GameInstance findByAnyGameWorld(String worldName) {
-        GameInstance arena = findByGameWorld(worldName);
-        if (arena == null) {
-            arena = findByDimensionWorld(worldName);
+        return findByDimensionWorld(worldName);
+    }
+
+    private GameInstance createInstanceForArena(String arenaId, ConfigManager.ArenaConfig config) {
+        be.dualsfwshield.deathswap.api.DeathSwapAPI.GameInstanceFactory factory = be.dualsfwshield.deathswap.api.DeathSwapAPI
+                .getFactory(config.gameType.name());
+
+        if (factory != null) {
+            return factory.create(plugin, arenaId, config);
+        } else if (config.gameType.equals(GameType.DEATHSHUFFLE)) {
+            return new DeathShuffleInstance(plugin, arenaId, config);
+        } else if (config.gameType.equals(GameType.BLOCKSHUFFLE)) {
+            return new BlockShuffleInstance(plugin, arenaId, config);
+        } else {
+            return new GameInstance(plugin, arenaId, config);
         }
-        return arena;
     }
 }

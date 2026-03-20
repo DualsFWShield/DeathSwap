@@ -694,3 +694,33 @@ subtitle-swap-team: "Vous avez échangé avec l'équipe %team%"
 game-prefix: "&8[&cDeathSwap&8] "
 cmd-admin-command-usage: "&cUsage: /ds admin command <arena> <tp|reset> <value>"
 gui-settings-difficulty-mode-: "Inconnu"
+
+# Shuffle Extras
+shuffle-round-title: "&b&lROUND %round%"
+shuffle-round-title-ds: "&d&lROUND %round%"
+shuffle-bossbar-prefix: "&bRound %round% : "
+shuffle-bossbar-prefix-ds: "&dRound %round% : "
+shuffle-personal-objective: "&eObjectif personnel"
+
+shuffle-actionbar-race-bs: "&6&l🏁 RACE: %target%"
+shuffle-actionbar-urgent-bs: "&c&l⚠ %time%s — %target% ⚠"
+shuffle-actionbar-normal-bs: "&b%target% — %time%s"
+shuffle-actionbar-race-ds: "&6&l🏁 RACE: %target%"
+shuffle-actionbar-urgent-ds: "&c&l⚠ %time%s — %target% ⚠"
+shuffle-actionbar-normal-ds: "&e%target% — %time%s"
+shuffle-actionbar-completed: "&a✅ Complété ! En attente des autres..."
+
+shuffle-round-ending: "&c⚠ FIN DU ROUND DANS %time% SECONDES ⚠"
+bs-reminder: "&eRappel: Vous devez explorer, trouver ou fabriquer %target%"
+ds-reminder: "&eRappel: Vous devez mourir par %target%"
+
+bs-team-completed: "&a&l✅ Objectif d'équipe validé ! "
+bs-success-waiting: "&a&l✅ Bien joué ! &7En attente des autres..."
+
+ds-team-completed: "&a&l✅ Bien joué ! l'équipe marque 1 point."
+ds-success-waiting: "&a&l✅ Bien joué ! &7En attente des autres joueurs..."
+ds-bad-death: "&c❌ Mauvaise mort ! Tu dois : %target%"
+ds-bad-death-simple: "&c❌ Mauvaise mort !"
+ds-team-success: "&a%player% a réussi le challenge pour l'équipe %team%&a!"
+ds-solo-success: "&a%player% a réussi le challenge ! &7(%completed%/%total%)"
+ds-team-penalty: "&c%player% de l'équipe %team%&c est mort de la mauvaise cause ! -15s pour tous !"

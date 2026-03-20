@@ -19,6 +19,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import be.dualsfwshield.deathswap.util.Lang;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
@@ -256,9 +257,6 @@ public class BlockShuffleInstance extends GameInstance {
     /**
      * Start a new round with a random target.
      */
-    /**
-     * Start a new round with a random target.
-     */
     private void startNextRound() {
         if (getState() != GameState.RUNNING)
             return;
@@ -354,7 +352,7 @@ public class BlockShuffleInstance extends GameInstance {
                 continue; // Should not happen
 
             p.showTitle(Title.title(
-                    Component.text("ROUND " + currentRound, NamedTextColor.AQUA, TextDecoration.BOLD),
+                    Lang.getComponent("shuffle-round-title", "%round%", String.valueOf(currentRound)),
                     Component.text(t.displayName(), NamedTextColor.YELLOW),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(3), Duration.ofMillis(500))));
 
@@ -366,14 +364,14 @@ public class BlockShuffleInstance extends GameInstance {
         // Update BossBar (Only works well if shared target, or we show generic info)
         if (getConfig().uiMode == UIMode.RICH && getBossBar() != null) {
             if (getConfig().blockShuffleUniqueTargets && !getConfig().blockShuffleRaceMode) {
-                getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
-                        .append(Component.text("Objectif personnel", NamedTextColor.YELLOW)));
+                getBossBar().name(Lang.getComponent("shuffle-bossbar-prefix", "%round%", String.valueOf(currentRound))
+                        .append(Lang.getComponent("shuffle-personal-objective")));
             } else {
                 // Shared
                 if (!playerTargets.isEmpty()) {
                     ShuffleTarget t = playerTargets.values().iterator().next();
                     String emoji = t.material().isBlock() ? "🧱" : "🎯";
-                    getBossBar().name(Component.text("Round " + currentRound + " : ", NamedTextColor.AQUA)
+                    getBossBar().name(Lang.getComponent("shuffle-bossbar-prefix", "%round%", String.valueOf(currentRound))
                             .append(Component.text(emoji + " " + t.displayName(), NamedTextColor.YELLOW)));
                 }
             }
@@ -437,33 +435,26 @@ public class BlockShuffleInstance extends GameInstance {
 
                         if (getConfig().blockShuffleRaceMode) {
                             // RACE MODE ACTION BAR
-                            p.sendActionBar(Component.text("🏁 RACE: " + t.displayName(), NamedTextColor.GOLD,
-                                    TextDecoration.BOLD));
+                            p.sendActionBar(Lang.getComponent("shuffle-actionbar-race-bs", "%target%", t.displayName()));
                             continue;
                         }
 
                         if (!completedRound.contains(p.getUniqueId())) {
                             if (roundTimer <= 10) {
-                                p.sendActionBar(
-                                        Component.text("⚠ " + roundTimer + "s — " + t.displayName() + " ⚠",
-                                                NamedTextColor.RED, TextDecoration.BOLD));
+                                p.sendActionBar(Lang.getComponent("shuffle-actionbar-urgent-bs", "%time%", String.valueOf(roundTimer), "%target%", t.displayName()));
                             } else {
-                                p.sendActionBar(Component.text(t.displayName() + " — " + roundTimer + "s",
-                                        NamedTextColor.AQUA));
+                                p.sendActionBar(Lang.getComponent("shuffle-actionbar-normal-bs", "%time%", String.valueOf(roundTimer), "%target%", t.displayName()));
                             }
                         } else {
-                            p.sendActionBar(
-                                    Component.text("✅ Complété ! En attente des autres...", NamedTextColor.GREEN));
+                            p.sendActionBar(Lang.getComponent("shuffle-actionbar-completed"));
                         }
                     }
-                } else if (getConfig().uiMode == UIMode.RICH && getConfig().blockShuffleRaceMode) {
-                    // Handled in loop above
                 } else {
                     // CLEAN Mode: Chat notifications
                     if (roundDuration != Integer.MAX_VALUE) {
                         if (roundTimer == 60 || roundTimer == 30 || roundTimer == 10
                                 || (roundTimer <= 5 && roundTimer > 0)) {
-                            broadcastGame("&c⚠ FIN DU ROUND DANS " + roundTimer + " SECONDES ⚠");
+                            broadcastGame(Lang.get("shuffle-round-ending", "%time%", String.valueOf(roundTimer)));
                             if (roundTimer <= 5 && getPlugin().getSoundManager() != null) {
                                 getPlugin().getSoundManager().playSoundAll("countdown-tick", getGamePlayers());
                             }
@@ -474,11 +465,8 @@ public class BlockShuffleInstance extends GameInstance {
                                 ShuffleTarget t = playerTargets.get(p.getUniqueId());
                                 if (t != null) {
                                     String emoji = t.material().isBlock() ? "🧱" : "🎯";
-                                    p.sendMessage(Lang.get("game-prefix")
-                                            + Component.text(
-                                                    "Rappel: " + emoji + " Obtiens ou tiens-toi sur : "
-                                                            + t.displayName(),
-                                                    NamedTextColor.YELLOW));
+                                    p.sendMessage(Lang.getComponent("game-prefix")
+                                            .append(Lang.getComponent("bs-reminder", "%target%", emoji + " " + t.displayName())));
                                 }
                             }
                         }
@@ -660,38 +648,20 @@ public class BlockShuffleInstance extends GameInstance {
 
         if (team != null) {
             for (Player p : team.getAlivePlayers(getAlivePlayers())) {
-                p.sendMessage(Component.text("✅ Objectif d'équipe validé ! ", NamedTextColor.GREEN, TextDecoration.BOLD));
+                p.sendMessage(Lang.getComponent("bs-team-completed"));
                 if (getPlugin().getSoundManager() != null) {
                     getPlugin().getSoundManager().playSound("round-success", p);
                 }
             }
         } else {
-            player.sendMessage(Component.text("✅ Bien joué ! ", NamedTextColor.GREEN, TextDecoration.BOLD)
-                    .append(Component.text("En attente des autres joueurs...", NamedTextColor.GRAY)
-                            .decoration(TextDecoration.BOLD, false)));
+            player.sendMessage(Lang.getComponent("bs-success-waiting"));
             if (getPlugin().getSoundManager() != null) {
                 getPlugin().getSoundManager().playSound("round-success", player);
             }
         }
     }
 
-    /**
-     * Eliminate a player.
-     */
-    private void eliminatePlayer(Player player) {
-        getAlivePlayers().remove(player);
-        getSpectators().add(player);
-        player.setGameMode(GameMode.SPECTATOR);
-        giveSpectatorTools(player);
 
-        if (getPlugin().getSoundManager() != null) {
-            getPlugin().getSoundManager().playSound("death", player);
-        }
-
-        if (getPlugin().getConfigManager().isStatsEnabled() && getPlugin().getStatsManager() != null) {
-            getPlugin().getStatsManager().addDeath(player.getUniqueId(), player.getName());
-        }
-    }
 
     private boolean allAliveCompleted() {
         for (Player p : getAlivePlayers()) {
@@ -701,18 +671,8 @@ public class BlockShuffleInstance extends GameInstance {
         return !getAlivePlayers().isEmpty();
     }
 
-    private String getDifficultyStars(int difficulty) {
-        return switch (difficulty) {
-            case 1 -> "&a★&7☆☆";
-            case 2 -> "&e★★&7☆";
-            case 3 -> "&c★★★";
-            default -> "&7☆☆☆";
-        };
-    }
 
-    /**
-     * Get the current target for the listener.
-     */
+
     /**
      * Get the target for a specific player.
      * Replaces getCurrentTarget.

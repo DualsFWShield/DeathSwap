@@ -688,3 +688,33 @@ subtitle-swap-team: "You swapped with team %team%"
 game-prefix: "&8[&cDeathSwap&8] "
 cmd-admin-command-usage: "&cUsage: /ds admin command <arena> <tp|reset> <value>"
 gui-settings-difficulty-mode-: "Unknown"
+
+# Shuffle Extras
+shuffle-round-title: "&b&lROUND %round%"
+shuffle-round-title-ds: "&d&lROUND %round%"
+shuffle-bossbar-prefix: "&bRound %round%: "
+shuffle-bossbar-prefix-ds: "&dRound %round%: "
+shuffle-personal-objective: "&ePersonal Objective"
+
+shuffle-actionbar-race-bs: "&6&l🏁 RACE: %target%"
+shuffle-actionbar-urgent-bs: "&c&l⚠ %time%s — %target% ⚠"
+shuffle-actionbar-normal-bs: "&b%target% — %time%s"
+shuffle-actionbar-race-ds: "&6&l🏁 RACE: %target%"
+shuffle-actionbar-urgent-ds: "&c&l⚠ %time%s — %target% ⚠"
+shuffle-actionbar-normal-ds: "&e%target% — %time%s"
+shuffle-actionbar-completed: "&a✅ Completed! Waiting for others..."
+
+shuffle-round-ending: "&c⚠ ROUND ENDING IN %time% SECONDS ⚠"
+bs-reminder: "&eReminder: You must explore, find, or craft %target%"
+ds-reminder: "&eReminder: You must die by %target%"
+
+bs-team-completed: "&a&l✅ Team objective completed! "
+bs-success-waiting: "&a&l✅ Well done! &7Waiting for others..."
+
+ds-team-completed: "&a&l✅ Well done! The team scored 1 point."
+ds-success-waiting: "&a&l✅ Well done! &7Waiting for other players..."
+ds-bad-death: "&c❌ Wrong death! You must: %target%"
+ds-bad-death-simple: "&c❌ Wrong death!"
+ds-team-success: "&a%player% completed the challenge for team %team%&a!"
+ds-solo-success: "&a%player% completed the challenge! &7(%completed%/%total%)"
+ds-team-penalty: "&c%player% from team %team%&c died the wrong way! -15s for everyone!"
