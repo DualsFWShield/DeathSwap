@@ -19,12 +19,6 @@
 
 ### 🕹️ 3 Game Modes
 
-*   **Item Race:** The first player to find the target item wins the point.
-*   **Item Bingo:** A 5x5 grid of random items; the first to complete a line wins.
-*   **Modes of difficulty:** Progressive, Thematic (Easy, Medium, Hard, Extreme), Random, Balanced.
-*   **DeathShuffle:** Players must find a way to take a specific type of damage. (e.g., fall damage, fire, drowning).
-*   **Bingo:** A 5x5 grid of challenges; the first to complete a line wins.
-*   **More modes coming soon!**
 | Mode | Description |
 | ---------------------- | --------------------------------------------------------------------------------------------------------- |
 | **DeathSwap** | Players are randomly swapped. Trap the area before the swap! |
@@ -526,11 +520,15 @@ src/main/java/be/dualsfwshield/deathswap/
 ├── GameInstance.java          # Game logic (base)
 ├── GameState.java             # States (WAITING/STARTING/RUNNING/ENDED/DISABLED)
 ├── GameType.java              # Game mode enum
+├── DifficultyMode.java        # Difficulty enum (PROGRESSIVE/THEMATIC/RANDOM/BALANCED)
 ├── SwapMode.java              # FIXED/RANDOM enum
 ├── UIMode.java                # RICH/CLEAN enum
 ├── SeedEntry.java             # Predefined seed record
 ├── ArenaManager.java          # Multi-arena management
 ├── ConfigManager.java         # YAML configuration
+├── TeamManager.java           # Team management (colors, auto-balance, penalties)
+├── api/
+│   └── DeathSwapAPI.java      # Public API for custom modes
 ├── commands/
 │   └── DeathSwapCommand.java  # All /ds commands
 ├── gui/
@@ -540,6 +538,10 @@ src/main/java/be/dualsfwshield/deathswap/
 │   ├── SettingsGUI.java       # Per-arena settings
 │   ├── GamerulesGUI.java      # In-game gamerules
 │   ├── SwapTimerGUI.java      # Swap timer
+│   ├── BlockShuffleGUI.java   # BlockShuffle blocks config
+│   ├── DeathShuffleGUI.java   # DeathShuffle causes config
+│   ├── PlayerConfigGUI.java   # Player lobby config (Hopper)
+│   ├── TeamSelectGUI.java     # Team selection (Compass)
 │   ├── PlayerListGUI.java     # Player list
 │   ├── PlayerActionGUI.java   # Player actions
 │   ├── ConfirmationGUI.java   # Destructive action confirmation
@@ -620,6 +622,8 @@ classDiagram
         +getConfigManager()
         +getStatsManager()
         +getSoundManager()
+        +getTeamSelectGUI()
+        +getPlayerConfigGUI()
         +getHelpGUI()
     }
   
@@ -679,6 +683,7 @@ classDiagram
         +SoundManager
         +StatsManager
         +LeaderboardManager
+        +TeamManager
     }
   
     class GUIs {
@@ -689,6 +694,10 @@ classDiagram
         +SettingsGUI
         +GamerulesGUI
         +SwapTimerGUI
+        +BlockShuffleGUI
+        +DeathShuffleGUI
+        +PlayerConfigGUI
+        +TeamSelectGUI
         +PlayerListGUI
         +PlayerActionGUI
         +ConfirmationGUI

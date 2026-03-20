@@ -1,7 +1,7 @@
 # DeathSwap Plugin - Bilan des Fonctionnalités
 
 ## 🕹️ Modes de Jeu (Game Instances)
-- **DeathSwap** : Échange les joueurs après un cooldown ([GameInstance.java](file:///c:/Users/Toyger/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java)). Gère TP, invulnérabilité au TP, et attribution de victoires quand un meurt.
+- **DeathSwap** : Échange les joueurs après un cooldown ([GameInstance.java](file:///c:/Users/bruijninckx/OneDrive/Projects51c/DeathSwap/src/main/java/be/dualsfwshield/deathswap/GameInstance.java)). Gère TP, invulnérabilité au TP, et attribution de victoires quand un meurt.
 - **DeathShuffle** : Chaque joueur a une cause de mort assignée (`DeathShuffleInstance.java`). Vérifie les `targetCauses` et `skipCauses`. Timer de shuffle spécifique.
 - **BlockShuffle** : Chaque joueur a un bloc cible à tenir ou se tenir dessus (`BlockShuffleInstance.java`). Logique de scan actif (pas basé que sur des events).
 

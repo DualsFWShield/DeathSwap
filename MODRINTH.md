@@ -15,6 +15,7 @@
 🗳️ **Seed Voting** — Players vote for predefined seeds before each game
 🎯 **Challenges** — Craft, mine, and kill objectives with potion effect rewards
 🔊 **Custom Sounds** — Every event sound is fully configurable
+🤝 **Team System** — Play all modes cooperatively with auto-balanced color teams
 🎨 **Two UI Modes** — RICH (BossBar + ActionBar) or CLEAN (chat only)
 ⚙️ **In-Game Config** — Modify everything via GUI or commands, no file editing needed
 🛠️ **Custom GameMode API** — Developers can register their own modes using the DeathSwapAPI

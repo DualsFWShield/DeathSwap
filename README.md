@@ -521,11 +521,15 @@ src/main/java/be/dualsfwshield/deathswap/
 ├── GameInstance.java          # Logique de jeu (base)
 ├── GameState.java             # États (WAITING/STARTING/RUNNING/ENDED/DISABLED)
 ├── GameType.java              # Enum modes de jeu
+├── DifficultyMode.java        # Enum difficulté (PROGRESSIVE/THEMATIC/RANDOM/BALANCED)
 ├── SwapMode.java              # Enum FIXED/RANDOM
 ├── UIMode.java                # Enum RICH/CLEAN
 ├── SeedEntry.java             # Record seed prédéfini
 ├── ArenaManager.java          # Gestion multi-arènes
 ├── ConfigManager.java         # Configuration YAML
+├── TeamManager.java           # Gestion des équipes (couleurs, auto-balance, pénalités)
+├── api/
+│   └── DeathSwapAPI.java      # API publique pour modes customs
 ├── commands/
 │   └── DeathSwapCommand.java  # Toutes les commandes /ds
 ├── gui/
@@ -535,6 +539,10 @@ src/main/java/be/dualsfwshield/deathswap/
 │   ├── SettingsGUI.java       # Settings par arène
 │   ├── GamerulesGUI.java      # Gamerules en jeu
 │   ├── SwapTimerGUI.java      # Timer de swap
+│   ├── BlockShuffleGUI.java   # Config blocs BlockShuffle
+│   ├── DeathShuffleGUI.java   # Config causes DeathShuffle
+│   ├── PlayerConfigGUI.java   # Config joueur au lobby (Hopper)
+│   ├── TeamSelectGUI.java     # Sélection d'équipe (Boussole)
 │   ├── PlayerListGUI.java     # Liste joueurs
 │   ├── PlayerActionGUI.java   # Actions joueur
 │   ├── ConfirmationGUI.java   # Confirmation actions destructives
@@ -615,6 +623,8 @@ classDiagram
         +getConfigManager()
         +getStatsManager()
         +getSoundManager()
+        +getTeamSelectGUI()
+        +getPlayerConfigGUI()
         +getHelpGUI()
     }
   
@@ -674,6 +684,7 @@ classDiagram
         +SoundManager
         +StatsManager
         +LeaderboardManager
+        +TeamManager
     }
   
     class GUIs {
@@ -684,6 +695,10 @@ classDiagram
         +SettingsGUI
         +GamerulesGUI
         +SwapTimerGUI
+        +BlockShuffleGUI
+        +DeathShuffleGUI
+        +PlayerConfigGUI
+        +TeamSelectGUI
         +PlayerListGUI
         +PlayerActionGUI
         +ConfirmationGUI

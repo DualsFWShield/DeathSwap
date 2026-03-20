@@ -1,4 +1,4 @@
-# 🚀 Release Notes - DeathSwap (V1.0.0 Globale)
+# 🚀 Release Notes - DeathSwap (V2.1.0 Globale)
 
 Bienvenue dans la version complète de **DeathSwap** ! Ce document résume l'intégralité du travail accompli, des toutes premières lignes de code aux dernières fonctionnalités de groupe.
 

@@ -57,9 +57,9 @@
 | `/ds stop [arène]`                             | Arrête une arène                             | `deathswap.admin` |
 | `/ds swapnow`                                   | Force un swap immédiat                       | `deathswap.admin` |
 | `/ds reload`                                    | Recharge la configuration complète            | `deathswap.admin` |
-| `/ds admin gamerule <arène> set <r> <v>`       | Ajouter/modifier une gamerule                 | `deathswap.admin` |
-| `/ds admin gamerule <arène> remove <r>`        | Supprimer une gamerule                        | `deathswap.admin` |
-| `/ds admin list`                                | Liste les arènes (GUI)                       | `deathswap.admin` |
+| `/ds settings`                                  | Ouvre le GUI Settings de l'arène courante    | `deathswap.admin` |
+| `/ds help commands`                             | Affiche les commandes admin en chat           | `deathswap.admin` |
+| `/ds admin`                                     | Ouvrir le Dashboard Admin (GUI)               | `deathswap.admin` |
 | `/ds admin list`                                | Liste les arènes (GUI)                       | `deathswap.admin` |
 | `/ds admin create <nom>`                        | Crée une arène                               | `deathswap.admin` |
 | `/ds admin edit <arène>`                       | Ouvre le GUI Settings d'une arène            | `deathswap.admin` |
@@ -213,8 +213,6 @@ lobby-world: "DS_Lobby"      # Monde de lobby
 min-players: 2
 max-players: 20
 ui-mode: RICH                # RICH ou CLEAN
-
-ui-mode: RICH  # RICH (BossBar + ActionBar) ou CLEAN (Chat uniquement)
 
 # ==========================================
 #                 TIMERS
@@ -526,10 +524,10 @@ Le Dashboard Admin est un système de GUI accessible via `/ds admin`. Il fournit
 Accessible via le **Shift+Clic** sur une arène dans le Dashboard, ou via `/ds settings` / `/ds admin edit <arène>`.
 Ce menu permet de modifier **tous** les aspects de l'arène sans toucher aux fichiers :
 
-- **Mondes**   **Item Bingo:** Une grille 5x5 d'items aléatoires; le premier à compléter une ligne l'emporte.
-*   **Modes de difficulté:** Progressif, Thématique (Facile, Moyen, Difficile, Extrême), Aléatoire, Équilibré.
-*   **Unique Targets:** Le même item ne tombera jamais deux fois par partie.
-*   **Options:** Permettez ou non le PvP, l'accès au Nether, et autres détails. de swap, max game time, etc.
+- **Mondes** : Changer le lobby et le monde de jeu (saisie clavier via chat)
+- **Mode de jeu** : Changer entre DeathSwap, DeathShuffle, BlockShuffle
+- **Gamerules** : (Dés)activer les règles (keep_inventory, etc.)
+- **Timers** : Ajuster les timers de swap, max game time, etc.
 - **Commandes** : Configurer la commande de TP et de Reset
 - **Résilience** : Activer les options de démarrage robuste
 

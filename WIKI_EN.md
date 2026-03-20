@@ -57,9 +57,9 @@
 | `/ds stop [arena]`                              | Stop an arena                                 | `deathswap.admin` |
 | `/ds swapnow`                                   | Force an immediate swap                       | `deathswap.admin` |
 | `/ds reload`                                    | Reload full configuration                     | `deathswap.admin` |
-| `/ds admin gamerule <arena> set <r> <v>`        | Add/modify a gamerule                         | `deathswap.admin` |
-| `/ds admin gamerule <arena> remove <r>`         | Remove a gamerule                             | `deathswap.admin` |
-| `/ds admin list`                                | List arenas (GUI)                             | `deathswap.admin` |
+| `/ds settings`                                  | Open Settings GUI for current arena           | `deathswap.admin` |
+| `/ds help commands`                             | Display admin commands in chat                | `deathswap.admin` |
+| `/ds admin`                                     | Open the Admin Dashboard (GUI)                | `deathswap.admin` |
 | `/ds admin list`                                | List arenas (GUI)                             | `deathswap.admin` |
 | `/ds admin create <name>`                       | Create an arena                               | `deathswap.admin` |
 | `/ds admin edit <arena>`                        | Open Settings GUI for an arena                | `deathswap.admin` |
@@ -1060,10 +1060,7 @@ blocks:
 
 1. **Item Race** (BlockShuffle only): The first player to find/craft the item wins the round (others fail).
 2. **Death Run** (DeathShuffle only): The first player to die from the specified cause wins the round (others fail).
-*   **Item Bingo:** A 5x5 grid of random items; the first to complete a line wins.
-*   **Modes of difficulty:** Progressive, Thematic (Easy, Medium, Hard, Extreme), Random, Balanced.
-*   **Unique Targets:** The same item will never fall twice per game.
-*   **Options:** Allow or forbid PvP, Nether access, and other details.
+3. **Unique Targets/Deaths**: Gives a different target/cause to each player for the round.
 4. **Pool Configuration**: Edit targets (Blocks/Causes) directly in-game using the paginated menu (Left click to toggle ON/OFF, Right click to change difficulty).
 
 ---
