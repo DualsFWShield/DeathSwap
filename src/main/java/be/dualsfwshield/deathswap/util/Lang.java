@@ -80,6 +80,12 @@ public class Lang {
             YamlConfiguration defConfig = YamlConfiguration
                     .loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8));
             config.setDefaults(defConfig);
+            
+            for (String key : defConfig.getKeys(true)) {
+                if (defConfig.isString(key)) {
+                    messages.put(key, config.getString(key));
+                }
+            }
         }
 
         for (String key : config.getKeys(true)) {

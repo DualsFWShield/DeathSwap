@@ -1505,10 +1505,11 @@ public class GameInstance {
      */
     protected String getDifficultyStars(int difficulty) {
         return switch (difficulty) {
-            case 1 -> "&a★&7☆☆";
-            case 2 -> "&e★★&7☆";
-            case 3 -> "&c★★★";
-            default -> "&7☆☆☆";
+            case 1 -> "&a★&7☆☆☆";
+            case 2 -> "&e★★&7☆☆";
+            case 3 -> "&c★★★&7☆";
+            case 4 -> "&4★★★★";
+            default -> "&7☆☆☆☆";
         };
     }
 
